@@ -37,7 +37,7 @@ type CustomValueArg interface {
 	ValueEx() string
 }
 
-func Arg(ctx context.Context, v any) Iter {
+func ArgIter(ctx context.Context, v any) Iter {
 	switch x := v.(type) {
 	case CustomValueArg:
 		return func(yield func(string, []any) bool) {
@@ -53,12 +53,12 @@ func Arg(ctx context.Context, v any) Iter {
 		}
 		return Empty().Frag(ctx)
 	case driver.Valuer:
-		return Single(x).Frag(ctx)
+		return Arg(x).Frag(ctx)
 	case iter.Seq[any]:
 		return Values[any](x).Frag(ctx)
 	case []any:
 		if len(x) > 0 {
-			return Pair(strings.Repeat(",?", len(x))[1:], x...).Frag(ctx)
+			return Query(strings.Repeat(",?", len(x))[1:], x...).Frag(ctx)
 		}
 		return Empty().Frag(ctx)
 	default:
@@ -69,7 +69,7 @@ func Arg(ctx context.Context, v any) Iter {
 		switch tpe.Kind() {
 		case reflect.Slice:
 			if !reflectx.IsBytes(tpe) {
-				return Args(ctx, x)
+				return ArgsIter(ctx, x)
 			}
 			return asArg
 		case reflect.Func:
@@ -88,7 +88,7 @@ func Arg(ctx context.Context, v any) Iter {
 	}
 }
 
-func Args(ctx context.Context, v any) Iter {
+func ArgsIter(ctx context.Context, v any) Iter {
 	switch x := v.(type) {
 	case []bool:
 		return Values[bool](slices.Values(x)).Frag(ctx)
@@ -128,4 +128,21 @@ func Args(ctx context.Context, v any) Iter {
 			yield(rv.Index(i).Interface())
 		}
 	}).Frag(ctx)
+}
+
+// Arg presents a single argument fragment
+func Arg(v any) Fragment {
+	return &argument{v: v}
+}
+
+type argument struct {
+	v any
+}
+
+func (f *argument) IsNil() bool { return false }
+
+func (f *argument) Frag(_ context.Context) Iter {
+	return func(yield func(string, []any) bool) {
+		yield("?", []any{f.v})
+	}
 }

@@ -15,9 +15,9 @@ type (
 	NamedArgs map[string]any
 )
 
-func Pair(query string, args ...any) Fragment {
+func Query(query string, args ...any) Fragment {
 	if len(args) == 0 {
-		return Raw(query)
+		return &pair{query: query}
 	}
 
 	frag := &pair{
@@ -86,7 +86,7 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					arg := name.String()
 					v, ok := p.set[arg]
 					must.BeTrueF(ok, "missing named argument query: %s arg: %s", p.query, arg)
-					for query, args := range Arg(ctx, v) {
+					for query, args := range ArgIter(ctx, v) {
 						yield(query, args)
 					}
 				}
@@ -101,7 +101,7 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					p.query, len(p.args), idx,
 				)
 				arg := p.args[idx]
-				for query, args := range Arg(ctx, arg) {
+				for query, args := range ArgIter(ctx, arg) {
 					if !yield(query, args) {
 						return
 					}

@@ -14,9 +14,9 @@ func Block(f Fragment) Fragment {
 		return Empty()
 	}
 	return &block{
-		splitter:  ",",
-		bracketed: true,
+		sep:       ",",
 		seq:       func(yield func(Fragment) bool) { yield(f) },
+		bracketed: true,
 	}
 }
 
@@ -31,8 +31,8 @@ func BlockWithoutBrackets(f Fragment) Fragment {
 type block struct {
 	f         Fragment
 	seq       iter.Seq[Fragment]
+	sep       string
 	bracketed bool
-	splitter  string
 }
 
 func (f *block) IsNil() bool { return f.seq == nil }
@@ -47,7 +47,7 @@ func (f *block) Frag(ctx context.Context) Iter {
 				}
 			}
 			if i > 0 {
-				if !yield(f.splitter, nil) {
+				if !yield(f.sep, nil) {
 					return
 				}
 			}

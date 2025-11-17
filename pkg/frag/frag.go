@@ -32,16 +32,6 @@ func NonNil[F Fragment](seq iter.Seq[F]) iter.Seq[Fragment] {
 	}
 }
 
-type Func func(ctx context.Context) Iter
-
-func (f Func) IsNil() bool {
-	return f == nil
-}
-
-func (f Func) Frag(ctx context.Context) Iter {
-	return f(ctx)
-}
-
 // Fragment defines an interface to present a sql fragment
 type Fragment interface {
 	IsNil() bool

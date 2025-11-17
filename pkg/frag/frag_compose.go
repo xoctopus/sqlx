@@ -10,6 +10,10 @@ func Compose(sep string, frags ...Fragment) Fragment {
 	return &compose{sep: sep, seq: NonNil(slices.Values(frags))}
 }
 
+func ComposeSeq(sep string, frags iter.Seq[Fragment]) Fragment {
+	return &compose{sep: sep, seq: NonNil(frags)}
+}
+
 type compose struct {
 	seq iter.Seq[Fragment]
 	sep string

@@ -17,27 +17,27 @@ type Fragment = frag.Fragment
 
 func TestFragment(t *testing.T) {
 	t.Run("Const", func(t *testing.T) {
-		Expect[Fragment](t, frag.Raw(""), BeFragment(""))
-		Expect[Fragment](t, frag.Raw("SELECT 1"), BeFragment("SELECT 1"))
+		Expect[Fragment](t, frag.Lit(""), BeFragment(""))
+		Expect[Fragment](t, frag.Lit("SELECT 1"), BeFragment("SELECT 1"))
 	})
 	t.Run("Flatten", func(t *testing.T) {
 		val := []any{1, 2, 3}
 		seq := slices.Values(val)
 		t.Run("Values", func(t *testing.T) {
-			Expect[Fragment](t, frag.Pair(`IN (?,?,?)`, val...), BeFragment("IN (?,?,?)", val...))
+			Expect[Fragment](t, frag.Query(`IN (?,?,?)`, val...), BeFragment("IN (?,?,?)", val...))
 		})
 		t.Run("Seq", func(t *testing.T) {
-			Expect[Fragment](t, frag.Pair(`IN (?)`, seq), BeFragment("IN (?,?,?)", 1, 2, 3))
+			Expect[Fragment](t, frag.Query(`IN (?)`, seq), BeFragment("IN (?,?,?)", 1, 2, 3))
 		})
 		t.Run("Slice", func(t *testing.T) {
-			Expect[Fragment](t, frag.Pair(`IN (?)`, val), BeFragment("IN (?,?,?)", 1, 2, 3))
+			Expect[Fragment](t, frag.Query(`IN (?)`, val), BeFragment("IN (?,?,?)", 1, 2, 3))
 		})
 		t.Run("Composed", func(t *testing.T) {
 			Expect[Fragment](
 				t,
-				frag.Pair(
+				frag.Query(
 					`DO UPDATE SET f_name = ?`,
-					[]any{frag.Pair("EXCLUDED.?", frag.Raw("f_name"))},
+					[]any{frag.Query("EXCLUDED.?", frag.Lit("f_name"))},
 				),
 				BeFragment("DO UPDATE SET f_name = EXCLUDED.f_name"),
 			)
@@ -45,14 +45,14 @@ func TestFragment(t *testing.T) {
 		t.Run("HasSub", func(t *testing.T) {
 			Expect[Fragment](
 				t,
-				frag.Pair(`#ID = ?`, frag.Pair("#ID+?", 1)),
+				frag.Query(`#ID = ?`, frag.Query("#ID+?", 1)),
 				BeFragment("#ID = #ID+?", 1),
 			)
 		})
 		t.Run("CustomValueArg", func(t *testing.T) {
 			Expect[Fragment](
 				t,
-				frag.Pair(`#Point = ?`, Point{1, 1}),
+				frag.Query(`#Point = ?`, Point{1, 1}),
 				BeFragment("#Point = ST_GeomFromText(?)", Point{1, 1}),
 			)
 		})
@@ -60,7 +60,7 @@ func TestFragment(t *testing.T) {
 			t.Run("WithNamedArg", func(t *testing.T) {
 				Expect[Fragment](
 					t,
-					frag.Pair(
+					frag.Query(
 						`time > @min AND time < @max`,
 						sql.Named("min", 10),
 						sql.Named("max", 20),
@@ -71,7 +71,7 @@ func TestFragment(t *testing.T) {
 			t.Run("WithNamedArgSet", func(t *testing.T) {
 				Expect[Fragment](
 					t,
-					frag.Pair(
+					frag.Query(
 						`time > @min AND time < @max`,
 						frag.NamedArgs{
 							"min": 10,
@@ -84,26 +84,26 @@ func TestFragment(t *testing.T) {
 		})
 		t.Run("Embedded", func(t *testing.T) {
 			Expect(t,
-				frag.Pair(
+				frag.Query(
 					`CREATE TABLE IF NOT EXISTS @table @columns`,
 					frag.NamedArgs{
-						"table": frag.Pair("t"),
+						"table": frag.Query("t"),
 						"columns": frag.Block(
 							frag.Compose(
 								", ",
-								frag.Pair(
+								frag.Query(
 									"@column @datatype",
 									frag.NamedArgs{
-										"column":   frag.Pair("f_id"),
-										"datatype": frag.Pair("bigint"),
+										"column":   frag.Query("f_id"),
+										"datatype": frag.Query("bigint"),
 									},
 								),
 								nil,
-								frag.Pair(
+								frag.Query(
 									"@column @datatype",
 									frag.NamedArgs{
-										"column":   frag.Pair("f_name"),
-										"datatype": frag.Pair("varchar(255)"),
+										"column":   frag.Query("f_name"),
+										"datatype": frag.Query("varchar(255)"),
 									},
 								),
 							),
