@@ -5,7 +5,6 @@ import (
 	"context"
 	"iter"
 	"slices"
-	"strings"
 )
 
 // Iter will yield a SQL fragment with a raw query(string with holder) and values
@@ -50,9 +49,10 @@ func Collect(ctx context.Context, f Fragment) (string, []any) {
 
 	for q, x := range f.Frag(ctx) {
 		if len(q) > 0 {
-			query.WriteString(strings.TrimPrefix(q, "\n"))
+			// query.WriteString(strings.TrimPrefix(q, "\n"))
+			query.WriteString(q)
 		}
-		if len(args) > 0 {
+		if len(x) > 0 {
 			args = slices.Concat(args, x)
 		}
 	}

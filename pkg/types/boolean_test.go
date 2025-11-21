@@ -1,4 +1,4 @@
-package sqltypes_test
+package types_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 
 	. "github.com/xoctopus/x/testx"
 
-	. "github.com/xoctopus/sqlx/pkg/sqltypes"
+	. "github.com/xoctopus/sqlx/pkg/types"
 )
 
 func TestBoolean(t *testing.T) {

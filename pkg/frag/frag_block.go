@@ -20,16 +20,15 @@ func Block(f Fragment) Fragment {
 	}
 }
 
-func BlockWithoutBrackets(f Fragment) Fragment {
-	b := Block(f)
-	if x, ok := b.(*block); ok {
-		x.bracketed = false
+func BlockWithoutBrackets(seq iter.Seq[Fragment]) Fragment {
+	if seq == nil {
+		return nil
 	}
-	return b
+
+	return &block{seq: seq, sep: ","}
 }
 
 type block struct {
-	f         Fragment
 	seq       iter.Seq[Fragment]
 	sep       string
 	bracketed bool

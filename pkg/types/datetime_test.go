@@ -1,4 +1,4 @@
-package sqltypes_test
+package types_test
 
 import (
 	"database/sql"
@@ -12,7 +12,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/xoctopus/x/misc/must"
 
-	"github.com/xoctopus/sqlx/pkg/sqltypes"
+	"github.com/xoctopus/sqlx/pkg/types"
 )
 
 func TestDatetime_Hack(t *testing.T) {
@@ -42,7 +42,7 @@ func TestDatetime_Hack(t *testing.T) {
 			dsn:  "root:@tcp(localhost:13306)/test?parseTime=true&loc=Asia%2FShanghai",
 		},
 	}
-	sqltypes.AddTimestampInputLayouts(time.DateTime + ".000")
+	types.AddTimestampInputLayouts(time.DateTime + ".000")
 
 	query := "SELECT * FROM x LIMIT 1"
 
@@ -56,8 +56,8 @@ func TestDatetime_Hack(t *testing.T) {
 		}
 		for rows.Next() {
 			var (
-				datetime  = &sqltypes.Datetime{}
-				timestamp = &sqltypes.Timestamp{}
+				datetime  = &types.Datetime{}
+				timestamp = &types.Timestamp{}
 			)
 			fmt.Println("scan:")
 			err = rows.Scan(datetime, timestamp)

@@ -1,4 +1,4 @@
-package sqltypes_test
+package types_test
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	expjson "github.com/go-json-experiment/json"
 	. "github.com/xoctopus/x/testx"
 
-	. "github.com/xoctopus/sqlx/pkg/sqltypes"
+	. "github.com/xoctopus/sqlx/pkg/types"
 )
 
 func init() {

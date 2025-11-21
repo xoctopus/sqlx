@@ -49,8 +49,10 @@ func (m *fragmentMatcher[A]) Match(actual A) bool {
 	}
 	q, args := frag.Collect(context.Background(), actual)
 	if len(m.args) == 0 && len(args) == 0 {
-		return m.query == q
+		m.queryNotEqual = !(m.query == q)
+		return !m.queryNotEqual
 	}
+
 	if m.query == q {
 		return true
 	}
@@ -83,7 +85,7 @@ func (m *fragmentMatcher[A]) NormalizeActual(actual A) any {
 	return fmt.Sprintf("%v", args)
 }
 
-func (m *fragmentMatcher[A]) NormalizedExpected() any {
+func (m *fragmentMatcher[A]) NormalizeExpect() any {
 	if m.queryNotEqual && m.argsNotEqual {
 		return fmt.Sprintf("%s | %v", m.query, m.args)
 	}

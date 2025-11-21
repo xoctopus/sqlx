@@ -1,4 +1,4 @@
-package sqltypes_test
+package types_test
 
 import (
 	"database/sql/driver"
@@ -6,12 +6,12 @@ import (
 
 	. "github.com/xoctopus/x/testx"
 
-	"github.com/xoctopus/sqlx/pkg/sqltypes"
+	"github.com/xoctopus/sqlx/pkg/types"
 )
 
 func TestJSON(t *testing.T) {
 	t.Run("JSONArray", func(t *testing.T) {
-		var arr = sqltypes.JSONArrayOf[int](nil)
+		var arr = types.JSONArrayOf[int](nil)
 		t.Run("Scan", func(t *testing.T) {
 			for _, src := range []any{[]byte(`null`), "", []byte(``), nil} {
 				Expect(t, arr.Scan(src), Succeed())
@@ -43,8 +43,8 @@ func TestJSON(t *testing.T) {
 		}
 		type M map[int]int
 		var (
-			objT = sqltypes.JSONObjectOf[T](nil)
-			objM = sqltypes.JSONObjectOf[M](nil)
+			objT = types.JSONObjectOf[T](nil)
+			objM = types.JSONObjectOf[M](nil)
 		)
 		t.Run("Scan", func(t *testing.T) {
 			for _, src := range []any{[]byte(``), []byte(`null`), "", nil} {
@@ -74,6 +74,6 @@ func TestJSON(t *testing.T) {
 			v, _ = objM.Value()
 			Expect(t, v, Equal[driver.Value](`{"1":1}`))
 		})
-		ExpectPanic[error](t, func() { sqltypes.JSONObjectOf(new(int)) })
+		ExpectPanic[error](t, func() { types.JSONObjectOf(new(int)) })
 	})
 }

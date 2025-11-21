@@ -44,7 +44,7 @@ func ArgIter(ctx context.Context, v any) Iter {
 			yield(x.ValueEx(), []any{x})
 		}
 	case Fragment:
-		if !(x == nil || x.IsNil()) {
+		if !IsNil(x) {
 			return func(yield func(string, []any) bool) {
 				for query, args := range x.Frag(ctx) {
 					yield(query, args)

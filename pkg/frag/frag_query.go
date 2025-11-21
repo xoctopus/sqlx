@@ -106,6 +106,7 @@ func (p *pair) Frag(ctx context.Context) Iter {
 						return
 					}
 				}
+				idx++
 			default:
 				tmp.WriteRune(c)
 			}

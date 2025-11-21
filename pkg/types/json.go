@@ -1,4 +1,4 @@
-package sqltypes
+package types
 
 import (
 	"bytes"
