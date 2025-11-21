@@ -345,7 +345,34 @@ func ExampleInsert() {
 					Where(CT[string]("f_status").AsCond(Eq("valid"))),
 				),
 		)
+	Print(context.Background(), f)
 
+	f = Insert().
+		Into(
+			T("t_user"),
+			OnConflict(ColsOf(C("f_id"))).DoNothing(),
+			Comment("insert on conflict do nothing"),
+		).
+		Values(ColsOf(C("f_id"), C("f_name")), 1, "saito")
+	Print(context.Background(), f)
+
+	f = Insert().
+		Into(
+			T("t_user"),
+			OnConflict(ColsOf(C("f_id"))).
+				DoUpdateSet(ColumnsAndValues(ColsOf(C("f_name")), "saito")),
+			Comment("insert on conflict do update"),
+		).
+		Values(ColsOf(C("f_id"), C("f_name")), 1, "saito")
+	Print(context.Background(), f)
+
+	f = Insert().
+		Into(
+			T("t_user"),
+			OnDuplicate(ColumnsAndValues(ColsOf(C("f_id")), C("f_id"))),
+			Comment("insert on duplicate key do update"),
+		).
+		Values(ColsOf(C("f_id"), C("f_name")), 1, "saito")
 	Print(context.Background(), f)
 
 	// Output:
@@ -358,6 +385,15 @@ func ExampleInsert() {
 	// -- insert from selection
 	// INSERT INTO t_user_migrated (f_a,f_b) SELECT f_a,f_b FROM t_user_previous WHERE f_status = ?
 	// [valid]
+	// -- insert on conflict do nothing
+	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO NOTHING
+	// [1 saito]
+	// -- insert on conflict do update
+	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
+	// [1 saito saito]
+	// -- insert on duplicate key do update
+	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON DUPLICATE KEY UPDATE f_id = f_id
+	// [1 saito]
 }
 
 func ExampleUpdate() {

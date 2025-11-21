@@ -2,7 +2,7 @@ package builder
 
 import (
 	"context"
-	"iter"
+	"slices"
 
 	"github.com/xoctopus/x/iterx"
 
@@ -24,7 +24,6 @@ type onconflict struct {
 	cols        ColIter
 	nothing     bool
 	assignments []Assignment
-	assigns     iter.Seq[frag.Fragment]
 }
 
 func (o onconflict) Type() AdditionType {
@@ -37,18 +36,20 @@ func (o onconflict) DoNothing() OnConflictAddition {
 }
 
 func (o onconflict) DoUpdateSet(assignments ...Assignment) OnConflictAddition {
-	o.assigns = iterx.Map(
-		iterx.FilterSlice(assignments, func(a Assignment) bool {
-			if !frag.IsNil(a) {
-				o.assignments = append(o.assignments, a)
-				return true
-			}
-			return false
-		}),
-		func(a Assignment) frag.Fragment {
-			return a
-		},
-	)
+	// o.assigns = iterx.Map(
+	// 	iterx.FilterSlice(assignments, func(a Assignment) bool {
+	// 		if !frag.IsNil(a) {
+	// 			o.assignments = append(o.assignments, a)
+	// 			return true
+	// 		}
+	// 		return false
+	// 	}),
+	// 	func(a Assignment) frag.Fragment {
+	// 		return a
+	// 	},
+	// )
+	o.nothing = false
+	o.assignments = append(o.assignments, assignments...)
 	return &o
 }
 
@@ -80,7 +81,16 @@ func (o *onconflict) Frag(ctx context.Context) frag.Iter {
 
 		yield("UPDATE SET ", nil)
 
-		for q, args := range frag.ComposeSeq(", ", o.assigns).Frag(ctx) {
+		frags := iterx.Map(
+			slices.Values(o.assignments),
+			func(a Assignment) frag.Fragment {
+				if frag.IsNil(a) {
+					return nil
+				}
+				return a
+			},
+		)
+		for q, args := range frag.ComposeSeq(", ", frag.NonNil(frags)).Frag(ctx) {
 			yield(q, args)
 		}
 	}

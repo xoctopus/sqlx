@@ -22,6 +22,7 @@ const (
 	addition_GROUP_BY
 	addition_ORDER_BY
 	addition_ON_CONFLICT
+	addition_ON_DUPLICATE
 	addition_LIMIT
 	addition_RETURNING
 	addition_FOR_UPDATE
