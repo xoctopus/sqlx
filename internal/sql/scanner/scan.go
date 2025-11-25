@@ -75,7 +75,20 @@ func scan(ctx context.Context, rows *sql.Rows, v any) error {
 		}
 
 		dst := make([]any, n)
-		placeholder := &nullable.Empty{}
+		placeholder := &nullable.EmptyScanner{}
+
+		if x, ok := v.(WithColumnReceivers); ok {
+			receivers := x.ColumnReceivers()
+			for i, name := range cols {
+				if c, ok := receivers[strings.ToLower(name)]; ok {
+					dst[i] = nullable.NewNullIgnoreScanner(c)
+				} else {
+					dst[i] = &placeholder
+				}
+			}
+			return rows.Scan(dst...)
+		}
+
 		columns := map[string]int{}
 
 		for i, name := range cols {

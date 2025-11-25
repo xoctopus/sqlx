@@ -13,6 +13,10 @@ type ScanIter interface {
 	Next(v any) error
 }
 
+type WithColumnReceivers interface {
+	ColumnReceivers() map[string]any
+}
+
 type ScanIterT[T any] interface {
 	New() T
 	Next(T) error

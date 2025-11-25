@@ -28,8 +28,8 @@ func (s *NullIgnoreScanner) Scan(src any) error {
 	return convertAssign(s.dst, src)
 }
 
-type Empty struct{}
+type EmptyScanner struct{}
 
-func (scanner *Empty) Scan(any) error {
+func (scanner *EmptyScanner) Scan(any) error {
 	return nil
 }
