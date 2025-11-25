@@ -291,7 +291,7 @@ func WithColDef(def *ColumnDef) ColOption {
 }
 
 func WithColDefOf(ctx context.Context, v any, tag reflect.StructTag) ColOption {
-	return WithColDef(def.ParseColDef(ctx, typex.NewTType(ctx, v), tag))
+	return WithColDef(def.ParseColDef(ctx, typex.NewTType(ctx, reflect.TypeOf(v)), tag))
 }
 
 func AsValue[T any](v TCol[T]) ColValuer[T] {

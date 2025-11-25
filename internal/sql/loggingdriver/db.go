@@ -117,12 +117,13 @@ func (c *connection) prepare(q string) string {
 	}
 
 	b := bytes.NewBuffer(nil)
+	placeholders := int64(1)
 	for i := range q {
 		switch v := q[i]; v {
 		case '?':
 			b.WriteString(c.placeholder)
-			b.WriteString(strconv.FormatInt(int64(i+1), 10))
-			i++
+			b.WriteString(strconv.FormatInt(placeholders+1, 10))
+			placeholders++
 		default:
 			b.WriteByte(v)
 		}

@@ -93,7 +93,7 @@ func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) 
 				if rollback == nil {
 					return fmt.Errorf("cause: %w", caught)
 				}
-				return fmt.Errorf("caught: %w rollback: %v", caught)
+				return fmt.Errorf("caught: %w rollback: %v", caught, rollback)
 			}
 			switch e := caught.(type) {
 			case runtime.Error:

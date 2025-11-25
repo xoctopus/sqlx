@@ -75,9 +75,6 @@ func TestInterpolate(t *testing.T) {
 		_, err := Interpolate("?", []driver.NamedValue{{Value: 1}}, time.UTC)
 		Expect(t, err, ErrorContains("unsupported type"))
 	})
-	t.Run("Injected", func(t *testing.T) {
-		_, err := Interpolate("", []driver.NamedValue{{Value: 1}}, time.UTC)
-	})
 
 	interpolator := Interpolator("??", []driver.NamedValue{{}})
 	Expect(t, interpolator.String(), HavePrefix("invalid: "))
