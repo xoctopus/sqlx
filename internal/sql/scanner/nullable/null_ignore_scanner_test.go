@@ -22,7 +22,7 @@ func TestNullIgnoreScanner(t *testing.T) {
 	})
 
 	t.Run("ScanNil", func(t *testing.T) {
-		s := NewNullIgnoreScanner(&Empty{})
+		s := NewNullIgnoreScanner(&EmptyScanner{})
 		Expect(t, s.Scan(nil), Succeed())
 
 		v := 0
