@@ -47,6 +47,8 @@ type (
 		Of(Table) Keys
 		Len() int
 	}
+
+	KeyKind = def.KeyKind
 )
 
 func PK(cols Cols, opts ...KeyOption) Key {
@@ -56,15 +58,15 @@ func PK(cols Cols, opts ...KeyOption) Key {
 
 func UK(name string, cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create unique index")
-	return K(name, cols, append(opts, UniqueKey(true))...)
+	return K(name, cols, append(opts, KeyUniquenessApplier(true))...)
 }
 
 func K(name string, cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create index")
 	k := &key{name: strings.ToLower(name)}
+
 	for c := range cols.Cols() {
-		opts = append(opts, WithColumnOptions(def.KeyColumnOption{Name: c.Name()}))
-		// k.options = append(k.options, FieldOption(c.Name()))
+		k.options = append(k.options, def.KeyColumnOption{FieldName: c.FieldName()})
 	}
 
 	for _, f := range opts {
@@ -75,19 +77,19 @@ func K(name string, cols Cols, opts ...KeyOption) Key {
 
 type KeyOption func(*key)
 
-func UniqueKey(unique bool) KeyOption {
+func KeyUniquenessApplier(unique bool) KeyOption {
 	return func(k *key) {
 		k.unique = unique
 	}
 }
 
-func UsingKey(method string) KeyOption {
+func KeyMethodApplier(method string) KeyOption {
 	return func(k *key) {
 		k.method = method
 	}
 }
 
-func WithColumnOptions(opts ...def.KeyColumnOption) KeyOption {
+func KeyColumnOptionsApplier(opts ...def.KeyColumnOption) KeyOption {
 	return func(k *key) {
 		k.options = opts
 	}
@@ -95,6 +97,7 @@ func WithColumnOptions(opts ...def.KeyColumnOption) KeyOption {
 
 type key struct {
 	table   Table
+	kind    KeyKind
 	name    string
 	unique  bool
 	method  string
@@ -135,10 +138,10 @@ func (k *key) Cols() iter.Seq[Col] {
 	return func(yield func(Col) bool) {
 		names := map[string]bool{}
 		for _, opt := range k.options {
-			names[opt.Name] = true
+			names[opt.FieldName] = true
 		}
 		for c := range k.table.Cols() {
-			if names[c.Name()] || names[c.FieldName()] {
+			if names[c.FieldName()] {
 				if !yield(c) {
 					return
 				}

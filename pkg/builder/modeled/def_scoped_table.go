@@ -1,13 +1,14 @@
 package modeled
 
 import (
+	"context"
 	"iter"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 )
 
-func M[M Model]() Table[M] {
-	return CastT[M](builder.TFrom(new(M)))
+func M[M Model](ctx context.Context) Table[M] {
+	return CastT[M](builder.TFrom(ctx, new(M)))
 }
 
 func CastT[M Model](t builder.Table) Table[M] {

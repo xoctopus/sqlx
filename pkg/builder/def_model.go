@@ -10,15 +10,17 @@ type (
 	}
 
 	WithUniqueIndexes interface {
+		// UniqueIndexes returns field name => []string{index name, options...}
 		UniqueIndexes() map[string][]string
 	}
 
 	WithIndexes interface {
+		// Indexes returns field name => []string{index name, options...}
 		Indexes() map[string][]string
 	}
 
-	WithColumnComments interface {
-		Comments() map[string]string
+	WithColumnComment interface {
+		ColumnComment() map[string]string
 	}
 
 	WithColumnDesc interface {

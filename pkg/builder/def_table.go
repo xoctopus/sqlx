@@ -73,19 +73,11 @@ func T(name string, defs ...frag.Fragment) Table {
 
 var schemas = syncx.NewXmap[reflect.Type, Table]()
 
-func TFrom(m any) Table {
+func TFrom(ctx context.Context, m any) Table {
 	t := reflect.TypeOf(m)
-	must.BeTrueF(
-		t.Kind() == reflect.Pointer,
-		"model %s must be a pointer",
-		t.Name(),
-	)
+	must.BeTrueF(t.Kind() == reflect.Pointer, "model %s must be a pointer", t.Name())
 	t = t.Elem()
-	must.BeTrueF(
-		t.Kind() == reflect.Struct,
-		"model %s must be a struct",
-		t.Name(),
-	)
+	must.BeTrueF(t.Kind() == reflect.Struct, "model %s must be a struct", t.Name())
 
 	if tab, ok := schemas.Load(t); ok {
 		if x, ok := m.(internal.Model); ok {
@@ -99,8 +91,8 @@ func TFrom(m any) Table {
 		name = x.TableName()
 	}
 
-	tab := T(name).(*table)
-	// def.ScanTable(tab, m)
+	tab := scan(ctx, m)
+	tab.(WithTableName).WithTableName(name)
 	schemas.Store(t, tab)
 
 	return tab
@@ -198,10 +190,10 @@ func TableNames(c Tables) iter.Seq[string] {
 	}
 }
 
-func CatalogFrom(models ...internal.Model) Catalog {
+func CatalogFrom(ctx context.Context, models ...internal.Model) Catalog {
 	tables := &Tables{}
 	for i := range models {
-		tables.Add(TFrom(models[i]))
+		tables.Add(TFrom(ctx, models[i]))
 	}
 	return tables
 }
