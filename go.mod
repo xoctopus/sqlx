@@ -3,17 +3,24 @@ module github.com/xoctopus/sqlx
 go 1.25.4
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-json-experiment/json v0.0.0-20251027170946-4849db3c2f7e
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.4.0
-	github.com/xoctopus/x v0.2.1-0.20251119071327-97f15ff32638
+	github.com/xoctopus/errx v0.0.0-20251119064822-0543182caf80
+	github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec
+	github.com/xoctopus/pkgx v0.1.1-0.20251124100900-b88ff3a8b8c4
+	github.com/xoctopus/typex v0.2.2-0.20251124101059-710b367cebae
+	github.com/xoctopus/x v0.2.1-0.20251124085551-4660064d025a
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/xoctopus/errx v0.0.0-20251119064822-0543182caf80 // indirect
 	golang.org/x/exp v0.0.0-20251113190631-e25ba8c21ef6 // indirect
+	golang.org/x/mod v0.30.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/tools v0.39.0 // indirect
 )

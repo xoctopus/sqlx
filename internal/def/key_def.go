@@ -3,7 +3,7 @@ package def
 // ParseKeyDefine parses key define
 // eg:
 //
-//	| Kind         | Name[,Method]      | Fields[,Option]            | Comments                                  |
+//	| Kind         | Name[,Using]       | Fields[,Option]            | Comments                                  |
 //	| :---         | :---               | :----                      | :----                                     |
 //	| idx          | idx_name,BTREE     | Name                       | 普通索引, 使用btree                       |
 //	| index        | idx_name,GIST      | Geo,gist_trgm_ops          | 位置索引, 使用GIST, 开启gist_trgm_ops选项 |

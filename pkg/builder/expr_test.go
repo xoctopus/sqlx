@@ -11,14 +11,14 @@ import (
 var (
 	tUser = T(
 		"t_user",
-		C("f_id", WithColDefOf(uint64(0), `,autoinc`)),
-		C("f_name", WithColDefOf("", `,width=128,default=''`)),
-		C("f_org_id", WithColDefOf(uint64(0), ``)),
+		C("f_id", WithColDefOf(context.Background(), uint64(0), `,autoinc`)),
+		C("f_name", WithColDefOf(context.Background(), "", `,width=128,default=''`)),
+		C("f_org_id", WithColDefOf(context.Background(), uint64(0), ``)),
 	)
 	tOrg = T(
 		"t_org",
-		C("f_org_id", WithColDefOf(uint64(0), `,autoinc`)),
-		C("f_name", WithColDefOf("", `,width=128,default=''`)),
+		C("f_org_id", WithColDefOf(context.Background(), uint64(0), `,autoinc`)),
+		C("f_name", WithColDefOf(context.Background(), "", `,width=128,default=''`)),
 	)
 )
 
@@ -42,29 +42,13 @@ func PrintQuery(ctx context.Context, f frag.Fragment) {
 }
 
 func ExampleGroupBy() {
-	tab := T("t_x")
-
 	f := Select(ColsOf(C("F_a"), C("F_b"))).
 		From(
-			tab,
+			T("t_x"),
 			Where(Where(CT[int]("F_a").AsCond(Eq(1)))),
-			GroupBy(
-				C("F_a"),
-				C("F_b"),
-			).Having(CT[int]("F_a").AsCond(Eq(1))),
+			GroupBy(C("F_a"), C("F_b")).
+				Having(CT[int]("F_a").AsCond(Eq(1))),
 			Comment("group multi columns"),
-		)
-	Print(context.Background(), f)
-
-	f = Select(nil).
-		From(
-			tab,
-			Where(CT[int]("F_a").AsCond(Eq(1))),
-			GroupBy(
-				AscOrder(C("F_a")),
-				DescOrder(C("F_b")),
-			),
-			Comment("group with order"),
 		)
 	Print(context.Background(), f)
 
@@ -72,9 +56,6 @@ func ExampleGroupBy() {
 	// -- group multi columns
 	// SELECT f_a,f_b FROM t_x WHERE f_a = ? GROUP BY f_a,f_b HAVING f_a = ?
 	// [1 1]
-	// -- group with order
-	// SELECT * FROM t_x WHERE f_a = ? GROUP BY (f_a) ASC,(f_b) DESC
-	// [1]
 }
 
 func ExampleJoin() {
@@ -86,8 +67,8 @@ func ExampleJoin() {
 		tUser,
 		Join(Alias(tOrg, "t_org")).On(
 			And(
-				CTOf[int64](tUser, "f_org_id").AsCond(EqCol(CTOf[int64](tOrg, "f_org_id"))),
-				CTOf[string](tOrg, "f_name").AsCond(Neq("abc")),
+				CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+				CastC[string](tOrg.C("f_name")).AsCond(Neq("abc")),
 			),
 		),
 		Comment("join on"),
@@ -102,22 +83,55 @@ func ExampleJoin() {
 		)
 	Print(context.Background(), f)
 
-	// TODO long sql query should break to lines
-	/*
-		SELECT
-			t_user.f_id AS f_user_id,
-			t_user.f_name AS f_user_name,
-			t_user.f_org_id AS f_org_id,
-			t_org.f_name AS f_org_name
-		FROM
-			t_user
-		JOIN
-			t_org AS t_org
-		ON
-			(t_user.f_org_id = t_org.f_org_id)
-			AND
-			(t_org.f_name <> ?)
-	*/
+	f = Select(
+		frag.Compose(
+			",",
+			Alias(C("f_id").Of(tUser), "f_user_id"),
+			Alias(C("f_org_id").Of(tOrg), "f_org_id"),
+		),
+	).From(
+		tUser,
+		RightJoin(tOrg).On(
+			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+		),
+		Comment("right join"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(
+		frag.Compose(
+			",",
+			Alias(C("f_id").Of(tUser), "f_user_id"),
+			Alias(C("f_org_id").Of(tOrg), "f_org_id"),
+		),
+	).From(
+		tUser,
+		FullJoin(tOrg).On(
+			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+		),
+		Comment("full join"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(
+		frag.Compose(
+			",",
+			Alias(C("f_id").Of(tUser), "f_user_id"),
+			Alias(C("f_org_id").Of(tOrg), "f_org_id"),
+		),
+	).From(
+		tUser,
+		InnerJoin(tOrg).On(
+			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+		),
+		Comment("inner join"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(nil).
+		From(tUser, CrossJoin(tOrg), Comment("cross join"))
+	Print(context.Background(), f)
+
 	f = Select(
 		AutoAlias(
 			tUser.C("f_id"),
@@ -126,7 +140,7 @@ func ExampleJoin() {
 	).From(
 		tUser,
 		FullJoin(tOrg).On(
-			CTOf[int](tUser, "f_org_id").AsCond(EqCol(CTOf[int](tOrg, "f_org_id"))),
+			CastC[int](tUser.C("f_org_id")).AsCond(EqCol(CastC[int](tOrg.C("f_org_id")))),
 		),
 		Comment("full join + auto alias"),
 	)
@@ -138,6 +152,18 @@ func ExampleJoin() {
 	// [abc]
 	// -- join using
 	// SELECT * FROM t_user LEFT JOIN t_org USING (f_org_id)
+	// []
+	// -- right join
+	// SELECT t_user.f_id AS f_user_id,t_org.f_org_id AS f_org_id FROM t_user RIGHT JOIN t_org ON t_user.f_org_id = t_org.f_org_id
+	// []
+	// -- full join
+	// SELECT t_user.f_id AS f_user_id,t_org.f_org_id AS f_org_id FROM t_user FULL JOIN t_org ON t_user.f_org_id = t_org.f_org_id
+	// []
+	// -- inner join
+	// SELECT t_user.f_id AS f_user_id,t_org.f_org_id AS f_org_id FROM t_user INNER JOIN t_org ON t_user.f_org_id = t_org.f_org_id
+	// []
+	// -- cross join
+	// SELECT * FROM t_user CROSS JOIN t_org
 	// []
 	// -- full join + auto alias
 	// SELECT t_user.f_id AS t_user__f_id, t_org.f_name AS t_org__f_name FROM t_user FULL JOIN t_org ON t_user.f_org_id = t_org.f_org_id
@@ -168,7 +194,7 @@ func ExampleLimit() {
 			T("t_x"),
 			Where(CT[int]("F_a").AsCond(Eq(1))),
 			Limit(20).Offset(100),
-			Comment("limit with offset"),
+			Comment("limit with offset", "comment line2"),
 		)
 	Print(context.Background(), f)
 
@@ -180,6 +206,7 @@ func ExampleLimit() {
 	// SELECT * FROM t_x WHERE f_a = ?
 	// [1]
 	// -- limit with offset
+	// -- comment line2
 	// SELECT * FROM t_x WHERE f_a = ? LIMIT 20 OFFSET 100
 	// [1]
 }
@@ -286,6 +313,31 @@ func ExampleSelect() {
 
 	f = Select(nil).From(
 		tUser,
+		Where(CT[int]("F_id").AsCond(In(1, 2, 3))),
+		OrderBy(
+			Order(tUser.C("f_id")),
+			AscOrder(tUser.C("f_org_id"), NullsFirst()),
+			DescOrder(tUser.C("f_name"), NullsLast()),
+		),
+		Comment("select with orders"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(
+		frag.Compose(",",
+			DistinctOn(tUser.C("f_org_id")),
+			tUser.C("f_id"),
+			tUser.C("f_name"),
+		),
+	).From(
+		tUser,
+		OrderBy(Order(C("f_created_at"))),
+		Comment("select with distinct on"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(nil).From(
+		tUser,
 		Where(CT[int]("F_id").AsCond(Eq(1))),
 		ForUpdate(),
 		Comment("select 1 row for update"),
@@ -296,6 +348,12 @@ func ExampleSelect() {
 	// -- select with modifier
 	// SELECT SQL_CALC_FOUND_ROWS * FROM t_user WHERE f_created_at >= ? LIMIT 10
 	// [593650800]
+	// -- select with orders
+	// SELECT * FROM t_user WHERE f_id IN (?,?,?) ORDER BY (f_id),(f_org_id) ASC NULLS FIRST,(f_name) DESC NULLS LAST
+	// [1 2 3]
+	// -- select with distinct on
+	// SELECT DISTINCT ON (f_org_id),f_id,f_name FROM t_user ORDER BY (f_created_at)
+	// []
 	// -- select 1 row for update
 	// SELECT * FROM t_user WHERE f_id = ? FOR UPDATE
 	// [1]
@@ -409,8 +467,8 @@ func ExampleUpdate() {
 
 	f := Update(t_stu).
 		Set(
-			CTOf[int](t_stu, "f_score").AssignBy(Value(100)),
-			CTOf[string](t_stu, f_class.Name()).AssignBy(AsValue(CTOf[string](t_class, f_class.Name()))),
+			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			CastC[string](t_stu.C("f_class")).AssignBy(AsValue(CastC[string](t_class.C("f_class")))),
 		).
 		From(t_class).
 		Where(
@@ -430,8 +488,8 @@ func ExampleUpdate() {
 			Comment("update join mysql supported"),
 		).
 		Set(
-			CTOf[int](t_stu, "f_score").AssignBy(Value(100)),
-			CTOf[string](t_stu, f_class.Name()).AssignBy(AsValue(CTOf[string](t_class, f_class.Name()))),
+			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			CastC[string](t_stu.C("f_class")).AssignBy(AsValue(CastC[string](t_class.C("f_class")))),
 		)
 	Print(context.Background(), f)
 
@@ -442,11 +500,8 @@ func ExampleUpdate() {
 	)
 	f = Update(t_stu).
 		Set(
-			CTOf[int](t_stu, "f_score").AssignBy(Value(100)),
-			ColumnsAndValues(
-				f_class.Of(t_stu),
-				sub,
-			),
+			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			ColumnsAndValues(f_class.Of(t_stu), sub),
 		).
 		Where(
 			Exists(sub),

@@ -19,12 +19,12 @@ func TestColumns(t *testing.T) {
 		builder.C(
 			"f_id",
 			builder.WithColFieldName("ID"),
-			builder.WithColDefOf(100, `,autoinc`),
+			builder.WithColDefOf(context.Background(), 100, `,autoinc`),
 		),
 		builder.C(
 			"f_name",
 			builder.WithColFieldName("Name"),
-			builder.WithColDefOf("saito", ``),
+			builder.WithColDefOf(context.Background(), "saito", ``),
 		),
 	)
 	cs = cs.Of(builder.T("t_table"))
@@ -228,17 +228,17 @@ func BenchmarkCols(b *testing.B) {
 	cols := builder.Columns()
 
 	(cols).(builder.ColsManager).AddCol(
-		builder.C("f_id", builder.WithColFieldName("ID"), builder.WithColDefOf(1, `,autoinc`)),
-		builder.C("f_name", builder.WithColFieldName("Name"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f1", builder.WithColFieldName("F1"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f2", builder.WithColFieldName("F2"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f3", builder.WithColFieldName("F3"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f4", builder.WithColFieldName("F4"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f5", builder.WithColFieldName("F5"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f6", builder.WithColFieldName("F6"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f7", builder.WithColFieldName("F7"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f8", builder.WithColFieldName("F8"), builder.WithColDefOf(1, ``)),
-		builder.C("f_f9", builder.WithColFieldName("F9"), builder.WithColDefOf(1, ``)),
+		builder.C("f_id", builder.WithColFieldName("ID"), builder.WithColDefOf(context.Background(), 1, `,autoinc`)),
+		builder.C("f_name", builder.WithColFieldName("Name"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f1", builder.WithColFieldName("F1"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f2", builder.WithColFieldName("F2"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f3", builder.WithColFieldName("F3"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f4", builder.WithColFieldName("F4"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f5", builder.WithColFieldName("F5"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f6", builder.WithColFieldName("F6"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f7", builder.WithColFieldName("F7"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f8", builder.WithColFieldName("F8"), builder.WithColDefOf(context.Background(), 1, ``)),
+		builder.C("f_f9", builder.WithColFieldName("F9"), builder.WithColDefOf(context.Background(), 1, ``)),
 	)
 
 	b.Run("Single", func(b *testing.B) {

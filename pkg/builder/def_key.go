@@ -7,8 +7,8 @@ import (
 
 	"github.com/xoctopus/x/misc/must"
 
+	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/internal/def"
 )
 
 type (

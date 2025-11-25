@@ -1,10 +1,16 @@
 package builder
 
 import (
+	"container/list"
 	"context"
 	"iter"
+	"reflect"
 	"strings"
 
+	"github.com/xoctopus/x/misc/must"
+	"github.com/xoctopus/x/syncx"
+
+	"github.com/xoctopus/sqlx/internal"
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
@@ -23,14 +29,14 @@ type (
 		frag.Fragment
 	}
 
-	Tables interface {
-		Table(string) Table
+	Catalog interface {
+		T(string) Table
 		Tables() iter.Seq[Table]
 
 		Add(...Table)
-		Remove(...Table)
+		Remove(string)
 
-		Require(...Table)
+		Require(...Catalog)
 	}
 
 	WithTable interface {
@@ -63,6 +69,41 @@ func T(name string, defs ...frag.Fragment) Table {
 	}
 
 	return t
+}
+
+var schemas = syncx.NewXmap[reflect.Type, Table]()
+
+func TFrom(m any) Table {
+	t := reflect.TypeOf(m)
+	must.BeTrueF(
+		t.Kind() == reflect.Pointer,
+		"model %s must be a pointer",
+		t.Name(),
+	)
+	t = t.Elem()
+	must.BeTrueF(
+		t.Kind() == reflect.Struct,
+		"model %s must be a struct",
+		t.Name(),
+	)
+
+	if tab, ok := schemas.Load(t); ok {
+		if x, ok := m.(internal.Model); ok {
+			return t.(WithTableName).WithTableName(x.TableName())
+		}
+		return tab.(Table)
+	}
+
+	name := t.Name()
+	if x, ok := m.(internal.Model); ok {
+		name = x.TableName()
+	}
+
+	tab := T(name).(*table)
+	// def.ScanTable(tab, m)
+	schemas.Store(t, tab)
+
+	return tab
 }
 
 type table struct {
@@ -147,4 +188,93 @@ func (t *table) K(name string) Key {
 
 func (t *table) Keys() iter.Seq[Key] {
 	return t.ks.Keys()
+}
+
+func TableNames(c Tables) iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for t := range c.Tables() {
+			yield(t.TableName())
+		}
+	}
+}
+
+func CatalogFrom(models ...internal.Model) Catalog {
+	tables := &Tables{}
+	for i := range models {
+		tables.Add(TFrom(models[i]))
+	}
+	return tables
+}
+
+type Tables struct {
+	l        *list.List
+	m        map[string]*list.Element
+	requires []Catalog
+}
+
+func (t *Tables) T(name string) Table {
+	if t.m != nil {
+		if x, ok := t.m[name]; ok {
+			return x.Value.(Table)
+		}
+	}
+	return nil
+}
+
+func (t *Tables) Tables() iter.Seq[Table] {
+	return func(yield func(Table) bool) {
+		emitted := make(map[string]bool)
+
+		emit := func(t Table) bool {
+			name := t.TableName()
+			if _, ok := emitted[name]; ok {
+				return true
+			}
+			emitted[name] = true
+			return yield(t)
+		}
+
+		if t.l != nil {
+			for e := t.l.Front(); e != nil; e = e.Next() {
+				x := e.Value.(Table)
+				emit(x)
+			}
+		}
+
+		for _, c := range t.requires {
+			for x := range c.Tables() {
+				emit(x)
+			}
+		}
+	}
+}
+
+func (t *Tables) Add(tables ...Table) {
+	if t.m == nil {
+		t.m = make(map[string]*list.Element)
+		t.l = list.New()
+	}
+
+	for _, x := range tables {
+		if x != nil {
+			name := x.TableName()
+			if _, ok := t.m[name]; ok {
+				t.Remove(name)
+			}
+			t.m[name] = t.l.PushBack(x)
+		}
+	}
+}
+
+func (t *Tables) Remove(name string) {
+	if t.m != nil {
+		if e, ok := t.m[name]; ok {
+			t.l.Remove(e)
+			delete(t.m, name)
+		}
+	}
+}
+
+func (t *Tables) Require(requires ...Catalog) {
+	t.requires = append(t.requires, requires...)
 }

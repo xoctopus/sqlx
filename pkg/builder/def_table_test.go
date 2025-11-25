@@ -1,6 +1,7 @@
 package builder_test
 
 import (
+	"context"
 	"slices"
 	"testing"
 
@@ -16,12 +17,12 @@ func TestTable(t *testing.T) {
 		colID = builder.C(
 			"f_id",
 			builder.WithColFieldName("ID"),
-			builder.WithColDefOf(uint64(0), ",autoinc"),
+			builder.WithColDefOf(context.Background(), uint64(0), ",autoinc"),
 		)
 		colName = builder.C(
 			"f_name",
 			builder.WithColFieldName("Name"),
-			builder.WithColDefOf("", ",width=128,default=''"),
+			builder.WithColDefOf(context.Background(), "", ",width=128,default=''"),
 		)
 	)
 	tUser := builder.T(
@@ -35,12 +36,12 @@ func TestTable(t *testing.T) {
 		builder.C(
 			"f_id",
 			builder.WithColFieldName("ID"),
-			builder.WithColDefOf(uint64(0), ",autoinc"),
+			builder.WithColDefOf(context.Background(), uint64(0), ",autoinc"),
 		),
 		builder.C(
 			"f_user_id",
 			builder.WithColFieldName("UserID"),
-			builder.WithColDefOf(uint64(0), ""),
+			builder.WithColDefOf(context.Background(), uint64(0), ""),
 		),
 	)
 

@@ -1,17 +1,19 @@
 package def_test
 
 import (
+	"context"
 	"reflect"
 	"testing"
 
+	"github.com/xoctopus/typex"
 	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
 
-	"github.com/xoctopus/sqlx/pkg/internal/def"
+	"github.com/xoctopus/sqlx/internal/def"
 )
 
-func TestParseColumnDef(t *testing.T) {
-	typ := reflect.TypeFor[int]()
+func TestParseColDef(t *testing.T) {
+	typ := typex.NewRType(context.Background(), reflect.TypeFor[int]())
 	var cases = []struct {
 		name string
 		def  *def.ColumnDef
@@ -62,8 +64,8 @@ func TestParseColumnDef(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			c.def.Tag = c.tag
-			got := def.ParseColumnDef(typ, "db", c.tag)
-			Expect(t, typ, Equal(got.Type))
+			got := def.ParseColDef(def.WithModelTagKey(context.Background(), "db"), typ, c.tag)
+			Expect(t, typ.String(), Equal(got.Type.String()))
 			got.Type = nil
 			Expect(t, got, Equal(c.def))
 		})

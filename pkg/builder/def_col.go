@@ -7,10 +7,11 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/xoctopus/typex"
 	"github.com/xoctopus/x/misc/must"
 
+	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/internal/def"
 )
 
 type (
@@ -25,20 +26,22 @@ type (
 		String() string
 		// Of change column table context to given argument
 		Of(Table) Col
+		// Fragment return a sql frag based current column
 		Fragment(q string, args ...any) frag.Fragment
 	}
 
 	ColPick interface {
-		// C picks a column by database column name
+		// C picks a column by name
 		C(string) Col
 	}
 
 	ColIter interface {
-		// Cols iteration of columns yielding database column name and column define
+		// Cols iteration of columns
 		Cols() iter.Seq[Col]
 	}
 
 	ColDef interface {
+		// Def returns column define
 		Def() ColumnDef
 	}
 
@@ -85,8 +88,6 @@ type (
 	}
 
 	ColumnDef = def.ColumnDef
-
-	DeprecatedActions = def.DeprecatedActions
 )
 
 // C creates a Col by name and ColOption
@@ -100,6 +101,33 @@ func C(name string, options ...ColOption) Col {
 		o(c)
 	}
 	return c
+}
+
+// CT creates a Col by name and ColOption with computing T
+func CT[T any](name string, options ...ColOption) TCol[T] {
+	c := &column[T]{
+		name: strings.ToLower(name),
+		def:  ColumnDef{},
+	}
+	for _, apply := range options {
+		apply(c)
+	}
+	return c
+}
+
+func CastC[T any](c Col, options ...ColOption) TCol[T] {
+	col := &column[T]{
+		name:     c.Name(),
+		fname:    c.FieldName(),
+		table:    GetColTable(c),
+		def:      GetColDef(c),
+		computed: GetColComputed(c),
+	}
+
+	for _, o := range options {
+		o(col)
+	}
+	return col
 }
 
 func PickCols(p ColPick, names ...string) Cols {
@@ -262,38 +290,8 @@ func WithColDef(def *ColumnDef) ColOption {
 	return func(c ColModifier) { c.SetDef(*def) }
 }
 
-func WithColDefOf(v any, tag reflect.StructTag) ColOption {
-	return WithColDef(def.ParseColumnDef(reflect.TypeOf(v), "db", tag))
-}
-
-func CastC[T any](c Col, options ...ColOption) TCol[T] {
-	col := &column[T]{
-		name:     c.Name(),
-		fname:    c.FieldName(),
-		table:    GetColTable(c),
-		def:      GetColDef(c),
-		computed: GetColComputed(c),
-	}
-
-	for _, o := range options {
-		o(col)
-	}
-	return col
-}
-
-func CT[T any](name string, options ...ColOption) TCol[T] {
-	c := &column[T]{
-		name: strings.ToLower(name),
-		def:  ColumnDef{},
-	}
-	for _, apply := range options {
-		apply(c)
-	}
-	return c
-}
-
-func CTOf[T any](t Table, name string) TCol[T] {
-	return CastC[T](t.C(name))
+func WithColDefOf(ctx context.Context, v any, tag reflect.StructTag) ColOption {
+	return WithColDef(def.ParseColDef(ctx, typex.NewTType(ctx, v), tag))
 }
 
 func AsValue[T any](v TCol[T]) ColValuer[T] {

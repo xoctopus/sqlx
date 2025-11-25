@@ -11,7 +11,7 @@ type OrderAddition interface {
 	Addition
 	frag.Fragment
 
-	Mode() string
+	asOrderAddition()
 }
 
 func OrderBy(os ...OrderAddition) Addition {
@@ -25,14 +25,17 @@ func OrderBy(os ...OrderAddition) Addition {
 	return &orders{orders: final}
 }
 
+// Order default order
 func Order(by frag.Fragment, ex ...frag.Fragment) OrderAddition {
 	return &order{by: by, ex: ex}
 }
 
+// AscOrder asc order
 func AscOrder(by frag.Fragment, ex ...frag.Fragment) OrderAddition {
 	return &order{by: by, mode: "ASC", ex: ex}
 }
 
+// DescOrder desc order
 func DescOrder(by frag.Fragment, ex ...frag.Fragment) OrderAddition {
 	return &order{by: by, mode: "DESC", ex: ex}
 }
@@ -43,12 +46,10 @@ type order struct {
 	ex   []frag.Fragment
 }
 
+func (o *order) asOrderAddition() {}
+
 func (o *order) Type() AdditionType {
 	return addition_ORDER_BY
-}
-
-func (o *order) Mode() string {
-	return o.mode
 }
 
 func (o *order) IsNil() bool {
