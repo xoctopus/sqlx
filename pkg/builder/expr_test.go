@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	. "github.com/xoctopus/sqlx/devpkg/testdata"
 	. "github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	. "github.com/xoctopus/sqlx/testdata"
 )
 
 var (
