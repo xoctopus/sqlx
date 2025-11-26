@@ -92,7 +92,7 @@ func TFrom(ctx context.Context, m any) Table {
 	}
 
 	tab := scan(ctx, m)
-	tab.(WithTableName).WithTableName(name)
+	tab = tab.(WithTableName).WithTableName(name)
 	schemas.Store(t, tab)
 
 	return tab

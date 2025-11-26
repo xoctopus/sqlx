@@ -28,6 +28,7 @@ func TestParseKeyDef(t *testing.T) {
 			def: "primary ID ",
 			opt: &def.KeyDefine{
 				Kind: def.KEY_KIND__PRIMARY,
+				Name: "primary",
 				Options: []def.KeyColumnOption{
 					{FieldName: "ID", Options: []string{}},
 				},

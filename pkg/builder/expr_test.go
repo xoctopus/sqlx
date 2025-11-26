@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	. "github.com/xoctopus/sqlx/devpkg/testdata"
 	. "github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
@@ -518,5 +519,56 @@ func ExampleUpdate() {
 	// [100]
 	// -- update with sub query and exists condition sqlite supported
 	// UPDATE t_stu SET f_score = ?, f_class = (SELECT f_class FROM t_class WHERE f_stu_id = f_id LIMIT 1) WHERE EXISTS (SELECT f_class FROM t_class WHERE f_stu_id = f_id LIMIT 1)
+	// [100]
+}
+
+func Example_test() {
+	var f frag.Fragment
+
+	f = Select(nil).From(
+		TUser,
+		Where(
+			And(
+				TUser.UserID.AsCond(Eq[UserID](100)),
+				TUser.OrgID.Fragment("# = ? + 1", TOrg.OrgID),
+			),
+		),
+		LeftJoin(TOrg).On(
+			TUser.OrgID.AsCond(EqCol[OrgID](TOrg.OrgID)),
+		),
+		Limit(100).Offset(200),
+	)
+	Print(context.Background(), f)
+
+	f = Update(TUser).
+		Set(
+			TUser.Nickname.AssignBy(Value("new_name")),
+		).
+		Where(
+			TUser.UserID.AsCond(Eq[UserID](100)),
+		)
+	Print(context.Background(), f)
+
+	f = Insert().Into(TOrg).Values(
+		ColsOf(TOrg.OrgID, TOrg.Name, TOrg.Belonged, TOrg.Manager),
+		100, "org_name", 101, 102,
+	)
+	Print(context.Background(), f)
+
+	f = Delete().
+		From(
+			TUser,
+			Where(TUser.UserID.AsCond(Eq[UserID](100))),
+		)
+	Print(context.Background(), f)
+
+	// Output:
+	// SELECT * FROM users LEFT JOIN t_org ON users.f_org_id = t_org.f_org_id WHERE (users.f_user_id = ?) AND (users.f_org_id = t_org.f_org_id + 1) LIMIT 100 OFFSET 200
+	// [100]
+	// UPDATE users SET f_nick_name = ? WHERE f_user_id = ?
+	// [new_name 100]
+	// INSERT INTO t_org (f_org_id,f_name,f_belongs,manager) VALUES (?,?,?,?)
+	// [100 org_name 101 102]
+	// DELETE FROM users WHERE f_user_id = ?
 	// [100]
 }

@@ -18,6 +18,9 @@ func CastT[M Model](t builder.Table) Table[M] {
 type Table[M Model] interface {
 	builder.Table
 	ModelNewer[M]
+
+	MK(string) Key[M]
+
 	ColIter[M]
 	KeyIter[M]
 }
@@ -43,6 +46,10 @@ func (t *table[M]) MKeys() iter.Seq[Key[M]] {
 	}
 }
 
-func (t *table[m]) Unwrap() builder.Table {
+func (t *table[M]) Unwrap() builder.Table {
 	return t.Table
+}
+
+func (t *table[M]) MK(name string) Key[M] {
+	return CastK[M](t.K(name))
 }

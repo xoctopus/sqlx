@@ -24,7 +24,7 @@ func ParseKeyDef(def string) *KeyDefine {
 		}
 		d.Kind = KEY_KIND__INDEX
 		d.Name, d.Using = ResolveIndexNameAndUsing(parts[1])
-	case "unique_index", "u_idx":
+	case "unique_index", "u_idx", "uidx", "ui":
 		if len(parts) != 3 {
 			return nil
 		}
@@ -35,6 +35,7 @@ func ParseKeyDef(def string) *KeyDefine {
 			return nil
 		}
 		d.Kind = KEY_KIND__PRIMARY
+		d.Name = "primary"
 	default:
 		return nil
 	}
@@ -75,6 +76,22 @@ type KeyDefine struct {
 	Options []KeyColumnOption
 }
 
+func (d *KeyDefine) OptionsFieldNames() []string {
+	names := make([]string, len(d.Options))
+	for i, opt := range d.Options {
+		names[i] = opt.FieldName
+	}
+	return names
+}
+
+func (d *KeyDefine) OptionsStrings() []string {
+	ss := make([]string, len(d.Options))
+	for i, opt := range d.Options {
+		ss[i] = opt.String()
+	}
+	return ss
+}
+
 func ResolveKeyColumnOptions(s string) (options []KeyColumnOption) {
 	fields := strings.Split(s, ";")
 	for _, field := range fields {
@@ -110,4 +127,11 @@ func KeyColumnOptionByNames(names ...string) []KeyColumnOption {
 type KeyColumnOption struct {
 	FieldName string
 	Options   []string
+}
+
+func (o *KeyColumnOption) String() string {
+	if len(o.Options) == 0 {
+		return o.FieldName
+	}
+	return o.FieldName + "," + strings.Join(o.Options, ",")
 }

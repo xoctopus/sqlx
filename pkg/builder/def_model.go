@@ -1,5 +1,7 @@
 package builder
 
+import "github.com/xoctopus/sqlx/internal"
+
 type (
 	WithTableDesc interface {
 		TableDesc() []string
@@ -30,4 +32,6 @@ type (
 	WithColumnRel interface {
 		ColumnRel() map[string][]string
 	}
+
+	Model = internal.Model
 )
