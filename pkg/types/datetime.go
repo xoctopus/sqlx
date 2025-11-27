@@ -1,19 +1,18 @@
 package types
 
 import (
-	"database/sql/driver"
 	"fmt"
 	"strings"
 	"time"
 )
 
 var (
-	DatetimeZero     = Timestamp{time.Time{}}
-	DatetimeUnixZero = Timestamp{time.Unix(0, 0)}
+	DatetimeZero     = Datetime{time.Time{}}
+	DatetimeUnixZero = Datetime{time.Unix(0, 0)}
 )
 
 type Datetime struct {
-	Timestamp
+	time.Time
 }
 
 func (Datetime) DBType(driver string) string {
@@ -44,23 +43,19 @@ func (Datetime) DBType(driver string) string {
 func (t *Datetime) Scan(src any) error {
 	switch v := src.(type) {
 	case nil:
-		*t = Datetime{TimestampZero}
+		*t = DatetimeZero
 	case time.Time:
-		fmt.Printf("time.Time: %s\n", v.String())
-		*t = Datetime{Timestamp{v}}
+		println("from time.Time", v.Format(time.RFC3339Nano))
+		*t = Datetime{v}
 	case []byte:
-		fmt.Printf("bytes: %s\n", string(v))
+		println("from []byte", string(v))
 		x, err := ParseTimestamp(string(v))
 		if err != nil {
 			return err
 		}
-		*t = Datetime{x}
+		*t = Datetime{x.Time}
 	default:
-		return fmt.Errorf("cannot sql.Scan() strfmt.Timestamp from: %#v", v)
+		return fmt.Errorf("cannot sql.Scan() Datetime from: %#v", v)
 	}
 	return nil
-}
-
-func (t Datetime) Value() (driver.Value, error) {
-	return t.Time, nil
 }

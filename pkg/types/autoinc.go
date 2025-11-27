@@ -11,3 +11,5 @@ type AutoIncPrimary struct {
 func (AutoIncPrimary) PrimaryKey() []string {
 	return []string{"ID"}
 }
+
+type ID uint64

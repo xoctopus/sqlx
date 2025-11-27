@@ -29,10 +29,9 @@ var (
 type TimestampPrecision int64
 
 const (
-	TIMESTAMP_PRECISION__DEFAULT TimestampPrecision = iota + 1e6 // microseconds
-	TIMESTAMP_PRECISION__SEC     TimestampPrecision = 1e9        // seconds
-	TIMESTAMP_PRECISION__MICRO   TimestampPrecision = 1e6        // milliseconds
-	TIMESTAMP_PRECISION__MILLI   TimestampPrecision = 1e3        // microseconds
+	TIMESTAMP_PRECISION__SEC   TimestampPrecision = 1e9 // seconds
+	TIMESTAMP_PRECISION__MILLI TimestampPrecision = 1e6 // milliseconds
+	TIMESTAMP_PRECISION__MICRO TimestampPrecision = 1e3 // microseconds
 )
 
 // gConfig global timestamp config
@@ -45,7 +44,7 @@ var gConfig = struct {
 	output:    syncx.NewOnceOverride(time.DateTime),
 	inputs:    syncx.NewSet[string](time.DateTime),
 	timezone:  syncx.NewOnceOverride(time.Local),
-	precision: syncx.NewOnceOverride[TimestampPrecision](TIMESTAMP_PRECISION__DEFAULT),
+	precision: syncx.NewOnceOverride(TIMESTAMP_PRECISION__MILLI), // milliseconds as default precision
 }
 
 func SetTimestampPrecision(p TimestampPrecision) {

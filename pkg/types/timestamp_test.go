@@ -14,7 +14,7 @@ import (
 
 func init() {
 	SetTimestampTimezone(CST)
-	SetTimestampPrecision(TIMESTAMP_PRECISION__DEFAULT)
+	SetTimestampPrecision(TIMESTAMP_PRECISION__MILLI)
 	SetTimestampOutputLayout(time.DateTime + ".000")
 
 	AddTimestampInputLayouts(time.DateTime + ".000")
@@ -59,6 +59,7 @@ func TestTimestamp(t *testing.T) {
 
 	ts = AsTimestamp(TimestampUnixZero.Add(Unit()))
 	Expect(t, ts.IsZero(), BeFalse())
+	Expect(t, AsTimestamp(TimestampUnixZero.Add(Unit()-1)).IsZero(), BeTrue())
 	Expect(t, ts.UnmarshalJSON([]byte(`"0"`)), Succeed())
 	Expect(t, ts.IsZero(), BeFalse())
 	Expect(t, ts.Equal(TimestampUnixZero.Add(Unit())), BeTrue())

@@ -94,17 +94,16 @@ test: dep tidy
 		GOWORK=off $(GOTEST) test -race -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; \
 	fi
 
-hack_rerun:
-	@cd hack && docker compose down -v && docker compose up -d
-
-hack_run:
+hack_dep_run:
 	@cd hack && docker compose up -d
 
-hack_stop:
+hack_dep_stop:
 	@cd hack && docker compose down -v
 
-hack_test: hack_stop hack_run
-	@HACK_TEST=true GOWORK=off $(GOTEST) test -v ./... -run 'Hack$$' -gcflags="all=-N -l"
+hack_test:
+	@HACK_TEST=true GOWORK=off $(GOTEST) test -v ./pkg/types -run 'Hack$$' -gcflags="all=-N -l"
+
+hack_test_run: hack_dep_run hack_test
 
 cover: dep tidy
 	@echo "==> run unit test with coverage"
