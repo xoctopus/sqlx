@@ -59,7 +59,6 @@ func (d *ColumnDef) ParseDBTag(flag *reflectx.Flag) {
 		case "autoinc":
 			d.AutoInc = true
 		case "default":
-			must.BeTrueF(len(ov) > 0, "missing default value")
 			d.Default = &ov
 		case "width":
 			v, err := strconv.ParseUint(ov, 10, 64)

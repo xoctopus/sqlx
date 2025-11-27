@@ -10,7 +10,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/xoctopus/errx v0.0.0-20251126100440-d8ed5b465902
-	github.com/xoctopus/genx v0.1.1-0.20251126093812-fc1916a407bf
+	github.com/xoctopus/genx v0.1.1-0.20251127055150-5c6728a957cd
 	github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec
 	github.com/xoctopus/pkgx v0.1.1-0.20251126093352-c9835d0e4a5b
 	github.com/xoctopus/typex v0.2.2-0.20251126093658-0b77b696a6a8

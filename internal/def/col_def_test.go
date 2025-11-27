@@ -45,6 +45,11 @@ func TestParseColDef(t *testing.T) {
 			tag:  reflect.StructTag(`db:",default='abc def'"`),
 		},
 		{
+			name: "DefaultNull",
+			def:  &def.ColumnDef{Default: ptrx.Ptr("")},
+			tag:  reflect.StructTag(`db:",default=''"`),
+		},
+		{
 			name: "OnUpdate",
 			def:  &def.ColumnDef{OnUpdate: ptrx.Ptr("CURRENT_TIMESTAMP")},
 			tag:  reflect.StructTag(`db:",onupdate='CURRENT_TIMESTAMP'"`),

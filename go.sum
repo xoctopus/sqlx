@@ -17,8 +17,8 @@ github.com/shopspring/decimal v1.4.0 h1:bxl37RwXBklmTi0C79JfXCEBD1cqqHt0bbgBAGFp
 github.com/shopspring/decimal v1.4.0/go.mod h1:gawqmDU56v4yIKSwfBSFip1HdCCXN8/+DMd9qYNcwME=
 github.com/xoctopus/errx v0.0.0-20251126100440-d8ed5b465902 h1:5DkSAUcL8LD2VZV956ilsgb6oqe3dGPph5yftbz/AYw=
 github.com/xoctopus/errx v0.0.0-20251126100440-d8ed5b465902/go.mod h1:mSjcxvDVaBhqeagWk1ePGcHCoI3AGgK2T/q+CE3KKu4=
-github.com/xoctopus/genx v0.1.1-0.20251126093812-fc1916a407bf h1:RYhwRZO03KnrQcrI3IipnzGWqc85sZaCMzedbir6trc=
-github.com/xoctopus/genx v0.1.1-0.20251126093812-fc1916a407bf/go.mod h1:rGcBWgElAmf4w2RXF7wnQ28Xr2aoNQ4TCY03dPCERzk=
+github.com/xoctopus/genx v0.1.1-0.20251127055150-5c6728a957cd h1:bZLojKoXWPn/YTe5gLBKOX/2CC6IGow++nMQvT2GT3Q=
+github.com/xoctopus/genx v0.1.1-0.20251127055150-5c6728a957cd/go.mod h1:aU0jhMyX/VHHUEi5CO/f00UnIHCHVFjcF5RQeCaqWYQ=
 github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec h1:DGivc4D8SITui30zaUhFaZMmquZ0sC5PYD2e+4WBkCs=
 github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec/go.mod h1:uO5TUsDsu2M0Uy9a+HlY+51nASx1taBUANnFCvJVOFs=
 github.com/xoctopus/pkgx v0.1.1-0.20251126093352-c9835d0e4a5b h1:P27ZgKUe/cH4boI0ttUrIezARmbPRIxbrW24ZfJmUlk=
