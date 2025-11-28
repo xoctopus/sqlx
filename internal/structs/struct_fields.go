@@ -196,7 +196,7 @@ func TableFieldsSeq(ctx context.Context, v any) iter.Seq[*TableField] {
 		}
 
 		for f := range FieldsSeqFor(ctx, typex.NewRType(ctx, rv.Type())) {
-			if f.Flag.Option("deprecated") != nil {
+			if f.Flag != nil && f.Flag.Option("deprecated") != nil {
 				continue
 			}
 			tf := &TableField{

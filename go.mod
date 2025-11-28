@@ -9,7 +9,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.4.0
-	github.com/xoctopus/errx v0.0.0-20251126100440-d8ed5b465902
+	github.com/xoctopus/errx v0.0.0-20251127120907-5ef1627ad6d9
 	github.com/xoctopus/genx v0.1.1-0.20251127120206-07bcd8b4a2bd
 	github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec
 	github.com/xoctopus/pkgx v0.1.1-0.20251127115730-40f38b1c6085

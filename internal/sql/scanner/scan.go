@@ -96,7 +96,7 @@ func scan(ctx context.Context, rows *sql.Rows, v any) error {
 			dst[i] = placeholder
 		}
 
-		for f := range structs.TableFieldsSeq(ctx, v) {
+		for _, f := range structs.TableFields(ctx, v) {
 			if f.TableName != "" {
 				if i, ok := columns[frag.Alias(f.TableName, f.Field.Name)]; ok && i > -1 {
 					dst[i] = nullable.NewNullIgnoreScanner(f.Value.Addr().Interface())

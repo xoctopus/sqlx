@@ -1,6 +1,7 @@
 package types
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"strings"
 	"time"
@@ -58,4 +59,8 @@ func (t *Datetime) Scan(src any) error {
 		return fmt.Errorf("cannot sql.Scan() Datetime from: %#v", v)
 	}
 	return nil
+}
+
+func (t Datetime) Value() (driver.Value, error) {
+	return t.Time, nil
 }
