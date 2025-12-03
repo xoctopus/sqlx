@@ -16,6 +16,11 @@ import (
 type Fragment = frag.Fragment
 
 func TestFragment(t *testing.T) {
+	t.Run("CollectEmpty", func(t *testing.T) {
+		q, args := frag.Collect(nil, nil)
+		Expect(t, q, Equal(""))
+		Expect(t, args, HaveLen[[]any](0))
+	})
 	t.Run("Const", func(t *testing.T) {
 		Expect[Fragment](t, frag.Lit(""), BeFragment(""))
 		Expect[Fragment](t, frag.Lit("SELECT 1"), BeFragment("SELECT 1"))

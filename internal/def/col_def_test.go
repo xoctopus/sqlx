@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
 
@@ -13,7 +13,7 @@ import (
 )
 
 func TestParseColDef(t *testing.T) {
-	typ := typex.NewRType(context.Background(), reflect.TypeFor[int]())
+	typ := typx.NewRType(reflect.TypeFor[int]())
 	var cases = []struct {
 		name string
 		def  *def.ColumnDef

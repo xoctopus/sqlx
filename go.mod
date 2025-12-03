@@ -9,18 +9,16 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.4.0
-	github.com/xoctopus/errx v0.0.0-20251127120907-5ef1627ad6d9
-	github.com/xoctopus/genx v0.1.1-0.20251127120206-07bcd8b4a2bd
-	github.com/xoctopus/logx v0.0.3-0.20251107032504-e4e28aaae5ec
-	github.com/xoctopus/pkgx v0.1.1-0.20251127115730-40f38b1c6085
-	github.com/xoctopus/typex v0.2.2-0.20251127120105-e41be093062a
-	github.com/xoctopus/x v0.2.1-0.20251124085551-4660064d025a
+	github.com/xoctopus/genx v0.1.3
+	github.com/xoctopus/logx v0.1.0
+	github.com/xoctopus/pkgx v0.1.3
+	github.com/xoctopus/typx v0.3.2
+	github.com/xoctopus/x v0.2.1
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	golang.org/x/exp v0.0.0-20251125195548-87e1e737ad39 // indirect
 	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/tools v0.39.0 // indirect

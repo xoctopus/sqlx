@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/xoctopus/errx/pkg/codex"
+	"github.com/xoctopus/x/codex"
 	"github.com/xoctopus/x/reflectx"
 
 	"github.com/xoctopus/sqlx/internal/sql/scanner/nullable"

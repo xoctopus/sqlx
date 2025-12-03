@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 
 	"github.com/xoctopus/sqlx/internal/def"
@@ -291,7 +291,7 @@ func WithColDef(def *ColumnDef) ColOption {
 }
 
 func WithColDefOf(ctx context.Context, v any, tag reflect.StructTag) ColOption {
-	return WithColDef(def.ParseColDef(ctx, typex.NewTType(ctx, reflect.TypeOf(v)), tag))
+	return WithColDef(def.ParseColDef(ctx, typx.NewRType(reflect.TypeOf(v)), tag))
 }
 
 func AsValue[T any](v TCol[T]) ColValuer[T] {

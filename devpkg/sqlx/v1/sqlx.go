@@ -9,8 +9,8 @@ import (
 
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
-	"github.com/xoctopus/pkgx"
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/pkgx/pkg/pkgx"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/stringsx"
 
@@ -23,7 +23,7 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	if !ok {
 		return nil
 	}
-	x := typex.NewTType(g.Context(), t)
+	x := typx.NewTType(t)
 	if x.Kind() != reflect.Struct {
 		return nil
 	}
@@ -42,7 +42,7 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	for _, f := range m.fields {
 		fm[f.FieldName] = f
 		if f.ColumnDef.Comment == "" {
-			doc := g.Package().DocOf(token.Pos(typex.PosOfStructField(f.Field)))
+			doc := g.Package().DocOf(token.Pos(typx.PosOfStructField(f.Field)))
 			if doc != nil {
 				f.ColumnDef.Comment = strings.Join(doc.Desc(), " ")
 			}
@@ -85,7 +85,7 @@ func NewModel(g genx.Context, t types.Type) *Model {
 
 type Model struct {
 	ctx    genx.Context
-	typ    typex.Type
+	typ    typx.Type
 	doc    *pkgx.Doc
 	fields []*structs.Field
 
@@ -198,7 +198,7 @@ func (m *Model) ModeledTable(ctx context.Context) s.Snippet {
 	)
 }
 
-func (m *Model) ModeledTCol(ctx context.Context, t typex.Type) s.Snippet {
+func (m *Model) ModeledTCol(ctx context.Context, t typx.Type) s.Snippet {
 	return s.Expose(
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",
@@ -207,7 +207,7 @@ func (m *Model) ModeledTCol(ctx context.Context, t typex.Type) s.Snippet {
 	)
 }
 
-func (m *Model) ModeledCT(ctx context.Context, t typex.Type) s.Snippet {
+func (m *Model) ModeledCT(ctx context.Context, t typx.Type) s.Snippet {
 	return s.Expose(
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",

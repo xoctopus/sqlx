@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/reflectx"
 	"github.com/xoctopus/x/syncx"
@@ -24,8 +24,8 @@ var (
 	tDriverValuer = reflect.TypeFor[driver.Valuer]()
 )
 
-func FieldsFor(ctx context.Context, t typex.Type) []*Field {
-	t = typex.Deref(t)
+func FieldsFor(ctx context.Context, t typx.Type) []*Field {
+	t = typx.Deref(t)
 	must.BeTrueF(
 		t.Kind() == reflect.Struct,
 		"model %s must be a struct, but got %s",
@@ -47,21 +47,21 @@ func FieldsFor(ctx context.Context, t typex.Type) []*Field {
 	return fields
 }
 
-func FieldsSeqFor(ctx context.Context, t typex.Type) iter.Seq[*Field] {
+func FieldsSeqFor(ctx context.Context, t typx.Type) iter.Seq[*Field] {
 	return slices.Values(FieldsFor(ctx, t))
 }
 
 type walker struct {
 	flocs []int
 	mlocs []int
-	t     typex.Type
+	t     typx.Type
 }
 
-func (w *walker) Walk(ctx context.Context, t typex.Type) iter.Seq[*Field] {
+func (w *walker) Walk(ctx context.Context, t typx.Type) iter.Seq[*Field] {
 	mlocs := w.mlocs[:]
 	mtype := w.t
 
-	if ok := t.Implements(typex.NewRType(ctx, tSqlModel)); ok {
+	if ok := t.Implements(typx.NewRType(tSqlModel)); ok {
 		if mtype != nil && mtype.NumField() == 1 && mtype.Field(0).Anonymous() {
 			// extendable
 		} else {
@@ -93,8 +93,8 @@ func (w *walker) Walk(ctx context.Context, t typex.Type) iter.Seq[*Field] {
 			if (f.Anonymous() || f.Type().Name() == f.Name()) && flag == nil {
 				ft := f.Type()
 
-				if !ft.Implements(typex.NewRType(ctx, tDriverValuer)) {
-					ft = typex.Deref(ft)
+				if !ft.Implements(typx.NewRType(tDriverValuer)) {
+					ft = typx.Deref(ft)
 					if ft.Kind() == reflect.Struct {
 						embed := &walker{
 							flocs: loc,
@@ -134,8 +134,8 @@ func (w *walker) Walk(ctx context.Context, t typex.Type) iter.Seq[*Field] {
 type Field struct {
 	Name      string
 	FieldName string
-	Type      typex.Type
-	Field     typex.StructField
+	Type      typx.Type
+	Field     typx.StructField
 	Flag      *reflectx.Flag
 	Loc       []int
 	ColumnDef def.ColumnDef
@@ -195,7 +195,7 @@ func TableFieldsSeq(ctx context.Context, v any) iter.Seq[*TableField] {
 			tableName = m.TableName()
 		}
 
-		for f := range FieldsSeqFor(ctx, typex.NewRType(ctx, rv.Type())) {
+		for f := range FieldsSeqFor(ctx, typx.NewRType(rv.Type())) {
 			if f.Flag != nil && f.Flag.Option("deprecated") != nil {
 				continue
 			}

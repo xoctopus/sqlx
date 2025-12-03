@@ -4,14 +4,14 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/typx/pkg/typx"
 
 	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/internal/structs"
 )
 
 func scan(ctx context.Context, m any) Table {
-	t := typex.Deref(typex.NewTType(ctx, reflect.TypeOf(m)))
+	t := typx.Deref(typx.NewRType(reflect.TypeOf(m)))
 
 	var (
 		comments = map[string]string{}

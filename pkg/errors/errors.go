@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/xoctopus/errx/pkg/codex"
+	"github.com/xoctopus/x/codex"
 )
 
 type code int8
@@ -35,7 +35,7 @@ func IsErrNotFound(err error) bool {
 }
 
 func IsErrConflict(err error) bool {
-	return errors.Is(err, codex.New(NOTFOUND))
+	return errors.Is(err, codex.New(CONFLICT))
 }
 
 func IsErrRollback(err error) bool {

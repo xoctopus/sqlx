@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/reflectx"
 )
 
-func ParseColDef(ctx context.Context, t typex.Type, tag reflect.StructTag) *ColumnDef {
+func ParseColDef(ctx context.Context, t typx.Type, tag reflect.StructTag) *ColumnDef {
 	d := &ColumnDef{
-		Type: typex.Deref(t),
+		Type: typx.Deref(t),
 		Tag:  tag,
 	}
 
@@ -35,7 +35,7 @@ func ParseColDef(ctx context.Context, t typex.Type, tag reflect.StructTag) *Colu
 
 // ColumnDef describes source and database model
 type ColumnDef struct {
-	Type       typex.Type
+	Type       typx.Type
 	Tag        reflect.StructTag
 	DataType   string
 	Width      uint64

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/xoctopus/pkgx"
+	"github.com/xoctopus/pkgx/pkg/pkgx"
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/sql/scanner"

@@ -55,7 +55,10 @@ func ArgIter(ctx context.Context, v any) Iter {
 	case driver.Valuer:
 		return Arg(x).Frag(ctx)
 	case iter.Seq[any]:
-		return Values[any](x).Frag(ctx)
+		if f := Values[any](x); !IsNil(f) {
+			return f.Frag(ctx)
+		}
+		return Empty().Frag(ctx)
 	case []any:
 		if len(x) > 0 {
 			return Query(strings.Repeat(",?", len(x))[1:], x...).Frag(ctx)

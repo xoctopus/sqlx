@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/xoctopus/pkgx"
-	"github.com/xoctopus/typex"
+	"github.com/xoctopus/pkgx/pkg/pkgx"
+	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/contextx"
 	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
@@ -49,13 +49,13 @@ func ExampleFieldsFor() {
 		pkgx.CtxLoadTests.Carry(true),
 	)(context.Background())
 
-	fields := structs.FieldsFor(ctx, typex.NewRType(ctx, reflect.TypeFor[User]()))
+	fields := structs.FieldsFor(ctx, typx.NewRType(reflect.TypeFor[User]()))
 
 	for _, f := range fields {
 		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
 	}
 
-	seq := structs.FieldsSeqFor(ctx, typex.NewRType(ctx, reflect.TypeFor[User]()))
+	seq := structs.FieldsSeqFor(ctx, typx.NewRType(reflect.TypeFor[User]()))
 	for f := range seq {
 		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
 	}
@@ -127,7 +127,7 @@ func TestField_Value(t *testing.T) {
 
 	v := reflect.ValueOf(V).Elem()
 
-	fields := structs.FieldsFor(ctx, typex.NewRType(ctx, reflect.TypeFor[M]()))
+	fields := structs.FieldsFor(ctx, typx.NewRType(reflect.TypeFor[M]()))
 	Expect(t, fields, HaveLen[[]*structs.Field](7))
 	Expect(t, fields[0].Name, Equal("f_f1"))
 	Expect(t, fields[0].Value(v), Equal[any](V.F1))
