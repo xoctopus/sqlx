@@ -5,14 +5,14 @@ import "strings"
 // ParseKeyDef parses key define
 // eg:
 //
-//	| Kind         | Name[,Using]       | Field[,Option]             |
-//	| :---         | :---               | :----                      |
-//	| idx          | idx_name,BTREE     | Name                       |
-//	| index        | idx_name,GIST      | Geo,gist_trgm_ops          |
-//	| unique_index | idx_name           | OrgID,NULLS,FIRST;MemberID |
-//	| u_idx        | idx_name           | OrgID;MemberID,NULLS,FIRST |
-//	| primary      |                    | ID                         |
-//	| pk           |                    | ID                         |
+//	| Kind         | Name[,Using]       | Field[,Option]                |
+//	| :---         | :---               | :----                         |
+//	| idx          | idx_name,BTREE     | Name                          |
+//	| index        | idx_name,GIST      | Geo,gist_trgm_ops             |
+//	| unique_index | idx_name           | f_org_id,NULLS,FIRST;MemberID |
+//	| u_idx        | idx_name           | OrgID;f_member_id,NULLS,FIRST |
+//	| primary      |                    | ID                            |
+//	| pk           |                    | ID                            |
 func ParseKeyDef(def string) *KeyDefine {
 	parts := strings.Fields(def)
 
@@ -30,7 +30,7 @@ func ParseKeyDef(def string) *KeyDefine {
 		}
 		d.Kind = KEY_KIND__UNIQUE_INDEX
 		d.Name, d.Using = ResolveIndexNameAndUsing(parts[1])
-	case "primary", "pk":
+	case "primary", "pk", "pkey":
 		if len(parts) != 2 {
 			return nil
 		}
@@ -79,7 +79,7 @@ type KeyDefine struct {
 func (d *KeyDefine) OptionsFieldNames() []string {
 	names := make([]string, len(d.Options))
 	for i, opt := range d.Options {
-		names[i] = opt.FieldName
+		names[i] = opt.Name
 	}
 	return names
 }
@@ -97,10 +97,10 @@ func ResolveKeyColumnOptions(s string) (options []KeyColumnOption) {
 	for _, field := range fields {
 		if parts := strings.Split(field, ","); len(parts) > 0 {
 			option := KeyColumnOption{
-				FieldName: parts[0],
-				Options:   parts[1:],
+				Name:    parts[0],
+				Options: parts[1:],
 			}
-			if option.FieldName == "" {
+			if option.Name == "" {
 				continue
 			}
 			options = append(options, option)
@@ -119,19 +119,19 @@ func ResolveKeyColumnOptionsFromStrings(ss ...string) (options []KeyColumnOption
 func KeyColumnOptionByNames(names ...string) []KeyColumnOption {
 	options := make([]KeyColumnOption, len(names))
 	for i := range names {
-		options[i].FieldName = names[i]
+		options[i].Name = names[i]
 	}
 	return options
 }
 
 type KeyColumnOption struct {
-	FieldName string
-	Options   []string
+	Name    string // maybe column name or field name
+	Options []string
 }
 
 func (o *KeyColumnOption) String() string {
 	if len(o.Options) == 0 {
-		return o.FieldName
+		return o.Name
 	}
-	return o.FieldName + "," + strings.Join(o.Options, ",")
+	return o.Name + "," + strings.Join(o.Options, ",")
 }

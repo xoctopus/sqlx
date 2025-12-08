@@ -52,28 +52,31 @@ type ColumnDef struct {
 
 func (d *ColumnDef) ParseDBTag(flag *reflectx.Flag) {
 	for o := range flag.Options() {
-		ov := o.Unquoted()
 		switch strings.ToLower(o.Key()) {
 		case "null":
 			d.Null = true
 		case "autoinc":
 			d.AutoInc = true
 		case "default":
+			ov := o.Value()
 			d.Default = &ov
 		case "width":
+			ov := o.Unquoted()
 			v, err := strconv.ParseUint(ov, 10, 64)
 			must.NoErrorF(err, "invalid width value: %s", ov)
 			d.Width = v
 		case "precision":
+			ov := o.Unquoted()
 			v, err := strconv.ParseUint(ov, 10, 64)
 			must.NoErrorF(err, "invalid precision value: %s", ov)
 			d.Precision = v
 		case "onupdate":
+			ov := o.Value()
 			must.BeTrueF(len(ov) > 0, "missing onupdate value")
 			d.OnUpdate = &ov
 		case "deprecated":
 			// TODO more deprecated actions?
-			d.Deprecated = &DeprecatedActions{RenameTo: ov}
+			d.Deprecated = &DeprecatedActions{RenameTo: o.Value()}
 		}
 	}
 }

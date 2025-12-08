@@ -41,23 +41,23 @@ func TestParseColDef(t *testing.T) {
 		},
 		{
 			name: "Default",
-			def:  &def.ColumnDef{Default: ptrx.Ptr("abc def")},
+			def:  &def.ColumnDef{Default: ptrx.Ptr("'abc def'")},
 			tag:  reflect.StructTag(`db:",default='abc def'"`),
 		},
 		{
-			name: "DefaultNull",
-			def:  &def.ColumnDef{Default: ptrx.Ptr("")},
+			name: "DefaultEmpty",
+			def:  &def.ColumnDef{Default: ptrx.Ptr("''")},
 			tag:  reflect.StructTag(`db:",default=''"`),
 		},
 		{
 			name: "OnUpdate",
-			def:  &def.ColumnDef{OnUpdate: ptrx.Ptr("CURRENT_TIMESTAMP")},
-			tag:  reflect.StructTag(`db:",onupdate='CURRENT_TIMESTAMP'"`),
+			def:  &def.ColumnDef{OnUpdate: ptrx.Ptr("CURRENT_TIMESTAMP(3)")},
+			tag:  reflect.StructTag(`db:",onupdate=CURRENT_TIMESTAMP(3)"`),
 		},
 		{
 			name: "Deprecated",
 			def:  &def.ColumnDef{Deprecated: &def.DeprecatedActions{RenameTo: "f_new_column_name"}},
-			tag:  reflect.StructTag(`db:",deprecated='f_new_column_name'"`),
+			tag:  reflect.StructTag(`db:",deprecated=f_new_column_name"`),
 		},
 		{
 			name: "NoFlag",

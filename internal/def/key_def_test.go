@@ -20,7 +20,7 @@ func TestParseKeyDef(t *testing.T) {
 				Name:  "idx_name",
 				Using: "BTREE",
 				Options: []def.KeyColumnOption{
-					{FieldName: "Name", Options: []string{}},
+					{Name: "Name", Options: []string{}},
 				},
 			},
 		},
@@ -30,18 +30,18 @@ func TestParseKeyDef(t *testing.T) {
 				Kind: def.KEY_KIND__PRIMARY,
 				Name: "primary",
 				Options: []def.KeyColumnOption{
-					{FieldName: "ID", Options: []string{}},
+					{Name: "ID", Options: []string{}},
 				},
 			},
 		},
 		{
-			def: " unique_index   idx_name   OrgID,NULLS,FIRST;MemberID ",
+			def: " unique_index   idx_name   f_org_id,NULLS,FIRST;MemberID ",
 			opt: &def.KeyDefine{
 				Kind: def.KEY_KIND__UNIQUE_INDEX,
 				Name: "idx_name",
 				Options: []def.KeyColumnOption{
-					{FieldName: "OrgID", Options: []string{"NULLS", "FIRST"}},
-					{FieldName: "MemberID", Options: []string{}},
+					{Name: "f_org_id", Options: []string{"NULLS", "FIRST"}},
+					{Name: "MemberID", Options: []string{}},
 				},
 			},
 		},
