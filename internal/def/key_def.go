@@ -76,7 +76,7 @@ type KeyDefine struct {
 	Options []KeyColumnOption
 }
 
-func (d *KeyDefine) OptionsFieldNames() []string {
+func (d *KeyDefine) OptionsNames() []string {
 	names := make([]string, len(d.Options))
 	for i, opt := range d.Options {
 		names[i] = opt.Name

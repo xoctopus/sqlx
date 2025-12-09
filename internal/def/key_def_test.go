@@ -9,7 +9,7 @@ import (
 )
 
 func TestParseKeyDef(t *testing.T) {
-	for _, c := range []struct {
+	cases := []struct {
 		def string
 		opt *def.KeyDefine
 	}{
@@ -52,7 +52,26 @@ func TestParseKeyDef(t *testing.T) {
 		{def: "index ,using ID"},
 		{def: "index idx_name,using ;"},
 		{def: "invalid"},
-	} {
+	}
+	for _, c := range cases {
 		Expect(t, def.ParseKeyDef(c.def), Equal(c.opt))
 	}
+
+	Expect(t, cases[2].opt.OptionsNames(), Equal([]string{"f_org_id", "MemberID"}))
+	Expect(t, cases[2].opt.OptionsStrings(), Equal([]string{
+		"f_org_id,NULLS,FIRST",
+		"MemberID",
+	}))
+
+	Expect(
+		t,
+		def.ResolveKeyColumnOptionsFromStrings(cases[2].opt.OptionsStrings()...),
+		Equal(cases[2].opt.Options),
+	)
+
+	Expect(
+		t,
+		def.KeyColumnOptionByNames("f_id"),
+		Equal([]def.KeyColumnOption{{Name: "f_id"}}),
+	)
 }

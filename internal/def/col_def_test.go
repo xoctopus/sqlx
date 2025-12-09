@@ -75,4 +75,12 @@ func TestParseColDef(t *testing.T) {
 			Expect(t, got, Equal(c.def))
 		})
 	}
+	t.Run("AdaptedTags", func(t *testing.T) {
+		ExpectPanic[string](t, func() {
+			def.ParseColDef(def.WithModelTagKey(context.Background(), "gorm"), typ, `gorm:""`)
+		})
+		ExpectPanic[string](t, func() {
+			def.ParseColDef(def.WithModelTagKey(context.Background(), "any"), typ, `any:""`)
+		})
+	})
 }
