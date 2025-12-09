@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"database/sql/driver"
+	"errors"
 	"testing"
 
 	. "github.com/xoctopus/x/testx"
@@ -21,6 +22,8 @@ func TestJSON(t *testing.T) {
 			Expect(t, arr.Scan(100), Failed())
 			Expect(t, arr.Scan(`[1,2,3]`), Succeed())
 			Expect(t, arr.Get(), Equal[[]int]([]int{1, 2, 3}))
+
+			Expect(t, arr.UnmarshalJSON([]byte(`[`)), Failed())
 		})
 		t.Run("Value", func(t *testing.T) {
 			arr.Set(nil)
@@ -58,6 +61,7 @@ func TestJSON(t *testing.T) {
 			Expect(t, objT.Scan(100), Failed())
 			Expect(t, objT.Scan(`{}`), Succeed())
 			Expect(t, objT.Get(), Equal[*T](&T{}))
+			Expect(t, objT.UnmarshalJSON([]byte(`{`)), Failed())
 		})
 		t.Run("Value", func(t *testing.T) {
 			objT.Set(nil)
@@ -76,4 +80,13 @@ func TestJSON(t *testing.T) {
 		})
 		ExpectPanic[error](t, func() { types.JSONObjectOf(new(int)) })
 	})
+
+	_, err := types.DriverJSONValue(MustFailedJsonArshaler{})
+	Expect(t, err, Failed())
+}
+
+type MustFailedJsonArshaler struct{}
+
+func (MustFailedJsonArshaler) MarshalJSON() ([]byte, error) {
+	return nil, errors.New("brick")
 }

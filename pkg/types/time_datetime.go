@@ -8,34 +8,24 @@ import (
 )
 
 var (
-	DatetimeZero     = Datetime{time.Time{}}
-	DatetimeUnixZero = Datetime{time.Unix(0, 0)}
+	DatetimeZero     = Datetime{Timestamp: TimestampZero}
+	DatetimeUnixZero = Datetime{Timestamp: TimestampUnixZero}
 )
 
+func AsDatetime(t time.Time) Datetime {
+	return Datetime{AsTimestamp(t)}
+}
+
 type Datetime struct {
-	time.Time
+	Timestamp
 }
 
 func (Datetime) DBType(driver string) string {
 	switch strings.ToLower(driver) {
 	case "mysql":
-		switch gConfig.precision.Value() {
-		case TIMESTAMP_PRECISION__SEC:
-			return "datetime"
-		case TIMESTAMP_PRECISION__MILLI:
-			return "datetime(3)"
-		default:
-			return "datetime(6)"
-		}
+		return "datetime"
 	case "postgres", "pg":
-		switch gConfig.precision.Value() {
-		case TIMESTAMP_PRECISION__SEC:
-			return "timestamptz"
-		case TIMESTAMP_PRECISION__MILLI:
-			return "timestamptz(3)"
-		default:
-			return "timestamptz(6)"
-		}
+		return "timestamp"
 	default:
 		panic("unsupported use Timestamp instead")
 	}
@@ -46,15 +36,13 @@ func (t *Datetime) Scan(src any) error {
 	case nil:
 		*t = DatetimeZero
 	case time.Time:
-		println("from time.Time", v.Format(time.RFC3339Nano))
-		*t = Datetime{v}
+		t.Time = v
 	case []byte:
-		println("from []byte", string(v))
 		x, err := ParseTimestamp(string(v))
 		if err != nil {
 			return err
 		}
-		*t = Datetime{x.Time}
+		t.Time = x.Time
 	default:
 		return fmt.Errorf("cannot sql.Scan() Datetime from: %#v", v)
 	}

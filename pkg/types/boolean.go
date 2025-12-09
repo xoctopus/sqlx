@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 )
 
 type Bool int
@@ -54,6 +54,6 @@ func (v *Bool) UnmarshalText(data []byte) error {
 		*v = 0
 		return nil
 	default:
-		return errors.Errorf("invalid boolean value: %q", string(data))
+		return fmt.Errorf("invalid boolean value: %q", string(data))
 	}
 }

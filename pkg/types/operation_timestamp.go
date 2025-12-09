@@ -3,8 +3,6 @@ package types
 import (
 	"database/sql/driver"
 	"time"
-
-	"github.com/xoctopus/sqlx/internal"
 )
 
 type CreationMarker interface {
@@ -22,11 +20,6 @@ type DeletionMarker interface {
 type SoftDeletion interface {
 	// SoftDeletion returns soft deletion field name and default value
 	SoftDeletion() (string, driver.Value)
-}
-
-func HasSoftDeletion[M internal.Model]() bool {
-	_, ok := any(new(M)).(SoftDeletion)
-	return ok
 }
 
 type CreationTime struct {
@@ -75,4 +68,4 @@ func (cmd *CreationModificationDeletionTime) MarkDeletedAt() {
 	cmd.DeletedAt = cmd.UpdatedAt
 }
 
-type OperationTimes = CreationModificationDeletionTime
+type OperationTime = CreationModificationDeletionTime

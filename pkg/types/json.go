@@ -3,17 +3,19 @@ package types
 import (
 	"bytes"
 	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"reflect"
 
-	"github.com/go-json-experiment/json"
-	jsonv1 "github.com/go-json-experiment/json/v1"
-	"github.com/pkg/errors"
 	"github.com/xoctopus/x/misc/must"
 )
 
-var options = []json.Options{
-	jsonv1.OmitEmptyWithLegacySemantics(true),
-}
+// "encoding/json/v2"
+// "github.com/go-json-experiment/json"
+// jsonv1 "github.com/go-json-experiment/json/v1"
+// var options = []json.Options{
+// 	jsonv1.OmitEmptyWithLegacySemantics(true),
+// }
 
 // ScanJSONValue scan database input to value
 func ScanJSONValue(src, dst any) error {
@@ -31,7 +33,7 @@ func ScanJSONValue(src, dst any) error {
 	case nil:
 		return nil
 	default:
-		return errors.Errorf("cannot sql.Scan from `%T` to `%T", src, dst)
+		return fmt.Errorf("cannot sql.Scan from `%T` to `%T", src, dst)
 	}
 }
 
@@ -41,7 +43,7 @@ func DriverJSONValue(v any) (driver.Value, error) {
 		return "", nil
 	}
 
-	data, err := json.Marshal(v, options...)
+	data, err := json.Marshal(v)
 	if err != nil {
 		return "", err
 	}
@@ -99,15 +101,15 @@ func (v *JSONArray[T]) UnmarshalJSON(data []byte) error {
 	}
 
 	x := make([]T, 0)
-	if err := json.Unmarshal(data, &x, options...); err != nil {
+	if err := json.Unmarshal(data, &x); err != nil {
 		return err
 	}
 	v.v = x
 	return nil
 }
 
-func (v *JSONArray[T]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.v, options...)
+func (v JSONArray[T]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.v)
 }
 
 func JSONObjectOf[T any](v *T) JSONObject[T] {
@@ -151,7 +153,7 @@ func (v *JSONObject[T]) UnmarshalJSON(data []byte) error {
 	}
 
 	x := new(T)
-	if err := json.Unmarshal(data, x, options...); err != nil {
+	if err := json.Unmarshal(data, x); err != nil {
 		return err
 	}
 	v.v = x
@@ -159,9 +161,9 @@ func (v *JSONObject[T]) UnmarshalJSON(data []byte) error {
 }
 
 func (v JSONObject[T]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.v, options...)
+	return json.Marshal(v.v)
 }
 
-func (v *JSONObject[T]) OneOf() []any {
-	return []any{new(T)}
-}
+// func (v *JSONObject[T]) OneOf() []any {
+// 	return []any{new(T)}
+// }
