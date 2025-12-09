@@ -1,4 +1,4 @@
-PACKAGES=$(shell go list ./... | grep -E -v 'pb$|testdata|mock|proto|example|testx/internal|pkg/frag/testutil')
+PACKAGES=$(shell go list ./... | grep -E -v 'pb$|testdata|mock|proto|example|testx/internal|pkg/frag/testutil|hack')
 IGNORED=_gen.go|.pb.go|_mock.go|_genx_
 MOD=$(shell cat go.mod | grep ^module -m 1 | awk '{ print $$2; }' || '')
 MOD_NAME=$(shell basename $(MOD))
