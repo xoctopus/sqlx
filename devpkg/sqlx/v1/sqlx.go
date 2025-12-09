@@ -55,8 +55,8 @@ func NewModel(g genx.Context, t types.Type) *Model {
 			k := def.ParseKeyDef(line)
 			must.BeTrueF(k != nil, "failed to parse @def: %s", line)
 			for _, o := range k.Options {
-				_, exists := fm[o.FieldName]
-				must.BeTrueF(exists, "field def found: %s", o.FieldName)
+				_, exists := fm[o.Name]
+				must.BeTrueF(exists, "field def found: %s", o.Name)
 			}
 			switch k.Kind {
 			case def.KEY_KIND__PRIMARY:
@@ -115,7 +115,7 @@ func (m *Model) IndexList(unique bool) s.Snippet {
 		ss := make([]s.Snippet, 0, len(indexes))
 		for _, i := range indexes {
 			ss = append(ss, s.BlockF("%q: {", i.Name))
-			ss = append(ss, s.Strings(",", "\n", i.OptionsFieldNames()...))
+			ss = append(ss, s.Strings(",", "\n", i.OptionsNames()...))
 			ss = append(ss, s.Block("},"))
 		}
 		return s.Snippets(s.NewLine(1), ss...)
