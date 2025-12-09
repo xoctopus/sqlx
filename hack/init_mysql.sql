@@ -4,7 +4,7 @@ USE test;
 
 CREATE TABLE x (datetime datetime(3), timestamp bigint);
 
-INSERT INTO x(datetime, timestamp) VALUES (now(3), unix_timestamp(now(3)) * 1000);
+INSERT INTO x (datetime,timestamp) VALUES ('1988-10-24 07:00:00.123', 593650800123);
 
 CREATE TABLE IF NOT EXISTS users (
     f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
