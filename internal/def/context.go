@@ -6,7 +6,7 @@ import (
 	"github.com/xoctopus/x/contextx"
 )
 
-var CtxTagKey = contextx.NewT[string](contextx.WithOnce[string]())
+var CtxTagKey = contextx.NewT[string]()
 
 func WithModelTagKey(ctx context.Context, key string) context.Context {
 	return CtxTagKey.With(ctx, key)
