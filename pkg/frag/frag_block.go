@@ -41,25 +41,17 @@ func (f *block) Frag(ctx context.Context) Iter {
 		i := 0
 		for frag := range NonNil(f.seq) {
 			if f.bracketed && i == 0 {
-				if !yield("(", nil) {
-					return
-				}
+				yield("(", nil)
 			}
 			if i > 0 {
-				if !yield(f.sep, nil) {
-					return
-				}
+				yield(f.sep, nil)
 			}
 			for query, args := range frag.Frag(ctx) {
-				if !yield(query, args) {
-					return
-				}
+				yield(query, args)
 				i++
 			}
 			if f.bracketed && i > 0 {
-				if !yield(")", nil) {
-					return
-				}
+				yield(")", nil)
 			}
 		}
 	}

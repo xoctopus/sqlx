@@ -61,11 +61,9 @@ func (p *pair) Frag(ctx context.Context) Iter {
 
 		for c := s.Next(); c != scanner.EOF; c = s.Next() {
 			switch c {
-			case '@':
+			case '@': // named arguments
 				if tmp.Len() > 0 {
-					if !yield(tmp.String(), nil) {
-						return
-					}
+					yield(tmp.String(), nil)
 				}
 				tmp.Reset()
 
@@ -75,6 +73,7 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					if c == scanner.EOF {
 						break
 					}
+					// read an identifier of argument name
 					if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' {
 						name.WriteRune(c)
 						continue
@@ -86,11 +85,11 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					arg := name.String()
 					v, ok := p.set[arg]
 					must.BeTrueF(ok, "missing named argument query: %s arg: %s", p.query, arg)
-					for query, args := range ArgIter(ctx, v) {
-						yield(query, args)
+					for q, args := range ArgIter(ctx, v) {
+						yield(q, args)
 					}
 				}
-			case '?':
+			case '?': // placeholder
 				if tmp.Len() > 0 {
 					yield(tmp.String(), nil)
 				}
@@ -101,10 +100,8 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					p.query, len(p.args), idx,
 				)
 				arg := p.args[idx]
-				for query, args := range ArgIter(ctx, arg) {
-					if !yield(query, args) {
-						return
-					}
+				for q, args := range ArgIter(ctx, arg) {
+					yield(q, args)
 				}
 				idx++
 			default:
@@ -112,9 +109,7 @@ func (p *pair) Frag(ctx context.Context) Iter {
 			}
 		}
 		if tmp.Len() > 0 {
-			if !yield(tmp.String(), nil) {
-				return
-			}
+			yield(tmp.String(), nil)
 		}
 	}
 }

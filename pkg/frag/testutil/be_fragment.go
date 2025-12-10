@@ -31,8 +31,8 @@ type fragmentMatcher[A frag.Fragment] struct {
 	args      []any
 	checkArgs bool
 
-	queryNotEqual bool
-	argsNotEqual  bool
+	queryMatched bool
+	argsMatched  bool
 }
 
 func (m *fragmentMatcher[A]) Negative() bool {
@@ -47,25 +47,23 @@ func (m *fragmentMatcher[A]) Match(actual A) bool {
 	if frag.IsNil(actual) {
 		return m.query == ""
 	}
+
 	q, args := frag.Collect(context.Background(), actual)
-	if len(m.args) == 0 && len(args) == 0 {
-		m.queryNotEqual = !(m.query == q)
-		return !m.queryNotEqual
-	}
 
-	if m.query == q {
-		return true
-	}
+	m.queryMatched = m.query == q
 
-	m.queryNotEqual = true
-
+	m.argsMatched = true
 	if m.checkArgs {
-		return reflect.DeepEqual(m.args, args)
+		if len(args) != len(m.args) {
+			m.argsMatched = false
+		} else if len(args) == 0 {
+			m.argsMatched = true
+		} else {
+			m.argsMatched = reflect.DeepEqual(args, m.args)
+		}
 	}
 
-	m.argsNotEqual = true
-
-	return false
+	return m.queryMatched && m.argsMatched
 }
 
 func (m *fragmentMatcher[A]) NormalizeActual(actual A) any {
@@ -74,25 +72,9 @@ func (m *fragmentMatcher[A]) NormalizeActual(actual A) any {
 	}
 	q, args := frag.Collect(context.Background(), actual)
 
-	if m.queryNotEqual && m.argsNotEqual {
-		return fmt.Sprintf("%s | %v", q, args)
-	}
-
-	if m.queryNotEqual {
-		return q
-	}
-
-	return fmt.Sprintf("%v", args)
+	return q + " | " + fmt.Sprintf("%v", args)
 }
 
 func (m *fragmentMatcher[A]) NormalizeExpect() any {
-	if m.queryNotEqual && m.argsNotEqual {
-		return fmt.Sprintf("%s | %v", m.query, m.args)
-	}
-
-	if m.queryNotEqual {
-		return m.query
-	}
-
-	return fmt.Sprintf("%v", m.args)
+	return m.query + " | " + fmt.Sprintf("%v", m.args)
 }
