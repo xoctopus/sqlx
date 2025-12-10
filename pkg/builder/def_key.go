@@ -20,12 +20,15 @@ type (
 		Of(Table) Key
 		IsPrimary() bool
 		IsUnique() bool
+		// String return [$table_name.]$index_name
+		String() string
 	}
 
 	KeyDefine = def.KeyDefine
 
 	KeyDef interface {
-		KeyDef() def.KeyDefine
+		Method() string
+		ColumnOptions() []def.KeyColumnOption
 	}
 
 	KeyPick interface {
@@ -45,10 +48,11 @@ type (
 		KeyPick
 
 		Of(Table) Keys
-		Len() int
+		// Len() int
 	}
 
-	KeyKind = def.KeyKind
+	KeyKind         = def.KeyKind
+	KeyColumnOption = def.KeyColumnOption
 )
 
 func PK(cols Cols, opts ...KeyOption) Key {
@@ -58,7 +62,7 @@ func PK(cols Cols, opts ...KeyOption) Key {
 
 func UK(name string, cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create unique index")
-	return K(name, cols, append(opts, KeyUniquenessApplier(true))...)
+	return K(name, cols, append(opts, WithKeyUniqueness(true))...)
 }
 
 func K(name string, cols Cols, opts ...KeyOption) Key {
@@ -66,7 +70,7 @@ func K(name string, cols Cols, opts ...KeyOption) Key {
 	k := &key{name: strings.ToLower(name)}
 
 	for c := range cols.Cols() {
-		k.options = append(k.options, def.KeyColumnOption{FieldName: c.FieldName()})
+		k.options = append(k.options, def.KeyColumnOption{Name: c.Name()})
 	}
 
 	for _, f := range opts {
@@ -77,22 +81,48 @@ func K(name string, cols Cols, opts ...KeyOption) Key {
 
 type KeyOption func(*key)
 
-func KeyUniquenessApplier(unique bool) KeyOption {
+func WithKeyUniqueness(unique bool) KeyOption {
 	return func(k *key) {
 		k.unique = unique
 	}
 }
 
-func KeyMethodApplier(method string) KeyOption {
+func WithKeyMethod(method string) KeyOption {
 	return func(k *key) {
 		k.method = method
 	}
 }
 
-func KeyColumnOptionsApplier(opts ...def.KeyColumnOption) KeyOption {
+func WithKeyColumnOptions(opts ...KeyColumnOption) KeyOption {
 	return func(k *key) {
 		k.options = opts
 	}
+}
+
+func KeyColumnsDefOf(k Key) frag.Fragment {
+	kd := k.(KeyDef)
+
+	must.BeTrueF(
+		len(kd.ColumnOptions()) > 0,
+		"missing columns of key define: %s", k,
+	)
+
+	cols := ColsIterOf(k.Cols())
+	return frag.Func(func(ctx context.Context) frag.Iter {
+		return func(yield func(string, []any) bool) {
+			for i, o := range kd.ColumnOptions() {
+				if i > 0 {
+					yield(",", nil)
+				}
+				c := cols.C(o.Name)
+				must.BeTrueF(c != nil, "missing column: %s", o.Name)
+				yield(c.Name(), nil)
+				if len(o.Options) > 0 {
+					yield(" "+strings.Join(o.Options, " "), nil)
+				}
+			}
+		}
+	})
 }
 
 type key struct {
@@ -134,17 +164,23 @@ func (k *key) IsPrimary() bool {
 	return k.unique && (k.name == "primary" || strings.HasSuffix(k.name, "pkey"))
 }
 
+func (k *key) String() string {
+	s := ""
+	if k.table != nil {
+		s += k.table.String() + "."
+	}
+	return s + k.name
+}
+
 func (k *key) Cols() iter.Seq[Col] {
 	return func(yield func(Col) bool) {
 		names := map[string]bool{}
 		for _, opt := range k.options {
-			names[opt.FieldName] = true
+			names[opt.Name] = true
 		}
 		for c := range k.table.Cols() {
-			if names[c.FieldName()] {
-				if !yield(c) {
-					return
-				}
+			if names[c.FieldName()] || names[c.Name()] {
+				yield(c)
 			}
 		}
 	}
@@ -168,13 +204,6 @@ func (ks *keys) K(name string) Key {
 		}
 	}
 	return nil
-}
-
-func (ks *keys) Len() int {
-	if ks == nil {
-		return 0
-	}
-	return len(ks.ks)
 }
 
 func (ks *keys) AddKey(followers ...Key) {

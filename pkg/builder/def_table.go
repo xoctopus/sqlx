@@ -35,8 +35,9 @@ type (
 
 		Add(...Table)
 		Remove(string)
+		Len() int
 
-		Require(...Catalog)
+		// Require(...Catalog)
 	}
 
 	WithTable interface {
@@ -45,6 +46,14 @@ type (
 
 	WithTableName interface {
 		WithTableName(name string) Table
+	}
+
+	WithSchema interface {
+		WithSchema(schema string) Table
+	}
+
+	WithDatabase interface {
+		WithDatabase(database string) Table
 	}
 )
 
@@ -81,7 +90,7 @@ func TFrom(ctx context.Context, m any) Table {
 
 	if tab, ok := schemas.Load(t); ok {
 		if x, ok := m.(internal.Model); ok {
-			return t.(WithTableName).WithTableName(x.TableName())
+			return tab.(WithTableName).WithTableName(x.TableName())
 		}
 		return tab.(Table)
 	}
@@ -174,6 +183,10 @@ func (t *table) Cols() iter.Seq[Col] {
 	return t.cs.Cols()
 }
 
+func (t *table) Pick(names ...string) Cols {
+	return t.cs.Pick(names...)
+}
+
 func (t *table) K(name string) Key {
 	return t.ks.K(name)
 }
@@ -182,7 +195,7 @@ func (t *table) Keys() iter.Seq[Key] {
 	return t.ks.Keys()
 }
 
-func TableNames(c Tables) iter.Seq[string] {
+func TableNames(c Catalog) iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for t := range c.Tables() {
 			yield(t.TableName())
@@ -191,20 +204,24 @@ func TableNames(c Tables) iter.Seq[string] {
 }
 
 func CatalogFrom(ctx context.Context, models ...internal.Model) Catalog {
-	tables := &Tables{}
+	tabs := &tables{}
 	for i := range models {
-		tables.Add(TFrom(ctx, models[i]))
+		tabs.Add(TFrom(ctx, models[i]))
 	}
-	return tables
+	return tabs
 }
 
-type Tables struct {
-	l        *list.List
-	m        map[string]*list.Element
-	requires []Catalog
+func NewCatalog() Catalog {
+	return &tables{}
 }
 
-func (t *Tables) T(name string) Table {
+type tables struct {
+	l *list.List
+	m map[string]*list.Element
+	// requires []Catalog
+}
+
+func (t *tables) T(name string) Table {
 	if t.m != nil {
 		if x, ok := t.m[name]; ok {
 			return x.Value.(Table)
@@ -213,35 +230,36 @@ func (t *Tables) T(name string) Table {
 	return nil
 }
 
-func (t *Tables) Tables() iter.Seq[Table] {
+func (t *tables) Tables() iter.Seq[Table] {
 	return func(yield func(Table) bool) {
-		emitted := make(map[string]bool)
+		// emitted := make(map[string]bool)
 
-		emit := func(t Table) bool {
-			name := t.TableName()
-			if _, ok := emitted[name]; ok {
-				return true
-			}
-			emitted[name] = true
-			return yield(t)
-		}
+		// emit := func(t Table) bool {
+		// 	name := t.TableName()
+		// 	if _, ok := emitted[name]; ok {
+		// 		return true
+		// 	}
+		// 	emitted[name] = true
+		// 	return yield(t)
+		// }
 
 		if t.l != nil {
 			for e := t.l.Front(); e != nil; e = e.Next() {
-				x := e.Value.(Table)
-				emit(x)
+				// x := e.Value.(Table)
+				// emit(x)
+				yield(e.Value.(Table))
 			}
 		}
 
-		for _, c := range t.requires {
-			for x := range c.Tables() {
-				emit(x)
-			}
-		}
+		// for _, c := range t.requires {
+		// 	for x := range c.Tables() {
+		// 		emit(x)
+		// 	}
+		// }
 	}
 }
 
-func (t *Tables) Add(tables ...Table) {
+func (t *tables) Add(tables ...Table) {
 	if t.m == nil {
 		t.m = make(map[string]*list.Element)
 		t.l = list.New()
@@ -258,7 +276,7 @@ func (t *Tables) Add(tables ...Table) {
 	}
 }
 
-func (t *Tables) Remove(name string) {
+func (t *tables) Remove(name string) {
 	if t.m != nil {
 		if e, ok := t.m[name]; ok {
 			t.l.Remove(e)
@@ -267,6 +285,13 @@ func (t *Tables) Remove(name string) {
 	}
 }
 
-func (t *Tables) Require(requires ...Catalog) {
-	t.requires = append(t.requires, requires...)
+func (t *tables) Len() int {
+	if t.m != nil {
+		return len(t.m)
+	}
+	return 0
 }
+
+// func (t *tables) Require(requires ...Catalog) {
+// 	t.requires = append(t.requires, requires...)
+// }

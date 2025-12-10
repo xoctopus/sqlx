@@ -16,6 +16,10 @@ func Update(t Table, modifiers ...string) *StmtUpdate {
 	return &StmtUpdate{table: t, modifiers: modifiers}
 }
 
+func UpdateIgnore(t Table) *StmtUpdate {
+	return Update(t, "IGNORE")
+}
+
 type StmtUpdate struct {
 	table       Table
 	from        Table

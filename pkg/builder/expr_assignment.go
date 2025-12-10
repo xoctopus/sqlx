@@ -52,7 +52,7 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		if usev || len(a.values) > 1 {
 			// (f_a,f_b...)
-			for q, args := range frag.Block(a.cols).Frag(WithoutToggles(ctx, TOGGLE__MULTI_TABLE)) {
+			for q, args := range frag.Block(a.cols).Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
 				yield(q, args)
 			}
 			values := a.values
@@ -82,7 +82,7 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 			}
 			return
 		}
-		for q, args := range a.cols.Frag(WithoutToggles(ctx, TOGGLE__MULTI_TABLE)) {
+		for q, args := range a.cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
 			yield(q, args)
 		}
 

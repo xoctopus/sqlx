@@ -28,7 +28,7 @@ func (c *col[M]) Unwrap() builder.Col {
 }
 
 func (c *col[M]) ComputedBy(f frag.Fragment) Col[M] {
-	return CastC[M](builder.CastC[any](c, builder.WithColComputed(f)))
+	return CastC[M](builder.CC[any](c, builder.WithColComputed(f)))
 }
 
 type TCol[M Model, T any] interface {
@@ -40,7 +40,7 @@ type TCol[M Model, T any] interface {
 }
 
 func CT[M Model, T any](c builder.Col) TCol[M, T] {
-	return &tcol[M, T]{TCol: builder.CastC[T](c)}
+	return &tcol[M, T]{TCol: builder.CC[T](c)}
 }
 
 type tcol[M Model, T any] struct {
@@ -53,11 +53,11 @@ func (c *tcol[M, T]) Unwrap() builder.Col {
 }
 
 func (c *tcol[M, T]) ComputedBy(f frag.Fragment) Col[M] {
-	return CastC[M](builder.CastC[any](c, builder.WithColComputed(f)))
+	return CastC[M](builder.CC[any](c, builder.WithColComputed(f)))
 }
 
 func (c *tcol[M, T]) TypedComputedBy(f frag.Fragment) TCol[M, T] {
-	return CT[M, T](builder.CastC[T](c, builder.WithColComputed(f)))
+	return CT[M, T](builder.CC[T](c, builder.WithColComputed(f)))
 }
 
 type ColIter[M Model] interface {

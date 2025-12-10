@@ -3,6 +3,9 @@ package builder_test
 import (
 	"context"
 	"fmt"
+	"testing"
+
+	"github.com/xoctopus/x/testx"
 
 	. "github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
@@ -68,8 +71,8 @@ func ExampleJoin() {
 		tUser,
 		Join(Alias(tOrg, "t_org")).On(
 			And(
-				CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
-				CastC[string](tOrg.C("f_name")).AsCond(Neq("abc")),
+				CC[int64](tUser.C("f_org_id")).AsCond(EqCol(CC[int64](tOrg.C("f_org_id")))),
+				CC[string](tOrg.C("f_name")).AsCond(Neq("abc")),
 			),
 		),
 		Comment("join on"),
@@ -93,7 +96,7 @@ func ExampleJoin() {
 	).From(
 		tUser,
 		RightJoin(tOrg).On(
-			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+			CC[int64](tUser.C("f_org_id")).AsCond(EqCol(CC[int64](tOrg.C("f_org_id")))),
 		),
 		Comment("right join"),
 	)
@@ -108,7 +111,7 @@ func ExampleJoin() {
 	).From(
 		tUser,
 		FullJoin(tOrg).On(
-			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+			CC[int64](tUser.C("f_org_id")).AsCond(EqCol(CC[int64](tOrg.C("f_org_id")))),
 		),
 		Comment("full join"),
 	)
@@ -123,7 +126,7 @@ func ExampleJoin() {
 	).From(
 		tUser,
 		InnerJoin(tOrg).On(
-			CastC[int64](tUser.C("f_org_id")).AsCond(EqCol(CastC[int64](tOrg.C("f_org_id")))),
+			CC[int64](tUser.C("f_org_id")).AsCond(EqCol(CC[int64](tOrg.C("f_org_id")))),
 		),
 		Comment("inner join"),
 	)
@@ -141,7 +144,7 @@ func ExampleJoin() {
 	).From(
 		tUser,
 		FullJoin(tOrg).On(
-			CastC[int](tUser.C("f_org_id")).AsCond(EqCol(CastC[int](tOrg.C("f_org_id")))),
+			CC[int](tUser.C("f_org_id")).AsCond(EqCol(CC[int](tOrg.C("f_org_id")))),
 		),
 		Comment("full join + auto alias"),
 	)
@@ -226,12 +229,26 @@ func ExampleOrderBy() {
 					CT[int]("F_b").Fragment("# = ?+1", CT[int]("F_a")),
 				),
 			),
+			Comment("orders addition"),
+		)
+	Print(context.Background(), f)
+
+	f = Select(nil).
+		From(
+			T("t_y"),
+			AscOrder(C("F_id")),
+			DescOrder(C("F_name")),
+			Comment("order additions"),
 		)
 	Print(context.Background(), f)
 
 	// Output:
+	// -- orders addition
 	// SELECT * FROM t_x WHERE (f_a = ?) AND (f_b = f_a+1) ORDER BY (f_a) ASC,(f_b) DESC
 	// [1]
+	// -- order additions
+	// SELECT * FROM t_y (f_id) ASC (f_name) DESC
+	// []
 }
 
 func ExampleCondition() {
@@ -434,6 +451,19 @@ func ExampleInsert() {
 		Values(ColsOf(C("f_id"), C("f_name")), 1, "saito")
 	Print(context.Background(), f)
 
+	f = Insert().
+		Into(
+			T("t_user"),
+			OnConflict(ColsOf(C("f_id"))).
+				DoUpdateSet(
+					ColumnsAndValues(ColsOf(C("f_name")), "saito"),
+					nil,
+				),
+			Comment("with nil assignment"),
+		).
+		Values(ColsOf(C("f_id"), C("f_name")), 1, "saito")
+	Print(context.Background(), f)
+
 	// Output:
 	// -- insert
 	// INSERT INTO t_user (f_a,f_b) VALUES (?,?)
@@ -453,6 +483,9 @@ func ExampleInsert() {
 	// -- insert on duplicate key do update
 	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON DUPLICATE KEY UPDATE f_id = f_id
 	// [1 saito]
+	// -- with nil assignment
+	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
+	// [1 saito saito]
 }
 
 func ExampleUpdate() {
@@ -468,13 +501,13 @@ func ExampleUpdate() {
 
 	f := Update(t_stu).
 		Set(
-			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
-			CastC[string](t_stu.C("f_class")).AssignBy(AsValue(CastC[string](t_class.C("f_class")))),
+			CC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			CC[string](t_stu.C("f_class")).AssignBy(AsValue(CC[string](t_class.C("f_class")))),
 		).
 		From(t_class).
 		Where(
-			CastC[string](t_stu.C(f_id.Name())).
-				AsCond(EqCol(CastC[string](t_class.C(f_stu_id.Name())))),
+			CC[string](t_stu.C(f_id.Name())).
+				AsCond(EqCol(CC[string](t_class.C(f_stu_id.Name())))),
 			Comment("update from postgres supported"),
 		)
 	Print(context.Background(), f)
@@ -483,30 +516,49 @@ func ExampleUpdate() {
 		From(
 			nil,
 			Join(t_class).On(
-				CastC[string](t_stu.C(f_id.Name())).
-					AsCond(EqCol(CastC[string](t_class.C(f_stu_id.Name())))),
+				CC[string](t_stu.C(f_id.Name())).
+					AsCond(EqCol(CC[string](t_class.C(f_stu_id.Name())))),
 			),
 			Comment("update join mysql supported"),
 		).
 		Set(
-			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
-			CastC[string](t_stu.C("f_class")).AssignBy(AsValue(CastC[string](t_class.C("f_class")))),
+			CC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			CC[string](t_stu.C("f_class")).AssignBy(AsValue(CC[string](t_class.C("f_class")))),
 		)
 	Print(context.Background(), f)
 
 	sub := Select(f_class.Of(t_class)).From(
 		t_class,
-		Where(CastC[int](f_stu_id.Of(t_class)).AsCond(EqCol(CastC[int](f_id.Of(t_stu))))),
+		Where(CC[int](f_stu_id.Of(t_class)).AsCond(EqCol(CC[int](f_id.Of(t_stu))))),
 		Limit(1),
 	)
 	f = Update(t_stu).
 		Set(
-			CastC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+			CC[int](t_stu.C("f_score")).AssignBy(Value(100)),
 			ColumnsAndValues(f_class.Of(t_stu), sub),
 		).
 		Where(
 			Exists(sub),
 			Comment("update with sub query and exists condition sqlite supported"),
+		)
+	Print(context.Background(), f)
+
+	f = Update(t_stu).
+		Set(
+			CC[int](t_stu.C("f_score")).AssignBy(Value(100)),
+		).
+		Where(
+			CC[int](t_stu.C("f_id")).AsCond(Eq(1)),
+			Returning(nil),
+			Comment("update with returning"),
+		)
+	Print(context.Background(), f)
+
+	f = UpdateIgnore(t_stu).
+		Set(CC[int](t_stu.C("f_score")).AssignBy(Value(100))).
+		Where(
+			CC[int](t_stu.C("f_id")).AsCond(Eq(1)),
+			Comment("update ignore"),
 		)
 	Print(context.Background(), f)
 
@@ -520,6 +572,12 @@ func ExampleUpdate() {
 	// -- update with sub query and exists condition sqlite supported
 	// UPDATE t_stu SET f_score = ?, f_class = (SELECT f_class FROM t_class WHERE f_stu_id = f_id LIMIT 1) WHERE EXISTS (SELECT f_class FROM t_class WHERE f_stu_id = f_id LIMIT 1)
 	// [100]
+	// -- update with returning
+	// UPDATE t_stu SET f_score = ? WHERE f_id = ? RETURNING *
+	// [100 1]
+	// -- update ignore
+	// UPDATE IGNORE t_stu SET f_score = ? WHERE f_id = ?
+	// [100 1]
 }
 
 func Example_test() {
@@ -571,4 +629,23 @@ func Example_test() {
 	// [100 org_name 101 102]
 	// DELETE FROM users WHERE f_user_id = ?
 	// [100]
+}
+
+func TestAssignment(t *testing.T) {
+	testx.Expect(t, (Assignments{}).IsNil(), testx.BeTrue())
+	testx.Expect(t, (Assignments{nil, nil}).IsNil(), testx.BeTrue())
+}
+
+func TestConditions(t *testing.T) {
+	testx.Expect[Fragment](t, AsCond(nil), BeFragment(""))
+	testx.Expect[Fragment](
+		t,
+		And(
+			AsCond(frag.Lit("true")),
+			Where(CT[int]("f_id").AsCond(Eq(1))),
+		),
+		BeFragment("(true) AND (f_id = ?)", 1),
+	)
+	testx.Expect(t, Or(frag.Empty(), frag.Empty()).IsNil(), testx.BeTrue())
+	testx.Expect[Fragment](t, And(frag.Lit("true")), BeFragment("true"))
 }

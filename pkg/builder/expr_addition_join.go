@@ -93,7 +93,7 @@ func (j *join) Frag(ctx context.Context) frag.Iter {
 		if len(j.cols) > 0 {
 			yield(" USING (", nil)
 			cols := frag.ComposeSeq(",", frag.NonNil(slices.Values(j.cols)))
-			for q, args := range cols.Frag(WithoutToggles(ctx, TOGGLE__MULTI_TABLE)) {
+			for q, args := range cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
 				yield(q, args)
 			}
 			yield(")", nil)

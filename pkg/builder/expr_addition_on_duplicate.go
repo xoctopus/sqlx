@@ -21,7 +21,7 @@ func (o onduplicate) Type() AdditionType {
 }
 
 func (o *onduplicate) IsNil() bool {
-	return o == nil || len(o.assignments) == 0
+	return o == nil || frag.IsNil(o.assignments)
 }
 
 func (o *onduplicate) Frag(ctx context.Context) frag.Iter {

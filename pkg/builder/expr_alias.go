@@ -27,7 +27,7 @@ func (a *alias) IsNil() bool {
 func (a *alias) Frag(ctx context.Context) frag.Iter {
 	return frag.Query(
 		"? AS ?", a.Fragment, frag.Lit(a.name),
-	).Frag(WithoutToggles(ctx, TOGGLE__AUTO_ALIAS))
+	).Frag(TrimToggles(ctx, TOGGLE__AUTO_ALIAS))
 }
 
 func AutoAlias(columns ...frag.Fragment) frag.Fragment {

@@ -19,9 +19,10 @@ const (
 
 type Toggles map[ToggleType]bool
 
-func (ts Toggles) Inject(ctx context.Context) context.Context {
-	return ContextWithToggles(ctx, ts)
-}
+// Injector?
+// func (ts Toggles) Inject(ctx context.Context) context.Context {
+// 	return ContextWithToggles(ctx, ts)
+// }
 
 func (ts Toggles) Merge(next Toggles) Toggles {
 	final := Toggles{}
@@ -63,7 +64,7 @@ func WithToggles(ctx context.Context, toggles ...ToggleType) context.Context {
 	return ctx
 }
 
-func WithoutToggles(ctx context.Context, toggles ...ToggleType) context.Context {
+func TrimToggles(ctx context.Context, toggles ...ToggleType) context.Context {
 	for _, toggle := range toggles {
 		ctx = ContextWithToggles(ctx, Toggles{toggle: false})
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/frag/testutil"
+	"github.com/xoctopus/sqlx/testdata"
 )
 
 func TestTable(t *testing.T) {
@@ -102,5 +103,68 @@ func TestTable(t *testing.T) {
 		Expect(t, pk.(builder.WithTable).T(), Equal(tUser))
 
 		Expect(t, slices.Collect(tUser.Keys()), HaveLen[[]builder.Key](2))
+
+		Expect(t, tUser.Pick("f_id").C("f_id"), Equal(tUser.C("f_id")))
+	})
+}
+
+type Role struct {
+}
+
+type WithAttrs struct {
+	ID int64
+}
+
+func (WithAttrs) ColumnComment() map[string]string {
+	return map[string]string{
+		"ID": "autoinc pk",
+	}
+}
+
+func (WithAttrs) ColumnDesc() map[string][]string {
+	return map[string][]string{
+		"ID": {"desc line1", "desc line2"},
+	}
+}
+
+func (WithAttrs) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"ID": {"t_a.f_a_id", "TB.FieldID"},
+	}
+}
+
+func TestCatalog(t *testing.T) {
+	ctx := context.Background()
+	catalog := builder.CatalogFrom(
+		ctx,
+		&testdata.User{},
+		&testdata.Org{},
+		builder.TFrom(ctx, &Role{}),
+	)
+
+	Expect(t, builder.NewCatalog().Len(), Equal(0))
+
+	t.Run("Pick", func(t *testing.T) {
+		Expect(
+			t,
+			slices.Collect(builder.TableNames(catalog)),
+			EquivalentSlice([]string{"Role", "users", "t_org"}),
+		)
+		Expect(t, catalog.T("users").TableName(), Equal("users"))
+		Expect(t, catalog.T("exclude"), BeNil[builder.Table]())
+	})
+
+	t.Run("Replace", func(t *testing.T) {
+		catalog.Add(builder.TFrom(ctx, &Role{}))
+		Expect(t, slices.Collect(catalog.Tables()), HaveLen[[]builder.Table](catalog.Len()))
+	})
+
+	t.Run("WithAttrs", func(t *testing.T) {
+		m := &WithAttrs{}
+		tab := builder.TFrom(ctx, m)
+		d := tab.C("ID").(builder.ColDef).Def()
+		Expect(t, d.Relation, Equal(m.ColumnRel()["ID"]))
+		Expect(t, d.Comment, Equal(m.ColumnComment()["ID"]))
+		Expect(t, d.Desc, Equal(m.ColumnDesc()["ID"]))
 	})
 }

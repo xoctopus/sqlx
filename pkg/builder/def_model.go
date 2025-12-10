@@ -33,5 +33,9 @@ type (
 		ColumnRel() map[string][]string
 	}
 
+	WithDatatypeDesc interface {
+		DBType(driver string) string
+	}
+
 	Model = internal.Model
 )

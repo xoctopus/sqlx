@@ -11,6 +11,9 @@ type ReturningAddition interface {
 }
 
 func Returning(p frag.Fragment) ReturningAddition {
+	if frag.IsNil(p) {
+		p = frag.Lit("*")
+	}
 	return &returning{p: p}
 }
 

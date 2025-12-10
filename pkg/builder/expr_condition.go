@@ -48,9 +48,6 @@ func (c *Condition) IsNil() bool {
 }
 
 func (c *Condition) Frag(ctx context.Context) frag.Iter {
-	if frag.IsNil(c.expr) {
-		return nil
-	}
 	return c.expr.Frag(ctx)
 }
 
@@ -87,15 +84,7 @@ type ComposedCondition struct {
 }
 
 func (c *ComposedCondition) IsNil() bool {
-	if c == nil || c.operator == "" || len(c.conditions) == 0 {
-		return true
-	}
-	for i := range c.conditions {
-		if !frag.IsNil(c.conditions[i]) {
-			return false
-		}
-	}
-	return true
+	return c == nil || c.operator == "" || len(c.conditions) == 0
 }
 
 func (c *ComposedCondition) Frag(ctx context.Context) frag.Iter {

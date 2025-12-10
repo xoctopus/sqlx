@@ -16,14 +16,6 @@ type (
 	ModelNewer[M Model] internal.ModelNewer[M]
 )
 
-func AscOrder[M Model](c Col[M]) OrderAddition[M] {
-	return builder.AscOrder(c)
-}
-
-func DescOrder[M Model](c Col[M]) OrderAddition[M] {
-	return builder.DescOrder(c)
-}
-
 type OrderAddition[M Model] interface {
 	builder.OrderAddition
 }

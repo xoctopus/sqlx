@@ -33,6 +33,8 @@ type (
 	ColPick interface {
 		// C picks a column by name
 		C(string) Col
+		// Pick columns
+		Pick(...string) Cols
 	}
 
 	ColIter interface {
@@ -115,7 +117,8 @@ func CT[T any](name string, options ...ColOption) TCol[T] {
 	return c
 }
 
-func CastC[T any](c Col, options ...ColOption) TCol[T] {
+// CC cast c for computing with type T
+func CC[T any](c Col, options ...ColOption) TCol[T] {
 	col := &column[T]{
 		name:     c.Name(),
 		fname:    c.FieldName(),
@@ -128,16 +131,6 @@ func CastC[T any](c Col, options ...ColOption) TCol[T] {
 		o(col)
 	}
 	return col
-}
-
-func PickCols(p ColPick, names ...string) Cols {
-	cs := &columns{}
-	for _, name := range names {
-		c := p.C(name)
-		must.NotNilF(c, "unknown column %s from %v", name, names)
-		cs.AddCol(c)
-	}
-	return cs
 }
 
 type column[T any] struct {
@@ -252,30 +245,33 @@ func GetColTable(c Col) Table {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
 	}
+	t := Table(nil)
 	if x, ok := c.(WithTable); ok {
-		return x.T()
+		t = x.T()
 	}
-	return nil
+	return t
 }
 
 func GetColDef(c Col) ColumnDef {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
 	}
+	d := ColumnDef{}
 	if x, ok := c.(ColDef); ok {
-		return x.Def()
+		d = x.Def()
 	}
-	return ColumnDef{}
+	return d
 }
 
 func GetColComputed(c Col) frag.Fragment {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
 	}
+	f := frag.Fragment(nil)
 	if x, ok := c.(ColComputed); ok {
-		return x.Computed()
+		f = x.Computed()
 	}
-	return nil
+	return f
 }
 
 func WithColFieldName(name string) ColOption {
@@ -448,23 +444,37 @@ func ColsOf(cs ...Col) Cols {
 	return cs_
 }
 
+func ColsIterOf(cs ...iter.Seq[Col]) Cols {
+	cs_ := &columns{}
+	for _, seq := range cs {
+		for c := range seq {
+			cs_.AddCol(c)
+		}
+	}
+	return cs_
+}
+
 type columns struct {
 	l []Col
 }
 
-func (cs *columns) F(name string) Col {
+// C collects Col from columns by column name or field name
+func (cs *columns) C(name string) Col {
+	if name == "" {
+		return nil
+	}
+
 	for i := range cs.l {
 		c := cs.l[i]
-		if MatchColumn(c, name) {
+		if x := name[0]; x >= 'A' && x <= 'Z' && c.FieldName() == name {
+			return c
+		}
+
+		if c.Name() == name {
 			return c
 		}
 	}
 	return nil
-}
-
-// C collects Col from columns by column name or field name
-func (cs *columns) C(name string) Col {
-	return cs.F(name)
 }
 
 func (cs *columns) Len() int {
@@ -480,6 +490,16 @@ func (cs *columns) Cols() iter.Seq[Col] {
 			yield(c)
 		}
 	}
+}
+
+func (cs *columns) Pick(names ...string) Cols {
+	sub := &columns{}
+	for _, name := range names {
+		c := cs.C(name)
+		must.NotNilF(c, "unknown column %s from %v", name, names)
+		sub.AddCol(c)
+	}
+	return sub
 }
 
 func (cs *columns) AddCol(cols ...Col) {
