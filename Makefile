@@ -110,12 +110,12 @@ cover: dep tidy hack_dep_run
 	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
 	@grep -vE '_gen.go|.pb.go|_mock.go|_genx_|main.go' cover.out > cover2.out && mv cover2.out cover.out
 
-# ci-cover: hack_dep_run
-# 	@if [ "${GOTEST}" = "xgo" ]; then \
-# 		go install github.com/xhd2015/xgo/cmd/xgo@latest; \
-# 	fi
-# 	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
-ci-cover: cover
+ci-cover: hack_dep_run
+	@if [ "${GOTEST}" = "xgo" ]; then \
+		go install github.com/xhd2015/xgo/cmd/xgo@latest; \
+	fi
+	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
+	@grep -vE '_gen.go|.pb.go|_mock.go|_genx_|main.go' cover.out > cover2.out && mv cover2.out cover.out
 
 view-cover: cover
 	@echo "==> run unit test with coverage and view"
