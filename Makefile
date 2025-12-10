@@ -86,12 +86,12 @@ tidy:
 	@echo "==> tidy"
 	@GOWORK=off go mod tidy
 
-test: dep tidy
+test: dep tidy hack_dep_run
 	@echo "==> run unit test"
 	@if [ "${GOTEST}" = "xgo" ]; then \
-		GOWORK=off $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; # xgo mock functions may cause data race \
+		GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; # xgo mock functions may cause data race \
 	else \
-		GOWORK=off $(GOTEST) test -race -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; \
+		GOWORK=off HACK_TEST=true $(GOTEST) test -race -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; \
 	fi
 
 hack_dep_run:
@@ -105,16 +105,16 @@ hack_test:
 
 hack_test_run: hack_dep_run hack_test
 
-cover: dep tidy
+cover: dep tidy hack_dep_run
 	@echo "==> run unit test with coverage"
-	@GOWORK=off $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
+	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
 	@grep -vE '_gen.go|.pb.go|_mock.go|_genx_|main.go' cover.out > cover2.out && mv cover2.out cover.out
 
 ci-cover:
 	@if [ "${GOTEST}" = "xgo" ]; then \
 		go install github.com/xhd2015/xgo/cmd/xgo@latest; \
 	fi
-	@GOWORK=off $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
+	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
 
 view-cover: cover
 	@echo "==> run unit test with coverage and view"

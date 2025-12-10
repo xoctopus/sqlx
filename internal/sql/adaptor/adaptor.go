@@ -32,15 +32,21 @@ type Adaptor interface {
 }
 
 type Dialect interface {
+	CreateSchema(string) frag.Fragment
+	SwitchSchema(string) frag.Fragment
+
 	CreateTableIsNotExists(t builder.Table) []frag.Fragment
 	DropTable(t builder.Table) frag.Fragment
 	TruncateTable(t builder.Table) frag.Fragment
+
 	AddColumn(builder.Col) frag.Fragment
 	DropColumn(builder.Col) frag.Fragment
 	RenameColumn(builder.Col, builder.Col) frag.Fragment
 	ModifyColumn(builder.Col, builder.Col) frag.Fragment
+
 	AddIndex(key builder.Key) frag.Fragment
 	DropIndex(key builder.Key) frag.Fragment
+
 	DBType(builder.ColumnDef) frag.Fragment
 }
 

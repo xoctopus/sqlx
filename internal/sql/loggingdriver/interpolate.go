@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xoctopus/x/misc/must"
 )
 
 func Interpolator(q string, args []driver.NamedValue) fmt.Stringer {
@@ -30,6 +32,12 @@ const (
 	digits01 = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
 	digits10 = "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
 )
+
+func DefaultInterpolate(q string, args []driver.NamedValue) string {
+	q, err := Interpolate(q, args, time.Local)
+	must.NoError(err)
+	return q
+}
 
 func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string, error) {
 	// TODO
