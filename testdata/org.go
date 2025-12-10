@@ -10,12 +10,12 @@ import "github.com/xoctopus/sqlx/pkg/types"
 // @def idx  i_name         Name;DeletedAt
 // @def idx  i_belonged     Belonged
 type Org struct {
-	types.AutoIncPrimary
+	types.AutoIncID
 
 	RelOrg
 	OrgData
 
-	types.OperationTimes
+	types.OperationTime
 }
 
 type RelOrg struct {

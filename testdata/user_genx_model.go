@@ -80,9 +80,9 @@ type tUser struct {
 	Gender modeled.TCol[User, Gender]
 	// Asset 资产 decimal(32,4)
 	Asset     modeled.TCol[User, types.Decimal]
-	CreatedAt modeled.TCol[User, types.Timestamp]
-	UpdatedAt modeled.TCol[User, types.Timestamp]
-	DeletedAt modeled.TCol[User, types.Timestamp]
+	CreatedAt modeled.TCol[User, types.Datetime]
+	UpdatedAt modeled.TCol[User, types.Datetime]
+	DeletedAt modeled.TCol[User, types.Datetime]
 }
 
 // New creates a new User
@@ -110,8 +110,8 @@ func init() {
 		Age:       modeled.CT[User, int](m.C("Age")),
 		Gender:    modeled.CT[User, Gender](m.C("Gender")),
 		Asset:     modeled.CT[User, types.Decimal](m.C("Asset")),
-		CreatedAt: modeled.CT[User, types.Timestamp](m.C("CreatedAt")),
-		UpdatedAt: modeled.CT[User, types.Timestamp](m.C("UpdatedAt")),
-		DeletedAt: modeled.CT[User, types.Timestamp](m.C("DeletedAt")),
+		CreatedAt: modeled.CT[User, types.Datetime](m.C("CreatedAt")),
+		UpdatedAt: modeled.CT[User, types.Datetime](m.C("UpdatedAt")),
+		DeletedAt: modeled.CT[User, types.Datetime](m.C("DeletedAt")),
 	}
 }

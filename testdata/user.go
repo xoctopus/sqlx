@@ -16,7 +16,7 @@ type User struct {
 	RelOrg
 	UserData
 
-	types.OperationTimes
+	types.OperationDatetime
 }
 
 type RelUser struct {
