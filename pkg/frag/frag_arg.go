@@ -85,9 +85,7 @@ func ArgIter(ctx context.Context, v any) Iter {
 					}
 				}).Frag(ctx)
 			}
-			// TODO should a function be an argument?
-			// return Arg(x).Frag(ctx)
-			panic(fmt.Errorf("unsupported type: %T", x))
+			panic(fmt.Errorf("unsupported argument type: %T", x))
 		default:
 			return Arg(x).Frag(ctx)
 		}

@@ -28,8 +28,8 @@ func (f *compose) Frag(ctx context.Context) Iter {
 			if i > 0 {
 				yield(f.sep, nil)
 			}
-			for query, args := range frag.Frag(ctx) {
-				yield(query, args)
+			for q, args := range frag.Frag(ctx) {
+				yield(q, args)
 				i++
 			}
 		}
