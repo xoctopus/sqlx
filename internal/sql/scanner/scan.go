@@ -56,7 +56,7 @@ func scan(ctx context.Context, rows *sql.Rows, v any) error {
 	t := reflect.TypeOf(v)
 
 	if t.Kind() != reflect.Pointer {
-		return fmt.Errorf("scan target must be a ptr value, but got %T", v)
+		return fmt.Errorf("scan target must be a pointer value, but got %T", v)
 	}
 	if s, ok := v.(sql.Scanner); ok {
 		return rows.Scan(s)
@@ -96,7 +96,7 @@ func scan(ctx context.Context, rows *sql.Rows, v any) error {
 			dst[i] = placeholder
 		}
 
-		for _, f := range structs.TableFields(ctx, v) {
+		for _, f := range structs.TableFields(v) {
 			if f.TableName != "" {
 				if i, ok := columns[frag.Alias(f.TableName, f.Field.Name)]; ok && i > -1 {
 					dst[i] = nullable.NewNullIgnoreScanner(f.Value.Addr().Interface())

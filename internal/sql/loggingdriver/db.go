@@ -1,48 +1,21 @@
 package loggingdriver
 
 import (
-	"bytes"
 	"context"
 	"database/sql/driver"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/xoctopus/logx"
 )
-
-type DriverOptionApplier func(*options)
-
-type options struct {
-	ErrorLevel          func(error) int
-	ParseDSN            func(string) (string, error)
-	ValueHolderReplacer func(string) string
-}
-
-func WithErrorLeveler(level func(error) int) func(*options) {
-	return func(o *options) {
-		o.ErrorLevel = level
-	}
-}
-
-func WithDsnParser(parser func(string) (string, error)) func(*options) {
-	return func(o *options) {
-		o.ParseDSN = parser
-	}
-}
-
-func WithPlaceholder(replacer func(string) string) func(*options) {
-	return func(o *options) {
-		o.ValueHolderReplacer = replacer
-	}
-}
 
 func Wrap(d driver.Driver, name string, opts ...DriverOptionApplier) driver.DriverContext {
 	c := &connector{d: d, name: name}
 	for _, applier := range opts {
 		applier(&c.options)
 	}
+
 	return c
 }
 
@@ -68,8 +41,8 @@ func (c *connector) OpenConnector(dsn string) (driver.Connector, error) {
 	}
 
 	dsn = u.String()
-	if c.ParseDSN != nil {
-		dsn, err = c.ParseDSN(dsn)
+	if c.DSNParser != nil {
+		dsn, err = c.DSNParser(dsn)
 		if err != nil {
 			return nil, err
 		}
@@ -96,18 +69,18 @@ func (c *connector) Open(dsn string) (driver.Conn, error) {
 		return nil, fmt.Errorf("failed to open connection: %w. %s", err, dsn)
 	}
 	return &connection{
-		Conn:     conn,
-		name:     c.name,
-		level:    c.ErrorLevel,
-		replacer: c.ValueHolderReplacer,
+		Conn:         conn,
+		name:         c.name,
+		level:        c.ErrorLevel,
+		interpolator: c.ValueHolderReplacer,
 	}, nil
 }
 
 type connection struct {
 	driver.Conn
-	name     string
-	level    func(error) int
-	replacer func(string) string
+	name         string
+	level        func(error) int
+	interpolator Interpolator
 }
 
 func (c *connection) Prepare(q string) (driver.Stmt, error) {
@@ -129,17 +102,15 @@ func (c *connection) QueryContext(ctx context.Context, q string, args []driver.N
 	_, log := logx.Enter(ctx)
 	span := Cost()
 
-	if c.replacer != nil {
-		q = c.replacer(q)
-	} else {
-		q = DefaultInterpolate(q, args)
-		args = nil
+	if c.interpolator == nil {
+		c.interpolator = DefaultInterpolate
 	}
+	q, args = c.interpolator(q, args)
 
 	defer func() {
-		microseconds := span().Microseconds()
-		printer := Interpolator(q, args)
-		log = log.With("driver", c.name, "query", printer.String(), "cost[µs]", microseconds)
+		millis := span().Milliseconds()
+		printer := NewPrinter(q, args)
+		log = log.With("driver", c.name, "query", printer.String(), "cost_ms", millis)
 		if err != nil {
 			if c.ErrorLevel(err) > 0 {
 				log.Error(fmt.Errorf("query failed: %w", err))
@@ -161,17 +132,15 @@ func (c *connection) ExecContext(ctx context.Context, q string, args []driver.Na
 	_, log := logx.Enter(ctx)
 	span := Cost()
 
-	if c.replacer != nil {
-		q = c.replacer(q)
-	} else {
-		q = DefaultInterpolate(q, args)
-		args = nil
+	if c.interpolator == nil {
+		c.interpolator = DefaultInterpolate
 	}
+	q, args = c.interpolator(q, args)
 
 	defer func() {
-		microseconds := span().Microseconds()
-		printer := Interpolator(q, args)
-		log = log.With("driver", c.name, "query", printer, "cost[µs]", microseconds)
+		millis := span().Milliseconds()
+		printer := NewPrinter(q, args)
+		log = log.With("driver", c.name, "query", printer.String(), "cost_ms", millis)
 		if err != nil {
 			if c.ErrorLevel(err) > 0 {
 				log.Error(fmt.Errorf("exec failed: %w", err))
@@ -186,27 +155,6 @@ func (c *connection) ExecContext(ctx context.Context, q string, args []driver.Na
 
 	res, err = c.Conn.(driver.ExecerContext).ExecContext(ctx, q, args)
 	return res, err
-}
-
-func (c *connection) prepare(q string) string {
-	// if len(c.placeholder) == 0 {
-	// 	return q
-	// }
-
-	b := bytes.NewBuffer(nil)
-	placeholders := int64(0)
-	for i := range q {
-		switch v := q[i]; v {
-		case '?':
-			b.WriteString("$")
-			b.WriteString(strconv.FormatInt(placeholders+1, 10))
-			placeholders++
-		default:
-			b.WriteByte(v)
-		}
-	}
-
-	return b.String()
 }
 
 func (c *connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {

@@ -1,7 +1,6 @@
 package structs
 
 import (
-	"context"
 	"database/sql/driver"
 	"go/ast"
 	"iter"
@@ -24,7 +23,7 @@ var (
 	tDriverValuer = reflect.TypeFor[driver.Valuer]()
 )
 
-func FieldsFor(ctx context.Context, t typx.Type) []*Field {
+func FieldsFor(t typx.Type) []*Field {
 	t = typx.Deref(t)
 	must.BeTrueF(
 		t.Kind() == reflect.Struct,
@@ -41,14 +40,14 @@ func FieldsFor(ctx context.Context, t typx.Type) []*Field {
 		cache.Store(t.Unwrap(), fields)
 	}()
 
-	for f := range (&walker{}).Walk(ctx, t) {
+	for f := range (&walker{}).Walk(t) {
 		fields = append(fields, f)
 	}
 	return fields
 }
 
-func FieldsSeqFor(ctx context.Context, t typx.Type) iter.Seq[*Field] {
-	return slices.Values(FieldsFor(ctx, t))
+func FieldsSeqFor(t typx.Type) iter.Seq[*Field] {
+	return slices.Values(FieldsFor(t))
 }
 
 type walker struct {
@@ -57,7 +56,7 @@ type walker struct {
 	t     typx.Type
 }
 
-func (w *walker) Walk(ctx context.Context, t typx.Type) iter.Seq[*Field] {
+func (w *walker) Walk(t typx.Type) iter.Seq[*Field] {
 	mlocs := w.mlocs[:]
 	mtype := w.t
 
@@ -77,9 +76,8 @@ func (w *walker) Walk(ctx context.Context, t typx.Type) iter.Seq[*Field] {
 				continue
 			}
 
-			tag := def.ModelTagKeyFrom(ctx)
 			loc := append(w.flocs, i)
-			flag := reflectx.ParseTag(f.Tag()).Get(tag)
+			flag := reflectx.ParseTag(f.Tag()).Get("db")
 			name := f.Name()
 			if flag != nil {
 				if flag.Name() == "-" {
@@ -101,7 +99,7 @@ func (w *walker) Walk(ctx context.Context, t typx.Type) iter.Seq[*Field] {
 							mlocs: mlocs,
 							t:     mtype,
 						}
-						for c := range embed.Walk(ctx, ft) {
+						for c := range embed.Walk(ft) {
 							if !yield(c) {
 								return
 							}
@@ -117,7 +115,7 @@ func (w *walker) Walk(ctx context.Context, t typx.Type) iter.Seq[*Field] {
 				Type:      f.Type(),
 				Field:     f,
 				Flag:      flag,
-				ColumnDef: *def.ParseColDef(ctx, f.Type(), f.Tag()),
+				ColumnDef: *def.ParseColDef(f.Type(), f.Tag()),
 			}
 			p.Loc = make([]int, len(loc))
 			copy(p.Loc, loc)
@@ -181,11 +179,11 @@ func value(v reflect.Value, indexes []int) reflect.Value {
 	return fv
 }
 
-func TableFields(ctx context.Context, v any) []*TableField {
-	return slices.Collect(TableFieldsSeq(ctx, v))
+func TableFields(v any) []*TableField {
+	return slices.Collect(TableFieldsSeq(v))
 }
 
-func TableFieldsSeq(ctx context.Context, v any) iter.Seq[*TableField] {
+func TableFieldsSeq(v any) iter.Seq[*TableField] {
 	return func(yield func(*TableField) bool) {
 		rv := reflectx.Indirect(reflect.ValueOf(v))
 		must.BeTrueF(rv.IsValid(), "struct value must be valid")
@@ -195,7 +193,7 @@ func TableFieldsSeq(ctx context.Context, v any) iter.Seq[*TableField] {
 			tableName = m.TableName()
 		}
 
-		for f := range FieldsSeqFor(ctx, typx.NewRType(rv.Type())) {
+		for f := range FieldsSeqFor(typx.NewRType(rv.Type())) {
 			if f.Flag != nil && f.Flag.Option("deprecated") != nil {
 				continue
 			}

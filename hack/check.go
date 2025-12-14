@@ -14,6 +14,6 @@ func Check(t testing.TB) {
 		t.Skip("should depend on postgres/mysql")
 	}
 	once.Do(func() {
-		time.Sleep(time.Second * 10) // to wait dependencies ready
+		time.Sleep(time.Second * 5) // to wait dependencies ready
 	})
 }

@@ -1,18 +1,14 @@
 package structs_test
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 	"testing"
 
-	"github.com/xoctopus/pkgx/pkg/pkgx"
 	"github.com/xoctopus/typx/pkg/typx"
-	"github.com/xoctopus/x/contextx"
 	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
 
-	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/internal/structs"
 	"github.com/xoctopus/sqlx/pkg/types"
 )
@@ -44,18 +40,13 @@ type UserData struct {
 }
 
 func ExampleFieldsFor() {
-	ctx := contextx.Compose(
-		def.CtxTagKey.Carry("db"),
-		pkgx.CtxLoadTests.Carry(true),
-	)(context.Background())
-
-	fields := structs.FieldsFor(ctx, typx.NewRType(reflect.TypeFor[User]()))
+	fields := structs.FieldsFor(typx.NewRType(reflect.TypeFor[User]()))
 
 	for _, f := range fields {
 		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
 	}
 
-	seq := structs.FieldsSeqFor(ctx, typx.NewRType(reflect.TypeFor[User]()))
+	seq := structs.FieldsSeqFor(typx.NewRType(reflect.TypeFor[User]()))
 	for f := range seq {
 		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
 	}
@@ -120,14 +111,9 @@ var V = &M{
 }
 
 func TestField_Value(t *testing.T) {
-	ctx := contextx.Compose(
-		def.CtxTagKey.Carry("db"),
-		pkgx.CtxLoadTests.Carry(true),
-	)(context.Background())
-
 	v := reflect.ValueOf(V).Elem()
 
-	fields := structs.FieldsFor(ctx, typx.NewRType(reflect.TypeFor[M]()))
+	fields := structs.FieldsFor(typx.NewRType(reflect.TypeFor[M]()))
 	Expect(t, fields, HaveLen[[]*structs.Field](7))
 	Expect(t, fields[0].Name, Equal("f_f1"))
 	Expect(t, fields[0].Value(v), Equal[any](V.F1))
@@ -152,12 +138,7 @@ func TestField_Value(t *testing.T) {
 }
 
 func TestTableFields(t *testing.T) {
-	ctx := contextx.Compose(
-		def.CtxTagKey.Carry("db"),
-		pkgx.CtxLoadTests.Carry(true),
-	)(context.Background())
-
-	fields := structs.TableFields(ctx, V)
+	fields := structs.TableFields(V)
 
 	Expect(t, fields, HaveLen[[]*structs.TableField](6))
 	Expect(t, fields[0].Field.Name, Equal("f_f1"))

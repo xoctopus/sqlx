@@ -27,6 +27,8 @@ type Adaptor interface {
 	DB
 
 	DriverName() string
+	Endpoint() string
+
 	Dialect() Dialect
 	Catalog(context.Context) (builder.Catalog, error)
 }
@@ -35,7 +37,7 @@ type Dialect interface {
 	CreateSchema(string) frag.Fragment
 	SwitchSchema(string) frag.Fragment
 
-	CreateTableIsNotExists(t builder.Table) []frag.Fragment
+	CreateTableIfNotExists(t builder.Table) []frag.Fragment
 	DropTable(t builder.Table) frag.Fragment
 	TruncateTable(t builder.Table) frag.Fragment
 
@@ -48,6 +50,8 @@ type Dialect interface {
 	DropIndex(key builder.Key) frag.Fragment
 
 	DBType(builder.ColumnDef) frag.Fragment
+	IsUnknownDatabaseError(error) bool
+	IsConflictError(err error) bool
 }
 
 var adaptors = syncx.NewXmap[string, Adaptor]()

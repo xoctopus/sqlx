@@ -1,5 +1,6 @@
 package scanner
 
+/*
 import (
 	"context"
 	"iter"
@@ -65,3 +66,4 @@ func (f RecvFunc[M]) Items(ctx context.Context) iter.Seq2[*M, error] {
 		}
 	}
 }
+*/

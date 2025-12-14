@@ -9,8 +9,10 @@ INSERT INTO x (datetime,timestamp) VALUES ('1988-10-24 07:00:00.123', 5936508001
 CREATE TABLE IF NOT EXISTS users (
     f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     f_user_id BIGINT UNSIGNED NOT NULL,
-    f_name VARCHAR(64) not null,
+    f_name VARCHAR(64) NOT NULL,
     f_email VARCHAR(255) NOT NULL,
+    f_token VARBINARY(1024),
+    f_balance DECIMAL(22,4) NOT NULL,
     f_created_at BIGINT UNSIGNED NOT NULL,
     f_updated_at BIGINT UNSIGNED NOT NULL,
     f_deleted_at BIGINT UNSIGNED NOT NULL DEFAULT 0,

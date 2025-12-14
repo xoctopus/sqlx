@@ -9,8 +9,8 @@ import (
 
 	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/pkg/builder"
-	"github.com/xoctopus/sqlx/pkg/scanner"
 )
 
 type TSchemaTableIndex struct {
@@ -27,18 +27,11 @@ func (TSchemaTableIndex) TableName() string {
 	return "information_schema.statistics"
 }
 
-func (t *TSchemaTableIndex) ToKey(cols builder.Cols) builder.Key {
-	d := &def.KeyDefine{}
-
-	builder.PK(cols)
-	builder.UK(d.Name, cols)
-	return builder.K(d.Name, cols)
-}
-
 type TSchemaTableColumn struct {
 	TableSchema       string `db:"table_schema"`
 	Table             string `db:"table_name"`
 	ColumnName        string `db:"column_name"`
+	RawDataType       string `db:"data_type"`
 	DataType          string `db:"column_type"`
 	VarcharLength     uint64 `db:"character_maximum_length"` // char,varchar
 	BinaryLength      uint64 `db:"character_octet_length"`   // binary,varbinary
@@ -63,25 +56,28 @@ func (t *TSchemaTableColumn) ToCol() builder.Col {
 	if t.DefaultValue != "" {
 		d.Default = &t.DefaultValue
 	}
-	if t.IsNullable != "TRUE" {
+	if t.IsNullable == "YES" {
 		d.Null = true
 	}
-	d.DataType = strings.ToLower(t.DataType)
-	switch d.DataType {
+	d.DataType = t.DataType
+	datatype := strings.ToLower(t.RawDataType)
+	switch datatype {
 	case "char", "varchar":
 		d.Width = t.VarcharLength
 	case "binary", "varbinary":
 		d.Width = t.BinaryLength
 	case "datetime", "timestamp", "time":
-		d.Width = t.DatetimePrecision
+		d.Precision = t.DatetimePrecision
 	case "decimal", "numeric":
+		// skip float/double precision width and precision define
+		// https://dev.mysql.com/doc/refman/8.0/en/floating-point-types.html
 		d.Width = t.NumericPrecision
 		d.Precision = t.NumericPrecision
 	}
 	return builder.C(t.ColumnName, builder.WithColDef(d))
 }
 
-func ScanCatalog(ctx context.Context, db adaptor.Adaptor, database string) (builder.Catalog, error) {
+func ScanCatalog(ctx context.Context, a adaptor.Adaptor, database string) (builder.Catalog, error) {
 	catalog := builder.NewCatalog()
 
 	tC := builder.TFrom(ctx, &TSchemaTableColumn{})
@@ -96,7 +92,7 @@ func ScanCatalog(ctx context.Context, db adaptor.Adaptor, database string) (buil
 				builder.Order(tC.C("ordinal_position")),
 			),
 		)
-	rows, err := db.Query(ctx, expr)
+	rows, err := a.Query(ctx, expr)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +122,7 @@ func ScanCatalog(ctx context.Context, db adaptor.Adaptor, database string) (buil
 				builder.Order(tI.C("seq_in_index")),
 			),
 		)
-	rows, err = db.Query(ctx, expr)
+	rows, err = a.Query(ctx, expr)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +153,7 @@ func ScanCatalog(ctx context.Context, db adaptor.Adaptor, database string) (buil
 
 			i := list[0]
 			options := make([]builder.KeyOption, 0) // skip empty and default
-			if i.IndexType != "" && strings.ToUpper(i.IndexType) != "BTREE" {
+			if i.IndexType != "" {
 				options = append(options, builder.WithKeyMethod(i.IndexType))
 			}
 

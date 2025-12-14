@@ -1,5 +1,5 @@
-PACKAGES=$(shell go list ./... | grep -E -v 'pb$|testdata|mock|proto|example|testx/internal|pkg/frag/testutil|hack')
-IGNORED=_gen.go|.pb.go|_mock.go|_genx_
+PACKAGES=$(shell go list ./... | grep -E -v 'pb$|testdata|mock|proto|example|testx/internal|pkg/frag/testutil')
+IGNOREDS=_gen.go|.pb.go|_mock.go|_genx_|testdata/|example/|hack/
 MOD=$(shell cat go.mod | grep ^module -m 1 | awk '{ print $$2; }' || '')
 MOD_NAME=$(shell basename $(MOD))
 
@@ -89,26 +89,22 @@ tidy:
 test: dep tidy hack_dep_run
 	@echo "==> run unit test"
 	@if [ "${GOTEST}" = "xgo" ]; then \
-		GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; # xgo mock functions may cause data race \
+		# xgo mock functions may cause data race \
+		GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; \
 	else \
 		GOWORK=off HACK_TEST=true $(GOTEST) test -race -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES}; \
 	fi
 
 hack_dep_run:
-	@cd hack && docker compose up -d
+	@cd hack && (PODMAN_COMPOSE_WARNING_LOGS=false podman compose up -d || docker compose up -d)
 
 hack_dep_stop:
-	@cd hack && docker compose down -v
+	@cd hack && (PODMAN_COMPOSE_WARNING_LOGS=false podman compose down -v || docker compose down -v )
 
-hack_test:
-	@HACK_TEST=true GOWORK=off $(GOTEST) test -v ./pkg/types -run 'Hack$$' -gcflags="all=-N -l"
-
-hack_test_run: hack_dep_run hack_test
-
-cover: dep tidy hack_dep_run
+cover: hack_dep_run
 	@echo "==> run unit test with coverage"
-	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ${PACKAGES} -covermode=count -coverprofile=cover.out
-	@grep -vE '_gen.go|.pb.go|_mock.go|_genx_|main.go' cover.out > cover2.out && mv cover2.out cover.out
+	@GOWORK=off HACK_TEST=true $(GOTEST) test -failfast -parallel 1 -gcflags="all=-N -l" ./... -covermode=count -coverprofile=cover.out
+	@grep -vE "$(IGNOREDS)" cover.out > cover2.out && mv cover2.out cover.out
 
 ci-cover: hack_dep_run
 	@if [ "${GOTEST}" = "xgo" ]; then \

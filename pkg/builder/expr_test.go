@@ -620,6 +620,11 @@ func Example_test() {
 		)
 	Print(context.Background(), f)
 
+	f = Update(TUser).
+		Set(TUser.Age.AssignBy(Inc(1))).
+		Where(TUser.UserID.AsCond(Eq[UserID](100)))
+	Print(context.Background(), f)
+
 	// Output:
 	// SELECT * FROM users LEFT JOIN t_org ON users.f_org_id = t_org.f_org_id WHERE (users.f_user_id = ?) AND (users.f_org_id = t_org.f_org_id + 1) LIMIT 100 OFFSET 200
 	// [100]
@@ -629,6 +634,8 @@ func Example_test() {
 	// [100 org_name 101 102]
 	// DELETE FROM users WHERE f_user_id = ?
 	// [100]
+	// UPDATE users SET f_age = f_age + ? WHERE f_user_id = ?
+	// [1 100]
 }
 
 func TestAssignment(t *testing.T) {

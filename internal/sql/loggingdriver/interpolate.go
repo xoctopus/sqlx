@@ -11,16 +11,41 @@ import (
 	"github.com/xoctopus/x/misc/must"
 )
 
-func Interpolator(q string, args []driver.NamedValue) fmt.Stringer {
-	return &QueryPrinter{q: q, args: args}
+func DefaultInterpolate(q string, args []driver.NamedValue) (string, []driver.NamedValue) {
+	q, err := Interpolate(q, args, time.Local)
+	must.NoError(err)
+	return q, nil
 }
 
-type QueryPrinter struct {
+func OrderedInterpolator(q string, args []driver.NamedValue) (string, []driver.NamedValue) {
+	b := bytes.NewBuffer(nil)
+	placeholders := int64(0)
+	for i := range q {
+		switch v := q[i]; v {
+		case '?':
+			b.WriteString("$")
+			b.WriteString(strconv.FormatInt(placeholders+1, 10))
+			placeholders++
+		default:
+			b.WriteByte(v)
+		}
+	}
+
+	return b.String(), args
+}
+
+type Interpolator func(string, []driver.NamedValue) (string, []driver.NamedValue)
+
+func NewPrinter(q string, args []driver.NamedValue) fmt.Stringer {
+	return &ExprPrinter{q: q, args: args}
+}
+
+type ExprPrinter struct {
 	q    string
 	args []driver.NamedValue
 }
 
-func (p *QueryPrinter) String() string {
+func (p *ExprPrinter) String() string {
 	s, err := Interpolate(p.q, p.args, time.Local)
 	if err != nil {
 		return "invalid: " + err.Error()
@@ -32,12 +57,6 @@ const (
 	digits01 = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
 	digits10 = "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
 )
-
-func DefaultInterpolate(q string, args []driver.NamedValue) string {
-	q, err := Interpolate(q, args, time.Local)
-	must.NoError(err)
-	return q
-}
 
 func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string, error) {
 	// TODO

@@ -75,9 +75,12 @@ func TestInterpolate(t *testing.T) {
 		_, err := Interpolate("?", []driver.NamedValue{{Value: 1}}, time.UTC)
 		Expect(t, err, ErrorContains("unsupported type"))
 	})
+	t.Run("DefaultInterpolate", func(t *testing.T) {
+		DefaultInterpolate("SELECT f_id FROM t_demo WHERE f_name = ?", []driver.NamedValue{{Value: "someone"}})
+	})
 
-	interpolator := Interpolator("??", []driver.NamedValue{{}})
-	Expect(t, interpolator.String(), HavePrefix("invalid: "))
-	interpolator = Interpolator("?", []driver.NamedValue{{Value: int64(1)}})
-	Expect(t, interpolator.String(), Equal("1"))
+	printer := NewPrinter("??", []driver.NamedValue{{}})
+	Expect(t, printer.String(), HavePrefix("invalid: "))
+	printer = NewPrinter("?", []driver.NamedValue{{Value: int64(1)}})
+	Expect(t, printer.String(), Equal("1"))
 }
