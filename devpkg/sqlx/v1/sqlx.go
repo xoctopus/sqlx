@@ -33,7 +33,7 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	m := &Model{
 		ctx:    g,
 		typ:    x,
-		fields: structs.FieldsFor(g.Context(), x),
+		fields: structs.FieldsFor(x),
 		t:      s.IdentTT(g.Context(), t),
 		name:   "t_" + stringsx.LowerSnakeCase(n.Obj().Name()),
 	}
