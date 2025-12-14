@@ -15,14 +15,14 @@ import (
 var (
 	tUser = T(
 		"t_user",
-		C("f_id", WithColDefOf(context.Background(), uint64(0), `,autoinc`)),
-		C("f_name", WithColDefOf(context.Background(), "", `,width=128,default=''`)),
-		C("f_org_id", WithColDefOf(context.Background(), uint64(0), ``)),
+		C("f_id", WithColDefOf(uint64(0), `,autoinc`)),
+		C("f_name", WithColDefOf("", `,width=128,default=''`)),
+		C("f_org_id", WithColDefOf(uint64(0), ``)),
 	)
 	tOrg = T(
 		"t_org",
-		C("f_org_id", WithColDefOf(context.Background(), uint64(0), `,autoinc`)),
-		C("f_name", WithColDefOf(context.Background(), "", `,width=128,default=''`)),
+		C("f_org_id", WithColDefOf(uint64(0), `,autoinc`)),
+		C("f_name", WithColDefOf("", `,width=128,default=''`)),
 	)
 )
 

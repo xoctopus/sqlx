@@ -43,17 +43,20 @@ type (
 	WithTable interface {
 		T() Table
 	}
-
 	WithTableName interface {
 		WithTableName(name string) Table
 	}
-
 	WithSchema interface {
 		WithSchema(schema string) Table
 	}
-
+	HasSchema interface {
+		Schema() string
+	}
 	WithDatabase interface {
 		WithDatabase(database string) Table
+	}
+	HasDatabase interface {
+		Database() string
 	}
 )
 
@@ -92,7 +95,7 @@ func TFrom(ctx context.Context, m any) Table {
 		if x, ok := m.(internal.Model); ok {
 			return tab.(WithTableName).WithTableName(x.TableName())
 		}
-		return tab.(Table)
+		return tab
 	}
 
 	name := t.Name()
@@ -109,8 +112,10 @@ func TFrom(ctx context.Context, m any) Table {
 
 type table struct {
 	database string
-	name     string
-	desc     []string
+	schema   string
+
+	name string
+	desc []string
 
 	ks Keys
 	cs Cols
@@ -143,6 +148,26 @@ func (t *table) WithTableName(name string) Table {
 	tt.ks = t.ks.Of(tt)
 
 	return tt
+}
+
+func (t *table) WithSchema(schema string) Table {
+	t_ := *t
+	t_.schema = schema
+	return &t_
+}
+
+func (t *table) Schema() string {
+	return t.schema
+}
+
+func (t *table) WithDatabase(database string) Table {
+	t_ := *t
+	t_.database = database
+	return &t_
+}
+
+func (t *table) Database() string {
+	return t.database
 }
 
 func (t *table) String() string {

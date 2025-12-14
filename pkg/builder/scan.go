@@ -39,7 +39,7 @@ func scan(ctx context.Context, m any) Table {
 		ks: &keys{},
 	}
 
-	for _, f := range structs.FieldsFor(ctx, t) {
+	for _, f := range structs.FieldsFor(t) {
 		c := &column[any]{
 			fname: f.FieldName,
 			name:  f.Name,

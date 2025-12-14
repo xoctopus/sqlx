@@ -18,12 +18,12 @@ func TestTable(t *testing.T) {
 		colID = builder.C(
 			"f_id",
 			builder.WithColFieldName("ID"),
-			builder.WithColDefOf(context.Background(), uint64(0), ",autoinc"),
+			builder.WithColDefOf(uint64(0), ",autoinc"),
 		)
 		colName = builder.C(
 			"f_name",
 			builder.WithColFieldName("Name"),
-			builder.WithColDefOf(context.Background(), "", ",width=128,default=''"),
+			builder.WithColDefOf("", ",width=128,default=''"),
 		)
 	)
 	tUser := builder.T(
@@ -37,12 +37,12 @@ func TestTable(t *testing.T) {
 		builder.C(
 			"f_id",
 			builder.WithColFieldName("ID"),
-			builder.WithColDefOf(context.Background(), uint64(0), ",autoinc"),
+			builder.WithColDefOf(uint64(0), ",autoinc"),
 		),
 		builder.C(
 			"f_user_id",
 			builder.WithColFieldName("UserID"),
-			builder.WithColDefOf(context.Background(), uint64(0), ""),
+			builder.WithColDefOf(uint64(0), ""),
 		),
 	)
 
@@ -105,6 +105,12 @@ func TestTable(t *testing.T) {
 		Expect(t, slices.Collect(tUser.Keys()), HaveLen[[]builder.Key](2))
 
 		Expect(t, tUser.Pick("f_id").C("f_id"), Equal(tUser.C("f_id")))
+	})
+
+	t.Run("Namespaces", func(t *testing.T) {
+		tab := builder.T("t").(builder.WithSchema).WithSchema("schema").(builder.WithDatabase).WithDatabase("database")
+		Expect(t, tab.(builder.HasSchema).Schema(), Equal("schema"))
+		Expect(t, tab.(builder.HasDatabase).Database(), Equal("database"))
 	})
 }
 

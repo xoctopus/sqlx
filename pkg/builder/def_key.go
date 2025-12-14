@@ -99,6 +99,13 @@ func WithKeyColumnOptions(opts ...KeyColumnOption) KeyOption {
 	}
 }
 
+func GetKeyTable(k Key) Table {
+	if d, ok := k.(WithTable); ok {
+		return d.T()
+	}
+	return nil
+}
+
 func KeyColumnsDefOf(k Key) frag.Fragment {
 	kd := k.(KeyDef)
 
@@ -167,7 +174,7 @@ func (k *key) IsPrimary() bool {
 func (k *key) String() string {
 	s := ""
 	if k.table != nil {
-		s += k.table.String() + "."
+		s += k.table.String() + "_"
 	}
 	return s + k.name
 }

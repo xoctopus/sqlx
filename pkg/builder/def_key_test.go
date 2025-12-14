@@ -52,8 +52,15 @@ func TestKeys(t *testing.T) {
 			Equal([]builder.KeyColumnOption{{Name: "Name", Options: []string{"NULL", "FIRST"}}}),
 		)
 		Expect(t, tab.K("ui_name").IsNil(), BeFalse())
-		Expect(t, tab.K("ui_name").String(), Equal("t_demo.ui_name"))
+		Expect(t, tab.K("ui_name").String(), Equal("t_demo_ui_name"))
 		Expect(t, frag.Func(tab.K("ui_name").Frag), BeFragment(tab.K("ui_name").Name()))
 	})
 
+	t.Run("GetKeyTable", func(t *testing.T) {
+		k := builder.K("k", builder.ColsOf(builder.C("a").Of(tab))).Of(tab)
+		Expect(t, builder.GetKeyTable(k), Equal(tab))
+
+		k = builder.Key(nil)
+		Expect(t, builder.GetKeyTable(k), Equal[builder.Table](nil))
+	})
 }
