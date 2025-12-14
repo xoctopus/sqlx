@@ -38,7 +38,7 @@ func (cu *CreationModificationDatetime) MarkModifiedAt() {
 type CreationModificationDeletionDatetime struct {
 	CreationModificationDatetime
 	// DeletedAt 删除时间
-	DeletedAt Datetime `db:"f_deleted_at,precision=3,default='1970-01-01 00:00:00'" json:"deletedAt"`
+	DeletedAt Datetime `db:"f_deleted_at,precision=3,default='0001-01-01 00:00:00'" json:"deletedAt"`
 }
 
 func (cud *CreationModificationDeletionDatetime) MarkDeletedAt() {
