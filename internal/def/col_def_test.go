@@ -1,7 +1,6 @@
 package def_test
 
 import (
-	"context"
 	"reflect"
 	"testing"
 
@@ -69,18 +68,10 @@ func TestParseColDef(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			c.def.Tag = c.tag
-			got := def.ParseColDef(def.WithModelTagKey(context.Background(), "db"), typ, c.tag)
+			got := def.ParseColDef(typ, c.tag)
 			Expect(t, typ.String(), Equal(got.Type.String()))
 			got.Type = nil
 			Expect(t, got, Equal(c.def))
 		})
 	}
-	t.Run("AdaptedTags", func(t *testing.T) {
-		ExpectPanic[string](t, func() {
-			def.ParseColDef(def.WithModelTagKey(context.Background(), "gorm"), typ, `gorm:""`)
-		})
-		ExpectPanic[string](t, func() {
-			def.ParseColDef(def.WithModelTagKey(context.Background(), "any"), typ, `any:""`)
-		})
-	})
 }

@@ -1,7 +1,6 @@
 package def
 
 import (
-	"context"
 	"reflect"
 	"strconv"
 	"strings"
@@ -11,25 +10,17 @@ import (
 	"github.com/xoctopus/x/reflectx"
 )
 
-func ParseColDef(ctx context.Context, t typx.Type, tag reflect.StructTag) *ColumnDef {
+func ParseColDef(t typx.Type, tag reflect.StructTag) *ColumnDef {
 	d := &ColumnDef{
 		Type: typx.Deref(t),
 		Tag:  tag,
 	}
 
-	flag := reflectx.ParseTag(tag).Get(ModelTagKeyFrom(ctx))
+	flag := reflectx.ParseTag(tag).Get("db")
 	if flag == nil {
 		return d
 	}
-
-	switch flag.Key() {
-	case "db":
-		d.ParseDBTag(flag)
-	case "gorm":
-		d.ParseGromTag(flag)
-	default:
-		panic("not supported model tag:" + flag.Key())
-	}
+	d.ParseDBTag(flag)
 	return d
 }
 
@@ -79,83 +70,6 @@ func (d *ColumnDef) ParseDBTag(flag *reflectx.Flag) {
 			d.Deprecated = &DeprecatedActions{RenameTo: o.Value()}
 		}
 	}
-}
-
-func (d *ColumnDef) ParseGromTag(flag *reflectx.Flag) {
-	panic("not supported gorm tag, trans gorm tag => my tag")
-	/*
-		TODO adapt gorm tags
-		func parseFieldIndexes(field *Field) (indexes []Index, err error) {
-			for _, value := range strings.Split(field.Tag.Get("gorm"), ";") {
-				if value != "" {
-					v := strings.Split(value, ":")
-					k := strings.TrimSpace(strings.ToUpper(v[0]))
-					if k == "INDEX" || k == "UNIQUEINDEX" {
-						var (
-							name       string
-							tag        = strings.Join(v[1:], ":")
-							idx        = strings.IndexByte(tag, ',')
-							tagSetting = strings.Join(strings.Split(tag, ",")[1:], ",")
-							settings   = ParseTagSetting(tagSetting, ",")
-							length, _  = strconv.Atoi(settings["LENGTH"])
-						)
-
-						if idx == -1 {
-							idx = len(tag)
-						}
-
-						name = tag[0:idx]
-						if name == "" {
-							subName := field.Name
-							const key = "COMPOSITE"
-							if composite, found := settings[key]; found {
-								if len(composite) == 0 || composite == key {
-									err = fmt.Errorf(
-										"the composite tag of %s.%s cannot be empty",
-										field.Schema.Name,
-										field.Name)
-									return
-								}
-								subName = composite
-							}
-							name = field.Schema.namer.IndexName(
-								field.Schema.Table, subName)
-						}
-
-						if (k == "UNIQUEINDEX") || settings["UNIQUE"] != "" {
-							settings["CLASS"] = "UNIQUE"
-						}
-
-						priority, err := strconv.Atoi(settings["PRIORITY"])
-						if err != nil {
-							priority = 10
-						}
-
-						indexes = append(indexes, Index{
-							Name:    name,
-							Class:   settings["CLASS"],
-							Type:    settings["TYPE"],
-							Where:   settings["WHERE"],
-							Comment: settings["COMMENT"],
-							Option:  settings["OPTION"],
-							Fields: []IndexOption{{
-								Field:      field,
-								Expression: settings["EXPRESSION"],
-								Sort:       settings["SORT"],
-								Collate:    settings["COLLATE"],
-								Length:     length,
-								Priority:   priority,
-							}},
-						})
-					}
-				}
-			}
-
-			err = nil
-			return
-		}
-	*/
-
 }
 
 type DeprecatedActions struct {

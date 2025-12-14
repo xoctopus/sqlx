@@ -1,5 +1,6 @@
 package def
 
+/*
 import (
 	"context"
 
@@ -19,3 +20,4 @@ func ModelTagKeyFrom(ctx context.Context) string {
 	}
 	return "db"
 }
+*/

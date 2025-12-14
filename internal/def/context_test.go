@@ -1,5 +1,6 @@
 package def_test
 
+/*
 import (
 	"context"
 	"testing"
@@ -16,3 +17,4 @@ func TestContext(t *testing.T) {
 	ctx = def.WithModelTagKey(ctx, "gorm")
 	Expect(t, def.ModelTagKeyFrom(ctx), Equal("gorm"))
 }
+*/
