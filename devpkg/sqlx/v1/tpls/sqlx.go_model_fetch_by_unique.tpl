@@ -5,34 +5,25 @@
 @def UniqueFields
 @def FetchComment
 @def frag.Fragment
-@def types.SoftDeletion
 @def session.For
-@def builder.CC
-@def driver.Value
 @def builder.Select
 @def builder.Where
 @def builder.Limit
 @def builder.Comment
+@def SoftDeletionCondition
 --FetchByUnique
 // FetchBy#UniqueSuffix# fetch #T# by #UniqueFields#
 func (m *#T#) FetchBy#UniqueSuffix#(ctx #context.Context#) error {
 	conds := []#frag.Fragment#{
 		#UniqueConds#
 	}
-
-	if x, ok := any(m).(#types.SoftDeletion#); ok {
-		col, val := x.SoftDeletion()
-		conds = append(
-			conds,
-			#builder.CC#[#driver.Value#](T#T#.C(col)).AsCond(builder.Eq(val)),
-		)
-	}
+	#SoftDeletionCondition#
 
 	rows, err := #session.For#(ctx, m).Adaptor().Query(
 		ctx,
 		#builder.Select#(nil).From(
 			T#T#,
-			#builder.Where#(builder.And(conds...)),
+			#builder.Where#(#builder.And#(conds...)),
 			#builder.Limit#(1),
 			#builder.Comment#(#FetchComment#),
 		),

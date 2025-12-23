@@ -36,7 +36,7 @@ func TestDiff_mysql(t *testing.T) {
 	f_asset DECIMAL(32,4) NOT NULL,
 	f_created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	f_updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-	f_deleted_at DATETIME(3) NOT NULL DEFAULT '0001-01-01 00:00:00',
+	f_deleted_at DATETIME(3) NOT NULL DEFAULT '0001-01-01 00:00:00.000',
 	PRIMARY KEY (f_id)
 );
 CREATE UNIQUE INDEX ui_name ON t_user (f_name,f_deleted_at);

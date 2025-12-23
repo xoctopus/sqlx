@@ -6,7 +6,7 @@ import (
 )
 
 type CreationDatetime struct {
-	// CreatedAt 创建时间
+	// CreatedAt 创建日期时间(毫秒)
 	CreatedAt Datetime `db:"f_created_at,precision=3,default=CURRENT_TIMESTAMP(3)" json:"createdAt"`
 }
 
@@ -18,7 +18,7 @@ func (c *CreationDatetime) MarkCreatedAt() {
 
 type CreationModificationDatetime struct {
 	CreationDatetime
-	// UpdatedAt 更新时间
+	// UpdatedAt 更新日期时间(毫秒)
 	UpdatedAt Datetime `db:"f_updated_at,precision=3,default=CURRENT_TIMESTAMP(3),onupdate=CURRENT_TIMESTAMP(3)" json:"updatedAt"`
 }
 
@@ -37,12 +37,12 @@ func (cu *CreationModificationDatetime) MarkModifiedAt() {
 
 type CreationModificationDeletionDatetime struct {
 	CreationModificationDatetime
-	// DeletedAt 删除时间
-	DeletedAt Datetime `db:"f_deleted_at,precision=3,default='0001-01-01 00:00:00'" json:"deletedAt"`
+	// DeletedAt 删除日期时间(毫秒)
+	DeletedAt Datetime `db:"f_deleted_at,precision=3,default='0001-01-01 00:00:00.000'" json:"deletedAt"`
 }
 
-func (cud CreationModificationDeletionDatetime) SoftDeletion() (string, driver.Value) {
-	return "DeletedAt", DatetimeZero
+func (cud CreationModificationDeletionDatetime) SoftDeletion() (string, []string, driver.Value) {
+	return "DeletedAt", []string{"UpdatedAt"}, DatetimeZero
 }
 
 func (cud *CreationModificationDeletionDatetime) MarkDeletedAt() {

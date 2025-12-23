@@ -5,14 +5,10 @@
 @def UniqueFields
 @def UpdateComment
 @def frag.Fragment
-@def types.SoftDeletion
 @def session.For
-@def builder.CC
-@def driver.Value
-@def builder.Select
-@def builder.Where
-@def builder.Limit
+@def builder.Update
 @def builder.Comment
+@def builder.Col
 @def codex.New
 @def errors.NOTFOUND
 --UpdateByUnique
@@ -29,19 +25,20 @@ func (m *#T#) UpdateBy#UniqueSuffix#(ctx #context.Context#, expects...#builder.C
 		#builder.Update#(T#T#).
 			Set(T#T#.AssignmentFor(m, expects...)).
 			Where(
-				builder.And(conds...),
-				builder.Comment(#UpdateComment#),
+				#builder.And#(conds...),
+				#builder.Comment#(#UpdateComment#),
 			),
 	)
 	if err != nil {
 		return err
 	}
 
-	if effected, err := res.RowsAffected(); err != nil {
+	effected, err := res.RowsAffected()
+	if err != nil {
 		return err
-		if effected == 0 {
-			return #codex.New#(#errors.NOTFOUND#)
-		}
+	}
+	if effected == 0 {
+		return #codex.New#(#errors.NOTFOUND#)
 	}
 	return nil
 }

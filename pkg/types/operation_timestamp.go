@@ -5,25 +5,8 @@ import (
 	"time"
 )
 
-type CreationMarker interface {
-	MarkCreatedAt()
-}
-
-type ModificationMarker interface {
-	MarkModifiedAt()
-}
-
-type DeletionMarker interface {
-	MarkDeletedAt()
-}
-
-type SoftDeletion interface {
-	// SoftDeletion returns soft deletion field name and default value
-	SoftDeletion() (string, driver.Value)
-}
-
 type CreationTime struct {
-	// 创建时间
+	// CreatedAt 创建时间 毫秒时间戳
 	CreatedAt Timestamp `db:"f_created_at,default='0'" json:"createdAt"`
 }
 
@@ -35,7 +18,7 @@ func (c *CreationTime) MarkCreatedAt() {
 
 type CreationModificationTime struct {
 	CreationTime
-	// 更新时间
+	// UpdatedAt 更新时间 毫秒时间戳
 	UpdatedAt Timestamp `db:"f_updated_at,default='0'" json:"updatedAt"`
 }
 
@@ -55,12 +38,12 @@ func (cu *CreationModificationTime) MarkCreatedAt() {
 
 type CreationModificationDeletionTime struct {
 	CreationModificationTime
-	// 删除时间
+	// DeletedAt 删除时间 毫秒时间戳
 	DeletedAt Timestamp `db:"f_deleted_at,default='0'" json:"deletedAt,omitempty"`
 }
 
-func (cmd CreationModificationDeletionTime) SoftDeletion() (string, driver.Value) {
-	return "DeletedAt", int64(0)
+func (cmd CreationModificationDeletionTime) SoftDeletion() (string, []string, driver.Value) {
+	return "DeletedAt", []string{"UpdatedAt"}, int64(0)
 }
 
 func (cmd *CreationModificationDeletionTime) MarkDeletedAt() {

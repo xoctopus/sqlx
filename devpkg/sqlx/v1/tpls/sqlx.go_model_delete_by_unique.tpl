@@ -5,13 +5,11 @@
 @def UniqueFields
 @def DeleteComment
 @def frag.Fragment
-@def types.SoftDeletion
 @def session.For
-@def builder.CC
-@def driver.Value
 @def builder.Delete
 @def builder.Where
 @def builder.Comment
+@def builder.And
 --DeleteByUnique
 // DeleteBy#UniqueSuffix# delete #T# recode by #UniqueFields#
 func (m *#T#) DeleteBy#UniqueSuffix#(ctx #context.Context#) error {

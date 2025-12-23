@@ -93,6 +93,24 @@ func GetTimezone() *time.Location {
 	return gConfig.timezone.Value()
 }
 
+type CreationMarker interface {
+	MarkCreatedAt()
+}
+
+type ModificationMarker interface {
+	MarkModifiedAt()
+}
+
+type DeletionMarker interface {
+	MarkDeletedAt()
+}
+
+type SoftDeletion interface {
+	// SoftDeletion returns soft deletion field name, modifications fields if exists
+	// and default value of deletion field
+	SoftDeletion() (deletion string, modifications []string, v driver.Value)
+}
+
 func HasSoftDeletion[M internal.Model]() bool {
 	_, ok := any(new(M)).(SoftDeletion)
 	return ok

@@ -20,15 +20,6 @@ import (
 	"github.com/xoctopus/sqlx/internal/structs"
 )
 
-var (
-	path = "github.com/xoctopus/sqlx/pkg/types"
-	pkg  = pkgx.NewPackages(context.Background(), path).Package(path)
-
-	tCreationMarker     = pkg.TypeNames().ElementByName("CreationMarker").Type()
-	tModificationMarker = pkg.TypeNames().ElementByName("ModificationMarker").Type()
-	tSoftDeletion       = pkg.TypeNames().ElementByName("SoftDeletion").Type()
-)
-
 func NewModel(g genx.Context, t types.Type) *Model {
 	x := typx.NewTType(t)
 	if x.Kind() != reflect.Struct {
@@ -47,6 +38,22 @@ func NewModel(g genx.Context, t types.Type) *Model {
 		attrs: map[Attr]string{
 			AttrTableName: "t_" + stringsx.LowerSnakeCase(x.Name()),
 		},
+	}
+
+	if p := g.PackageByPath("github.com/xoctopus/sqlx/pkg/types"); p != nil {
+		typenames := p.TypeNames()
+		if tn := typenames.ElementByName("CreationMarker"); tn != nil {
+			m.tCreationMarker = tn.Type()
+		}
+		if tn := typenames.ElementByName("ModificationMarker"); tn != nil {
+			m.tModificationMarker = tn.Type()
+		}
+		if tn := typenames.ElementByName("DeletionMarker"); tn != nil {
+			m.tDeletionMarker = tn.Type()
+		}
+		if tn := typenames.ElementByName("SoftDeletion"); tn != nil {
+			m.tSoftDeletion = tn.Type()
+		}
 	}
 
 	fm := make(map[string]*structs.Field)
@@ -106,6 +113,15 @@ type Model struct {
 	primary *def.KeyDefine
 	indexes []*def.KeyDefine
 	uniques []*def.KeyDefine
+
+	tSoftDeletion       types.Type
+	tCreationMarker     types.Type
+	tModificationMarker types.Type
+	tDeletionMarker     types.Type
+}
+
+func (m *Model) String() string {
+	return m.typ.String()
 }
 
 func (m *Model) PrimaryColList() s.Snippet {
@@ -134,7 +150,7 @@ func (m *Model) IndexList(unique bool) s.Snippet {
 }
 
 func (m *Model) ModeledKeyDefList(ctx context.Context) s.Snippet {
-	keyTyp := s.Expose(ctx, "github.com/xoctopus/sqlx/pkg/builder/modeled", "Key", m.ident)
+	keyTyp := s.Expose(ctx, _modeled, "Key", m.ident)
 
 	ss := make([]s.Snippet, 0, len(m.indexes)+len(m.uniques)+1)
 	if m.primary != nil {
@@ -193,37 +209,19 @@ func (m *Model) ModeledColInitList(ctx context.Context) s.Snippet {
 func (m *Model) Ident() s.Snippet { return m.ident }
 
 func (m *Model) ModeledM(ctx context.Context) s.Snippet {
-	return s.Expose(
-		ctx,
-		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"M", m.ident,
-	)
+	return s.Expose(ctx, _modeled, "M", m.ident)
 }
 
 func (m *Model) ModeledTable(ctx context.Context) s.Snippet {
-	return s.Expose(
-		ctx,
-		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"Table", m.ident,
-	)
+	return s.Expose(ctx, _modeled, "Table", m.ident)
 }
 
 func (m *Model) ModeledTCol(ctx context.Context, t typx.Type) s.Snippet {
-	return s.Expose(
-		ctx,
-		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"TCol",
-		m.ident, s.Ident(ctx, t),
-	)
+	return s.Expose(ctx, _modeled, "TCol", m.ident, s.Ident(ctx, t))
 }
 
 func (m *Model) ModeledCT(ctx context.Context, t typx.Type) s.Snippet {
-	return s.Expose(
-		ctx,
-		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"CT",
-		m.ident, s.Ident(ctx, t),
-	)
+	return s.Expose(ctx, _modeled, "CT", m.ident, s.Ident(ctx, t))
 }
 
 func (m *Model) TableName() s.Snippet {
@@ -245,17 +243,32 @@ func (m *Model) Register() s.Snippet {
 }
 
 func (m *Model) CreationMarker() s.Snippet {
-	if m.typ.Implements(tCreationMarker) || m.ptr.Implements(tCreationMarker) {
+	if m.tCreationMarker != nil &&
+		(m.typ.Implements(m.tCreationMarker) || m.ptr.Implements(m.tCreationMarker)) {
 		return s.Block("m.MarkCreatedAt()")
 	}
 	return nil
 }
 
 func (m *Model) ModificationMarker() s.Snippet {
-	if m.typ.Implements(tModificationMarker) || m.ptr.Implements(tModificationMarker) {
+	if m.tModificationMarker != nil &&
+		(m.typ.Implements(m.tModificationMarker) || m.ptr.Implements(m.tModificationMarker)) {
 		return s.Block("m.MarkModifiedAt()")
 	}
 	return nil
+}
+
+func (m *Model) DeletionMarker() s.Snippet {
+	if m.tDeletionMarker != nil &&
+		(m.typ.Implements(m.tDeletionMarker) || m.ptr.Implements(m.tModificationMarker)) {
+		return s.Block("m.MarkDeletedAt()")
+	}
+	return nil
+}
+
+func (m *Model) HasSoftDeletion() bool {
+	return m.tSoftDeletion != nil &&
+		(m.typ.Implements(m.tSoftDeletion) || m.ptr.Implements(m.tSoftDeletion))
 }
 
 func (m *Model) CommentOf(ref string) s.Snippet {
@@ -299,4 +312,35 @@ func (m *Model) UniqueConditions(ctx context.Context, names []string) s.Snippet 
 		s.Arg(ctx, "T", m.Ident()),
 		s.Arg(ctx, "builder.Eq", s.ExposeUnsafe(ctx, "github.com/xoctopus/sqlx/pkg/builder", "Eq")),
 	)
+}
+
+func (m *Model) SoftDeletionCondition(ctx context.Context) s.Snippet {
+	if !m.HasSoftDeletion() {
+		return nil
+	}
+	args := []*s.TArg{
+		s.Arg(ctx, "T", m.Ident()),
+		s.Arg(ctx, "frag.Fragment", s.ExposeUnsafe(ctx, _frag, "Fragment")),
+		s.Arg(ctx, "builder.Eq", s.ExposeUnsafe(ctx, _builder, "Eq")),
+		s.Arg(ctx, "builder.CC", s.ExposeUnsafe(ctx, _builder, "CC")),
+		s.Arg(ctx, "driver.Value", s.ExposeUnsafe(ctx, "database/sql/driver", "Value")),
+	}
+
+	code := `
+@def frag.Fragment
+@def builder.Eq
+@def builder.CC
+@def driver.Value
+--SoftDeletionCondition
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		#builder.CC#[#driver.Value#](T#T#.C(deletion)).AsCond(#builder.Eq#(v)),
+	)`
+	args = append(
+		args,
+		s.Arg(ctx, "T", m.Ident()),
+	)
+
+	return s.Template(bytes.NewBufferString(code), args...)
 }

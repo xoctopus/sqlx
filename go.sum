@@ -17,8 +17,8 @@ github.com/shopspring/decimal v1.4.0 h1:bxl37RwXBklmTi0C79JfXCEBD1cqqHt0bbgBAGFp
 github.com/shopspring/decimal v1.4.0/go.mod h1:gawqmDU56v4yIKSwfBSFip1HdCCXN8/+DMd9qYNcwME=
 github.com/xoctopus/datatypex v0.2.0 h1:KqaOHp6kgVpKyNfNsR6sXMrFhXifjcQSzJGK0jj4kXc=
 github.com/xoctopus/datatypex v0.2.0/go.mod h1:Bx09wH1Z2XEUenS82VfyHY6p1IH85V0n1gN6Y3K55x4=
-github.com/xoctopus/genx v0.1.6 h1:KYCS8oDsFsGpr9ErZ7/sspAfSVSB8y1R5X76BrFDO7k=
-github.com/xoctopus/genx v0.1.6/go.mod h1:0ZucEUNCcmOEY+TLWj1GCOpERUxQop+4852wHpKT4RI=
+github.com/xoctopus/genx v0.1.7 h1:/ajynqaM9gUmViIDz+lmhLwAU22MNNsPeRlhJQtxOWw=
+github.com/xoctopus/genx v0.1.7/go.mod h1:0ZucEUNCcmOEY+TLWj1GCOpERUxQop+4852wHpKT4RI=
 github.com/xoctopus/logx v0.1.0 h1:crm2Q7Ynej6X+ZZ6iqxDxBkN76bseYnWN3rqGPGYuJQ=
 github.com/xoctopus/logx v0.1.0/go.mod h1:EWenMh0WU80DPrRo6KcgKlwNSwLG6TR9OvXd6z9tZyM=
 github.com/xoctopus/pkgx v0.1.4 h1:kgj4X6Vqbf9f9+ls9SWjO8uHyuaaLirEexYXsvTinkk=
