@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -72,10 +73,24 @@ func (d dialect) CreateTableIfNotExists(t builder.Table) []frag.Fragment {
 			},
 		),
 	}
+
+	var keys []builder.Key
 	for k := range t.Keys() {
 		if !k.IsPrimary() {
-			exprs = append(exprs, d.AddIndex(k))
+			keys = append(keys, k)
 		}
+	}
+	slices.SortFunc(keys, func(a, b builder.Key) int {
+		if a.IsUnique() && !b.IsUnique() {
+			return -1
+		}
+		if !a.IsUnique() && b.IsUnique() {
+			return 1
+		}
+		return cmp.Compare(a.Name(), b.Name())
+	})
+	for _, k := range keys {
+		exprs = append(exprs, d.AddIndex(k))
 	}
 
 	return exprs
@@ -121,8 +136,31 @@ func (d dialect) RenameColumn(from builder.Col, to builder.Col) frag.Fragment {
 	)
 }
 
-func (d dialect) ModifyColumn(curr, prev builder.Col) frag.Fragment {
-	panic("todo")
+func (d dialect) ModifyColumn(next, curr builder.Col) frag.Fragment {
+	nextDef := builder.GetColDef(next)
+	currDef := builder.GetColDef(curr)
+
+	if nextDef.AutoInc {
+		// maybe multi steps
+		return nil
+	}
+
+	typNext, _ := frag.Collect(context.Background(), d.DBType(nextDef))
+	typCurr, _ := frag.Collect(context.Background(), d.DBType(currDef))
+
+	if typNext == typCurr {
+		return nil
+	}
+
+	return frag.Query(
+		"ALTER TABLE @table MODIFY COLUMN @col @next; /* from @prev */",
+		frag.NamedArgs{
+			"table": builder.GetColTable(next),
+			"col":   next,
+			"next":  frag.Lit(typNext),
+			"prev":  frag.Lit(typCurr),
+		},
+	)
 }
 
 func (d dialect) AddIndex(k builder.Key) frag.Fragment {

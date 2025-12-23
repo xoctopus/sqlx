@@ -626,15 +626,15 @@ func Example_test() {
 	Print(context.Background(), f)
 
 	// Output:
-	// SELECT * FROM users LEFT JOIN t_org ON users.f_org_id = t_org.f_org_id WHERE (users.f_user_id = ?) AND (users.f_org_id = t_org.f_org_id + 1) LIMIT 100 OFFSET 200
+	// SELECT * FROM t_user LEFT JOIN t_org ON t_user.f_org_id = t_org.f_org_id WHERE (t_user.f_user_id = ?) AND (t_user.f_org_id = t_org.f_org_id + 1) LIMIT 100 OFFSET 200
 	// [100]
-	// UPDATE users SET f_nick_name = ? WHERE f_user_id = ?
+	// UPDATE t_user SET f_nick_name = ? WHERE f_user_id = ?
 	// [new_name 100]
 	// INSERT INTO t_org (f_org_id,f_name,f_belongs,manager) VALUES (?,?,?,?)
 	// [100 org_name 101 102]
-	// DELETE FROM users WHERE f_user_id = ?
+	// DELETE FROM t_user WHERE f_user_id = ?
 	// [100]
-	// UPDATE users SET f_age = f_age + ? WHERE f_user_id = ?
+	// UPDATE t_user SET f_age = f_age + ? WHERE f_user_id = ?
 	// [1 100]
 }
 

@@ -1,7 +1,6 @@
 package builder_test
 
 import (
-	"context"
 	"slices"
 	"testing"
 
@@ -140,12 +139,10 @@ func (WithAttrs) ColumnRel() map[string][]string {
 }
 
 func TestCatalog(t *testing.T) {
-	ctx := context.Background()
 	catalog := builder.CatalogFrom(
-		ctx,
 		&testdata.User{},
 		&testdata.Org{},
-		builder.TFrom(ctx, &Role{}),
+		builder.TFrom(&Role{}),
 	)
 
 	Expect(t, builder.NewCatalog().Len(), Equal(0))
@@ -154,20 +151,20 @@ func TestCatalog(t *testing.T) {
 		Expect(
 			t,
 			slices.Collect(builder.TableNames(catalog)),
-			EquivalentSlice([]string{"Role", "users", "t_org"}),
+			EquivalentSlice([]string{"Role", "t_user", "t_org"}),
 		)
-		Expect(t, catalog.T("users").TableName(), Equal("users"))
+		Expect(t, catalog.T("t_user").TableName(), Equal("t_user"))
 		Expect(t, catalog.T("exclude"), BeNil[builder.Table]())
 	})
 
 	t.Run("Replace", func(t *testing.T) {
-		catalog.Add(builder.TFrom(ctx, &Role{}))
+		catalog.Add(builder.TFrom(&Role{}))
 		Expect(t, slices.Collect(catalog.Tables()), HaveLen[[]builder.Table](catalog.Len()))
 	})
 
 	t.Run("WithAttrs", func(t *testing.T) {
 		m := &WithAttrs{}
-		tab := builder.TFrom(ctx, m)
+		tab := builder.TFrom(m)
 		d := tab.C("ID").(builder.ColDef).Def()
 		Expect(t, d.Relation, Equal(m.ColumnRel()["ID"]))
 		Expect(t, d.Comment, Equal(m.ColumnComment()["ID"]))

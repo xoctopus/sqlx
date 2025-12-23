@@ -4,11 +4,12 @@ import "github.com/xoctopus/sqlx/pkg/types"
 
 // User 用户
 // +genx:model
-// @attr TableName=users
+// @attr TableName=t_user
 // @def pk ID
 // @def u_idx ui_user_id       UserID;DeletedAt
 // @def u_idx ui_name          Name;DeletedAt
 // @def idx   i_nickname,BTREE Nickname;DeletedAt
+// @def idx   i_age            Age
 type User struct {
 	types.AutoIncID
 
@@ -26,9 +27,13 @@ type RelUser struct {
 
 type UserData struct {
 	// Name 用户姓名
-	Name string `db:"f_name,width=128"`
+	Name string `db:"f_name,width=127"`
+	// RealName 真实姓名
+	RealName string `db:"f_real_name"`
+	// Username 用户姓名
+	Username string `db:"f_username,width=255"`
 	// Nickname 用户昵称
-	Nickname string `db:"f_nick_name,width=128"`
+	Nickname string `db:"f_nick_name,width=127"`
 	// Age 年龄
 	Age int `db:"f_age"`
 	// Gender 性别

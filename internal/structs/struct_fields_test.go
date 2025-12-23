@@ -43,12 +43,12 @@ func ExampleFieldsFor() {
 	fields := structs.FieldsFor(typx.NewRType(reflect.TypeFor[User]()))
 
 	for _, f := range fields {
-		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
+		fmt.Printf("%-10s %-6s %v\n", f.ColumnName, f.Type.Name(), f.Loc)
 	}
 
 	seq := structs.FieldsSeqFor(typx.NewRType(reflect.TypeFor[User]()))
 	for f := range seq {
-		fmt.Printf("%-10s %-6s %v\n", f.Name, f.Type.Name(), f.Loc)
+		fmt.Printf("%-10s %-6s %v\n", f.ColumnName, f.Type.Name(), f.Loc)
 	}
 
 	// Output:
@@ -115,25 +115,25 @@ func TestField_Value(t *testing.T) {
 
 	fields := structs.FieldsFor(typx.NewRType(reflect.TypeFor[M]()))
 	Expect(t, fields, HaveLen[[]*structs.Field](7))
-	Expect(t, fields[0].Name, Equal("f_f1"))
+	Expect(t, fields[0].ColumnName, Equal("f_f1"))
 	Expect(t, fields[0].Value(v), Equal[any](V.F1))
 
-	Expect(t, fields[1].Name, Equal("f_f2"))
+	Expect(t, fields[1].ColumnName, Equal("f_f2"))
 	Expect(t, fields[1].Value(v), Equal[any](V.F2))
 
-	Expect(t, fields[2].Name, Equal("f_f3"))
+	Expect(t, fields[2].ColumnName, Equal("f_f3"))
 	Expect(t, fields[2].Value(v), Equal[any](V.F3))
 
-	Expect(t, fields[3].Name, Equal("f_f4"))
+	Expect(t, fields[3].ColumnName, Equal("f_f4"))
 	Expect(t, fields[3].Value(v), Equal[any](V.F4))
 
-	Expect(t, fields[4].Name, Equal("f_f5"))
+	Expect(t, fields[4].ColumnName, Equal("f_f5"))
 	Expect(t, fields[4].Value(v), Equal[any](V.F5))
 
-	Expect(t, fields[5].Name, Equal("f_f6"))
+	Expect(t, fields[5].ColumnName, Equal("f_f6"))
 	Expect(t, fields[5].Value(v), Equal[any](V.F6))
 
-	Expect(t, fields[6].Name, Equal("f_f7"))
+	Expect(t, fields[6].ColumnName, Equal("f_f7"))
 	Expect(t, fields[6].Value(v), Equal[any](V.F7))
 }
 
@@ -141,21 +141,21 @@ func TestTableFields(t *testing.T) {
 	fields := structs.TableFields(V)
 
 	Expect(t, fields, HaveLen[[]*structs.TableField](6))
-	Expect(t, fields[0].Field.Name, Equal("f_f1"))
+	Expect(t, fields[0].Field.ColumnName, Equal("f_f1"))
 	Expect(t, fields[0].Value.Interface(), Equal[any](V.F1))
 
-	Expect(t, fields[1].Field.Name, Equal("f_f2"))
+	Expect(t, fields[1].Field.ColumnName, Equal("f_f2"))
 	Expect(t, fields[1].Value.Interface(), Equal[any](V.F2))
 
-	Expect(t, fields[2].Field.Name, Equal("f_f3"))
+	Expect(t, fields[2].Field.ColumnName, Equal("f_f3"))
 	Expect(t, fields[2].Value.Interface(), Equal[any](V.F3))
 
-	Expect(t, fields[3].Field.Name, Equal("f_f4"))
+	Expect(t, fields[3].Field.ColumnName, Equal("f_f4"))
 	Expect(t, fields[3].Value.Interface(), Equal[any](V.F4))
 
-	Expect(t, fields[4].Field.Name, Equal("f_f5"))
+	Expect(t, fields[4].Field.ColumnName, Equal("f_f5"))
 	Expect(t, fields[4].Value.Interface(), Equal[any](V.F5))
 
-	Expect(t, fields[5].Field.Name, Equal("f_f6"))
+	Expect(t, fields[5].Field.ColumnName, Equal("f_f6"))
 	Expect(t, fields[5].Value.Interface(), Equal[any](V.F6))
 }

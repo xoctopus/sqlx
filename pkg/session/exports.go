@@ -9,3 +9,7 @@ var (
 	Scan = scanner.Scan
 	Open = adaptor.Open
 )
+
+type (
+	Adaptor = adaptor.Adaptor
+)

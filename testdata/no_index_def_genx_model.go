@@ -2,8 +2,6 @@
 package testdata
 
 import (
-	"context"
-
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
 )
@@ -53,7 +51,7 @@ func (tNoIndexDef) New() builder.Model {
 var TNoIndexDef *tNoIndexDef
 
 func init() {
-	m := modeled.M[NoIndexDef](context.Background())
+	m := modeled.M[NoIndexDef]()
 	TNoIndexDef = &tNoIndexDef{
 		Table: m,
 		I:     iNoIndexDef{},

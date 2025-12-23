@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"context"
 	"reflect"
 
 	"github.com/xoctopus/typx/pkg/typx"
@@ -10,7 +9,7 @@ import (
 	"github.com/xoctopus/sqlx/internal/structs"
 )
 
-func scan(ctx context.Context, m any) Table {
+func scan(m any) Table {
 	t := typx.Deref(typx.NewRType(reflect.TypeOf(m)))
 
 	var (
@@ -42,7 +41,7 @@ func scan(ctx context.Context, m any) Table {
 	for _, f := range structs.FieldsFor(t) {
 		c := &column[any]{
 			fname: f.FieldName,
-			name:  f.Name,
+			name:  f.ColumnName,
 			def:   f.ColumnDef,
 		}
 		if text, ok := comments[c.fname]; ok {

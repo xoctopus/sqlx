@@ -40,7 +40,7 @@ func Scan(ctx context.Context, rows *sql.Rows, v any) (err error) {
 
 		if x, ok := si.(interface{ MustHasRecord() bool }); ok {
 			if !x.MustHasRecord() {
-				return codex.Errorf(sqlerrs.NOTFOUND, "record is not found")
+				return codex.New(sqlerrs.NOTFOUND)
 			}
 		}
 
@@ -98,11 +98,11 @@ func scan(ctx context.Context, rows *sql.Rows, v any) error {
 
 		for _, f := range structs.TableFields(v) {
 			if f.TableName != "" {
-				if i, ok := columns[frag.Alias(f.TableName, f.Field.Name)]; ok && i > -1 {
+				if i, ok := columns[frag.Alias(f.TableName, f.Field.ColumnName)]; ok && i > -1 {
 					dst[i] = nullable.NewNullIgnoreScanner(f.Value.Addr().Interface())
 				}
 			}
-			if i, ok := columns[f.Field.Name]; ok && i > -1 {
+			if i, ok := columns[f.Field.ColumnName]; ok && i > -1 {
 				dst[i] = nullable.NewNullIgnoreScanner(f.Value.Addr().Interface())
 			}
 		}

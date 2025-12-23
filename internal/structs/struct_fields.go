@@ -110,12 +110,12 @@ func (w *walker) Walk(t typx.Type) iter.Seq[*Field] {
 			}
 
 			p := &Field{
-				Name:      strings.ToLower(name),
-				FieldName: f.Name(),
-				Type:      f.Type(),
-				Field:     f,
-				Flag:      flag,
-				ColumnDef: *def.ParseColDef(f.Type(), f.Tag()),
+				ColumnName: strings.ToLower(name),
+				FieldName:  f.Name(),
+				Type:       f.Type(),
+				Field:      f,
+				Flag:       flag,
+				ColumnDef:  *def.ParseColDef(f.Type(), f.Tag()),
 			}
 			p.Loc = make([]int, len(loc))
 			copy(p.Loc, loc)
@@ -130,13 +130,13 @@ func (w *walker) Walk(t typx.Type) iter.Seq[*Field] {
 }
 
 type Field struct {
-	Name      string
-	FieldName string
-	Type      typx.Type
-	Field     typx.StructField
-	Flag      *reflectx.Flag
-	Loc       []int
-	ColumnDef def.ColumnDef
+	ColumnName string
+	FieldName  string
+	Type       typx.Type
+	Field      typx.StructField
+	Flag       *reflectx.Flag
+	Loc        []int
+	ColumnDef  def.ColumnDef
 	// ModelLoc  []int
 }
 

@@ -41,13 +41,13 @@ type CreationModificationDeletionDatetime struct {
 	DeletedAt Datetime `db:"f_deleted_at,precision=3,default='0001-01-01 00:00:00'" json:"deletedAt"`
 }
 
+func (cud CreationModificationDeletionDatetime) SoftDeletion() (string, driver.Value) {
+	return "DeletedAt", DatetimeZero
+}
+
 func (cud *CreationModificationDeletionDatetime) MarkDeletedAt() {
 	cud.MarkModifiedAt()
 	cud.DeletedAt = cud.UpdatedAt
-}
-
-func (cud CreationModificationDeletionDatetime) SoftDeletion() (string, driver.Value) {
-	return "DeletedAt", DatetimeZero
 }
 
 type OperationDatetime = CreationModificationDeletionDatetime

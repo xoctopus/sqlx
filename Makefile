@@ -142,3 +142,9 @@ clean:
 	@find . -name cover.out | xargs rm -rf
 	@find . -name .xgo | xargs rm -rf
 	@rm -rf build/*
+
+gen: clean_generated
+	go tool github.com/xoctopus/sqlx/internal/cmd/example
+
+clean_generated:
+	find . -name '*_genx_*.go' | xargs rm -rf

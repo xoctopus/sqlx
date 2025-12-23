@@ -2,8 +2,6 @@
 package testdata
 
 import (
-	"context"
-
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
 	"github.com/xoctopus/sqlx/pkg/types"
@@ -92,7 +90,7 @@ func (tOrg) New() builder.Model {
 var TOrg *tOrg
 
 func init() {
-	m := modeled.M[Org](context.Background())
+	m := modeled.M[Org]()
 	TOrg = &tOrg{
 		Table: m,
 		I: iOrg{

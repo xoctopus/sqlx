@@ -85,7 +85,7 @@ func T(name string, defs ...frag.Fragment) Table {
 
 var schemas = syncx.NewXmap[reflect.Type, Table]()
 
-func TFrom(ctx context.Context, m any) Table {
+func TFrom(m any) Table {
 	t := reflect.TypeOf(m)
 	must.BeTrueF(t.Kind() == reflect.Pointer, "model %s must be a pointer", t.Name())
 	t = t.Elem()
@@ -103,7 +103,7 @@ func TFrom(ctx context.Context, m any) Table {
 		name = x.TableName()
 	}
 
-	tab := scan(ctx, m)
+	tab := scan(m)
 	tab = tab.(WithTableName).WithTableName(name)
 	schemas.Store(t, tab)
 
@@ -111,8 +111,10 @@ func TFrom(ctx context.Context, m any) Table {
 }
 
 type table struct {
+	// database identifies a unique endpoint
 	database string
-	schema   string
+	// schema identifies a unique schema under endpoint
+	schema string
 
 	name string
 	desc []string
@@ -228,10 +230,10 @@ func TableNames(c Catalog) iter.Seq[string] {
 	}
 }
 
-func CatalogFrom(ctx context.Context, models ...internal.Model) Catalog {
+func CatalogFrom(models ...internal.Model) Catalog {
 	tabs := &tables{}
 	for i := range models {
-		tabs.Add(TFrom(ctx, models[i]))
+		tabs.Add(TFrom(models[i]))
 	}
 	return tabs
 }

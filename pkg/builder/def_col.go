@@ -494,6 +494,9 @@ func (cs *columns) Cols() iter.Seq[Col] {
 
 func (cs *columns) Pick(names ...string) Cols {
 	sub := &columns{}
+	if len(names) == 0 {
+		return cs
+	}
 	for _, name := range names {
 		c := cs.C(name)
 		must.NotNilF(c, "unknown column %s from %v", name, names)

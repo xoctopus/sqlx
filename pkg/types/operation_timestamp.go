@@ -59,7 +59,7 @@ type CreationModificationDeletionTime struct {
 	DeletedAt Timestamp `db:"f_deleted_at,default='0'" json:"deletedAt,omitempty"`
 }
 
-func (CreationModificationDeletionTime) SoftDeletion() (string, driver.Value) {
+func (cmd CreationModificationDeletionTime) SoftDeletion() (string, driver.Value) {
 	return "DeletedAt", int64(0)
 }
 

@@ -80,7 +80,7 @@ func (t *TSchemaTableColumn) ToCol() builder.Col {
 func ScanCatalog(ctx context.Context, a adaptor.Adaptor, database string) (builder.Catalog, error) {
 	catalog := builder.NewCatalog()
 
-	tC := builder.TFrom(ctx, &TSchemaTableColumn{})
+	tC := builder.TFrom(&TSchemaTableColumn{})
 	expr := builder.Select(builder.ColsIterOf(tC.Cols())).
 		From(
 			tC,
@@ -104,12 +104,14 @@ func ScanCatalog(ctx context.Context, a adaptor.Adaptor, database string) (build
 		var t builder.Table
 		if t = catalog.T(s.Table); t == nil {
 			t = builder.T(s.Table)
+			t = t.(builder.WithSchema).WithSchema(a.Schema())
+			t = t.(builder.WithDatabase).WithDatabase(a.Endpoint())
 			catalog.Add(t)
 		}
 		t.(builder.ColsManager).AddCol(s.ToCol())
 	}
 
-	tI := builder.TFrom(ctx, &TSchemaTableIndex{})
+	tI := builder.TFrom(&TSchemaTableIndex{})
 	expr = builder.Select(builder.ColsIterOf(tI.Cols())).
 		From(
 			tI,

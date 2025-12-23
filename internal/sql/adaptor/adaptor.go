@@ -27,6 +27,7 @@ type Adaptor interface {
 	DB
 
 	DriverName() string
+	Schema() string
 	Endpoint() string
 
 	Dialect() Dialect

@@ -1,7 +1,9 @@
 package sqlx
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"go/token"
 	"go/types"
 	"reflect"
@@ -18,31 +20,40 @@ import (
 	"github.com/xoctopus/sqlx/internal/structs"
 )
 
+var (
+	path = "github.com/xoctopus/sqlx/pkg/types"
+	pkg  = pkgx.NewPackages(context.Background(), path).Package(path)
+
+	tCreationMarker     = pkg.TypeNames().ElementByName("CreationMarker").Type()
+	tModificationMarker = pkg.TypeNames().ElementByName("ModificationMarker").Type()
+	tSoftDeletion       = pkg.TypeNames().ElementByName("SoftDeletion").Type()
+)
+
 func NewModel(g genx.Context, t types.Type) *Model {
-	n, ok := t.(*types.Named)
-	if !ok {
-		return nil
-	}
 	x := typx.NewTType(t)
 	if x.Kind() != reflect.Struct {
 		return nil
 	}
-	e := g.Package().TypeNames().ElementByName(n.Obj().Name())
-	must.BeTrueF(e != nil, "expect %s lookup in package %s", n.Obj().Name(), g.Package().Path())
+
+	e := g.Package().TypeNames().ElementByName(x.Name())
+	must.NotNilF(e, "expect %s lookup in package %s", x.Name(), g.Package().Path())
+	must.BeTrueF(types.Identical(e.Type(), t), "")
 
 	m := &Model{
-		ctx:    g,
 		typ:    x,
+		ptr:    typx.NewTType(types.NewPointer(e.Type())),
 		fields: structs.FieldsFor(x),
-		t:      s.IdentTT(g.Context(), t),
-		name:   "t_" + stringsx.LowerSnakeCase(n.Obj().Name()),
+		ident:  s.IdentTT(g.Context(), t),
+		attrs: map[Attr]string{
+			AttrTableName: "t_" + stringsx.LowerSnakeCase(x.Name()),
+		},
 	}
 
 	fm := make(map[string]*structs.Field)
 	for _, f := range m.fields {
 		fm[f.FieldName] = f
 		if f.ColumnDef.Comment == "" {
-			doc := g.Package().DocOf(token.Pos(typx.PosOfStructField(f.Field)))
+			doc := g.Packages().DocOf(token.Pos(typx.PosOfStructField(f.Field)))
 			if doc != nil {
 				f.ColumnDef.Comment = strings.Join(doc.Desc(), " ")
 			}
@@ -71,9 +82,8 @@ func NewModel(g genx.Context, t types.Type) *Model {
 		if strings.HasPrefix(line, "@attr ") {
 			line = strings.TrimSpace(strings.TrimPrefix(line, "@attr "))
 			if parts := strings.SplitN(line, "=", 2); len(parts) == 2 {
-				switch parts[0] {
-				case "TableName":
-					m.name = strings.TrimSpace(parts[1])
+				if attr := HasAttr(parts[0]); attr != "" {
+					m.attrs[attr] = parts[1]
 				}
 			}
 			continue
@@ -84,14 +94,14 @@ func NewModel(g genx.Context, t types.Type) *Model {
 }
 
 type Model struct {
-	ctx    genx.Context
 	typ    typx.Type
+	ptr    typx.Type
 	doc    *pkgx.Doc
 	fields []*structs.Field
 
-	t    s.Snippet
-	name string
-	desc []string
+	ident s.Snippet
+	attrs map[Attr]string
+	desc  []string
 
 	primary *def.KeyDefine
 	indexes []*def.KeyDefine
@@ -124,7 +134,7 @@ func (m *Model) IndexList(unique bool) s.Snippet {
 }
 
 func (m *Model) ModeledKeyDefList(ctx context.Context) s.Snippet {
-	keyTyp := s.Expose(ctx, "github.com/xoctopus/sqlx/pkg/builder/modeled", "Key", m.t)
+	keyTyp := s.Expose(ctx, "github.com/xoctopus/sqlx/pkg/builder/modeled", "Key", m.ident)
 
 	ss := make([]s.Snippet, 0, len(m.indexes)+len(m.uniques)+1)
 	if m.primary != nil {
@@ -180,13 +190,13 @@ func (m *Model) ModeledColInitList(ctx context.Context) s.Snippet {
 	return s.Snippets(s.NewLine(1), ss...)
 }
 
-func (m *Model) T() s.Snippet { return m.t }
+func (m *Model) Ident() s.Snippet { return m.ident }
 
 func (m *Model) ModeledM(ctx context.Context) s.Snippet {
 	return s.Expose(
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"M", m.t,
+		"M", m.ident,
 	)
 }
 
@@ -194,7 +204,7 @@ func (m *Model) ModeledTable(ctx context.Context) s.Snippet {
 	return s.Expose(
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",
-		"Table", m.t,
+		"Table", m.ident,
 	)
 }
 
@@ -203,7 +213,7 @@ func (m *Model) ModeledTCol(ctx context.Context, t typx.Type) s.Snippet {
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",
 		"TCol",
-		m.t, s.Ident(ctx, t),
+		m.ident, s.Ident(ctx, t),
 	)
 }
 
@@ -212,10 +222,81 @@ func (m *Model) ModeledCT(ctx context.Context, t typx.Type) s.Snippet {
 		ctx,
 		"github.com/xoctopus/sqlx/pkg/builder/modeled",
 		"CT",
-		m.t, s.Ident(ctx, t),
+		m.ident, s.Ident(ctx, t),
 	)
 }
 
-func (m *Model) TableName() string { return m.name }
+func (m *Model) TableName() s.Snippet {
+	return s.BlockRaw(m.attrs[AttrTableName])
+}
 
-func (m *Model) TableDesc() []string { return m.desc }
+func (m *Model) TableDesc() s.Snippet {
+	if len(m.desc) > 0 {
+		return s.Strings(",", "\n", m.desc...)
+	}
+	return nil
+}
+
+func (m *Model) Register() s.Snippet {
+	if register, _ := m.attrs[AttrRegister]; len(register) > 0 {
+		return s.BlockF("%s.Add(T%s)", register, m.typ.Name())
+	}
+	return nil
+}
+
+func (m *Model) CreationMarker() s.Snippet {
+	if m.typ.Implements(tCreationMarker) || m.ptr.Implements(tCreationMarker) {
+		return s.Block("m.MarkCreatedAt()")
+	}
+	return nil
+}
+
+func (m *Model) ModificationMarker() s.Snippet {
+	if m.typ.Implements(tModificationMarker) || m.ptr.Implements(tModificationMarker) {
+		return s.Block("m.MarkModifiedAt()")
+	}
+	return nil
+}
+
+func (m *Model) CommentOf(ref string) s.Snippet {
+	return s.BlockF("\"%s.%s\"", m.typ.Name(), ref)
+}
+
+func (m *Model) UniqueNames() [][]string {
+	suffixes := make([][]string, 0)
+
+	uniques := append([]*def.KeyDefine{m.primary}, m.uniques...)
+	for _, i := range uniques {
+		if i != nil {
+			suffixes = append(suffixes, i.OptionsNames())
+		}
+	}
+	return suffixes
+}
+
+func (m *Model) UniqueFields(names []string) s.Snippet {
+	fields := make([]string, len(names))
+	for i, name := range names {
+		fields[i] = m.typ.Name() + "." + name
+	}
+	return s.Block(strings.Join(fields, " and "))
+}
+
+func (m *Model) UniqueConditions(ctx context.Context, names []string) s.Snippet {
+	code := bytes.NewBufferString(`
+@def T
+@def builder.Eq
+--FetchByUniqueConds
+`)
+	for i, name := range names {
+		if i > 0 {
+			code.WriteString("\n")
+		}
+		code.WriteString(fmt.Sprintf("\t\tT#T#.%s.AsCond(#builder.Eq#(m.%s)),", name, name))
+	}
+	return s.Template(
+		code,
+		s.Arg(ctx, "T", m.Ident()),
+		s.Arg(ctx, "builder.Eq", s.ExposeUnsafe(ctx, "github.com/xoctopus/sqlx/pkg/builder", "Eq")),
+	)
+}

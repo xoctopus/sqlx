@@ -25,7 +25,8 @@ import (
 func TestDialect_Hack(t *testing.T) {
 	hack.Check(t)
 
-	d := NewAdaptor(t).Dialect()
+	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/fresh").Dialect()
+
 	Expect(t, d.CreateSchema("any"), BeFragment("CREATE DATABASE IF NOT EXISTS any;"))
 	Expect(t, d.SwitchSchema("any"), BeFragment("USE any;"))
 	Expect(t, d.DropTable(builder.T("t_table")), BeFragment("DROP TABLE IF EXISTS t_table;"))
@@ -63,14 +64,15 @@ func TestDialect_Hack(t *testing.T) {
 		builder.K("i_org_id", builder.ColsOf(tab.C("f_org_id")), builder.WithKeyMethod("BTREE")),
 	)
 
-	q, args := frag.Collect(context.Background(), frag.Compose("\n", d.CreateTableIfNotExists(tab)...))
-	named := make([]driver.NamedValue, len(args))
-	for i, arg := range args {
-		named[i].Value = arg
-	}
+	t.Run("CreateTable", func(t *testing.T) {
+		q, args := frag.Collect(context.Background(), frag.Compose("\n", d.CreateTableIfNotExists(tab)...))
+		named := make([]driver.NamedValue, len(args))
+		for i, arg := range args {
+			named[i].Value = arg
+		}
 
-	q, _ = loggingdriver.DefaultInterpolate(q, named)
-	Expect(t, q, Equal(`CREATE TABLE IF NOT EXISTS demo (
+		q, _ = loggingdriver.DefaultInterpolate(q, named)
+		Expect(t, q, Equal(`CREATE TABLE IF NOT EXISTS demo (
     f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'PK ID',
     f_name VARCHAR(255) NOT NULL DEFAULT '',
     f_org_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -94,26 +96,64 @@ func TestDialect_Hack(t *testing.T) {
 );
 CREATE UNIQUE INDEX ui_name ON demo (f_name,f_deleted_at);
 CREATE INDEX i_org_id ON demo (f_org_id) USING BTREE;`))
+	})
 
 	c1 := builder.C("f_appended", builder.WithColDefOf("", `db:",width=255,default=''"`)).Of(tab)
-	Expect(t, d.AddColumn(c1), BeFragment("ALTER TABLE demo ADD COLUMN f_appended VARCHAR(255) NOT NULL DEFAULT '';"))
+
+	t.Run("AddColumn", func(t *testing.T) {
+		Expect(
+			t, d.AddColumn(c1),
+			BeFragment("ALTER TABLE demo ADD COLUMN f_appended VARCHAR(255) NOT NULL DEFAULT '';"),
+		)
+	})
+
 	c2 := builder.C("f_renamed").Of(tab)
-	Expect(t, d.RenameColumn(c1, c2), BeFragment("ALTER TABLE demo RENAME COLUMN f_appended TO f_renamed;"))
-	Expect(t, d.DropColumn(c2), BeFragment("ALTER TABLE demo DROP COLUMN f_renamed;"))
 
-	pk := builder.PK(builder.ColsOf(tab.C("f_id"))).Of(tab)
-	Expect(t, d.DropIndex(pk), BeFragment("ALTER TABLE demo DROP PRIMARY KEY;"))
-	Expect(t, d.AddIndex(pk), BeFragment("ALTER TABLE demo ADD PRIMARY KEY (f_id);"))
+	t.Run("RenameColumn", func(t *testing.T) {
+		Expect(
+			t, d.RenameColumn(c1, c2),
+			BeFragment("ALTER TABLE demo RENAME COLUMN f_appended TO f_renamed;"),
+		)
+	})
 
-	uk := builder.UK("ui_idx", builder.ColsOf(tab.C("f_id"), tab.C("f_name"))).Of(tab)
-	Expect(t, d.DropIndex(uk), BeFragment("ALTER TABLE demo DROP INDEX ui_idx;"))
-	Expect(t, d.AddIndex(uk), BeFragment("CREATE UNIQUE INDEX ui_idx ON demo (f_id,f_name);"))
+	t.Run("DropColumn", func(t *testing.T) {
+		Expect(
+			t, d.DropColumn(c2),
+			BeFragment("ALTER TABLE demo DROP COLUMN f_renamed;"),
+		)
+	})
 
-	err := &mysqldriver.MySQLError{Number: 1049}
-	Expect(t, d.IsUnknownDatabaseError(err), BeTrue())
-	err.Number = 1062
-	Expect(t, d.IsConflictError(err), BeTrue())
+	t.Run("ModifyColumn", func(t *testing.T) {
+		currc := tab.C("f_name")
+		nextc := builder.C("f_name", builder.WithColDefOf("", `db:",default=('')"`)).Of(tab)
+		Expect(t, d.ModifyColumn(nextc, currc), BeFragment("ALTER TABLE demo MODIFY COLUMN f_name TEXT NOT NULL DEFAULT (''); /* from VARCHAR(255) NOT NULL DEFAULT '' */"))
 
-	Expect(t, mysql.UnwrapError(err), NotBeNil[*mysqldriver.MySQLError]())
-	Expect(t, mysql.UnwrapError(errors.New("any")), BeNil[*mysqldriver.MySQLError]())
+		currc = tab.C("f_name")
+		nextc = tab.C("f_name")
+		Expect(t, d.ModifyColumn(nextc, currc), BeFragment(""))
+
+		currc = tab.C("f_org_id")
+		nextc = builder.C("f_org_id", builder.WithColDefOf(types.ID(0), `db:",autoinc"`)).Of(tab)
+		Expect(t, d.ModifyColumn(nextc, currc), BeFragment(""))
+	})
+
+	t.Run("ModifyIndexes", func(t *testing.T) {
+		pk := builder.PK(builder.ColsOf(tab.C("f_id"))).Of(tab)
+		Expect(t, d.DropIndex(pk), BeFragment("ALTER TABLE demo DROP PRIMARY KEY;"))
+		Expect(t, d.AddIndex(pk), BeFragment("ALTER TABLE demo ADD PRIMARY KEY (f_id);"))
+
+		uk := builder.UK("ui_idx", builder.ColsOf(tab.C("f_id"), tab.C("f_name"))).Of(tab)
+		Expect(t, d.DropIndex(uk), BeFragment("ALTER TABLE demo DROP INDEX ui_idx;"))
+		Expect(t, d.AddIndex(uk), BeFragment("CREATE UNIQUE INDEX ui_idx ON demo (f_id,f_name);"))
+	})
+
+	t.Run("DriverErrors", func(t *testing.T) {
+		err := &mysqldriver.MySQLError{Number: 1049}
+		Expect(t, d.IsUnknownDatabaseError(err), BeTrue())
+		err.Number = 1062
+		Expect(t, d.IsConflictError(err), BeTrue())
+
+		Expect(t, mysql.UnwrapError(err), NotBeNil[*mysqldriver.MySQLError]())
+		Expect(t, mysql.UnwrapError(errors.New("any")), BeNil[*mysqldriver.MySQLError]())
+	})
 }

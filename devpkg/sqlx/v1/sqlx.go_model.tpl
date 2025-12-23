@@ -67,23 +67,46 @@ type t#T# struct {
 }
 
 @def T
-@def BuilderModel
+@def builder.Model
 --New
 // New creates a new #T#
-func (t#T#) New() #BuilderModel# {
+func (t *t#T#) New() #builder.Model# {
 	return &#T#{}
+}
+
+@def T
+@def builder.Col
+@def builder.ColsOf
+@def reflect.ValueOf
+// AssignmentFor returns assignment by m with expects columns
+func (t *t#T#) AssignmentFor(m *#T#, expects ...#builder.Col#) builder.Assignment {
+	cols := t.Pick()
+	if len(expects) > 0 {
+		cols = #builder.ColsOf#(expects...)
+	}
+	vals := make([]any, 0, cols.Len())
+	rv := #reflect.ValueOf#(m).Elem()
+
+	for c := range cols.Cols() {
+		if !#builder.GetColDef#(c).AutoInc {
+			vals = append(vals, rv.FieldByName(c.FieldName()).Interface())
+		}
+	}
+
+	return builder.ColumnsAndValues(cols, vals...)
 }
 
 @def T
 @def ModeledKeyInitList
 @def ModeledColInitList
-@def context.Background
 @def ModeledM
+@def Register
 --Init
 var T#T# *t#T#
 
 func init() {
-	m := #ModeledM#(#context.Background#())
+	m := #ModeledM#()
+
 	T#T# = &t#T#{
 		Table: m,
 
@@ -93,4 +116,6 @@ func init() {
 
 		#ModeledColInitList#
 	}
+
+	#Register#
 }

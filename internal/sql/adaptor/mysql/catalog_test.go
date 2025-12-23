@@ -14,9 +14,9 @@ import (
 func TestScanCatalog_Hack(t *testing.T) {
 	hack.Check(t)
 
-	d := NewAdaptor(t)
+	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/test")
 
-	catalog, err := d.Catalog(Context(t))
+	catalog, err := d.Catalog(hack.Context(t))
 
 	Expect(t, err, Succeed())
 	Expect(t, catalog, NotBeNil[builder.Catalog]())

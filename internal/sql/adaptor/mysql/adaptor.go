@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/xoctopus/x/codex"
+	"github.com/xoctopus/x/misc/must"
 
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/internal/sql/loggingdriver"
@@ -21,9 +22,9 @@ func init() {
 	adaptor.Register(&mycli{})
 }
 
-func Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
-	return (&mycli{dsn: dsn}).Open(ctx, dsn)
-}
+// func Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
+// 	return (&mycli{dsn: dsn}).Open(ctx, dsn)
+// }
 
 type mycli struct {
 	dialect
@@ -39,6 +40,10 @@ func (d *mycli) Dialect() adaptor.Dialect {
 
 func (d *mycli) DriverName() string {
 	return "mysql"
+}
+
+func (d *mycli) Schema() string {
+	return d.database
 }
 
 func (d *mycli) Endpoint() string {
@@ -59,41 +64,26 @@ func (d *mycli) Connector() driver.DriverContext {
 
 // Open return
 // dsn: mysql://[user[:password]@][addr]/database[?param1=value1&paramN=valueN]
-func (d *mycli) Open(ctx context.Context, dsn *url.URL) (a adaptor.Adaptor, err error) {
-	if dsn.Scheme != d.DriverName() {
-		return nil, fmt.Errorf("invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn)
-	}
-
-	var (
-		database = adaptor.DatabaseNameFromDSN(dsn)
-		conn     driver.Connector
+func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
+	must.BeTrueF(
+		dsn.Scheme == d.DriverName(),
+		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
 	)
 
-	conn, err = d.Connector().OpenConnector(dsn.String())
+	database := adaptor.DatabaseNameFromDSN(dsn)
+	conn, err := d.Connector().OpenConnector(dsn.String())
 	if err != nil {
 		return nil, err
 	}
 
 	db := sql.OpenDB(conn)
 
-	a = &mycli{
-		DB: adaptor.Wrap(db, func(err error) error {
-			if d.IsConflictError(err) {
-				return codex.Errorf(errors.CONFLICT, "%v", err)
-			}
-			return err
-		}),
-		database: database,
-		dsn:      d.dsn,
-	}
-
-	defer func() {
-		if err != nil {
-			_ = db.Close()
-		}
-	}()
-
 	if err = db.PingContext(ctx); err != nil {
+		// always do closing if it needs creating database
+		defer func() {
+			println("closing: " + dsn.String())
+			_ = db.Close()
+		}()
 		if d.IsUnknownDatabaseError(err) {
 			if err = d.CreateDatabase(ctx, *dsn, database); err != nil {
 				return nil, err
@@ -103,7 +93,16 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (a adaptor.Adaptor, err 
 		return nil, err
 	}
 
-	return a, nil
+	return &mycli{
+		DB: adaptor.Wrap(db, func(err error) error {
+			if d.IsConflictError(err) {
+				return codex.Errorf(errors.CONFLICT, "%v", err)
+			}
+			return err
+		}),
+		database: database,
+		dsn:      dsn,
+	}, nil
 }
 
 func (d *mycli) Catalog(ctx context.Context) (builder.Catalog, error) {
@@ -117,7 +116,10 @@ func (d *mycli) CreateDatabase(ctx context.Context, dsn url.URL, database string
 	if err != nil {
 		return err
 	}
-	defer a.Close()
+	defer func() {
+		println("closing: " + dsn.String())
+		_ = a.Close()
+	}()
 
 	_, err = a.Exec(ctx, frag.Query("CREATE DATABASE ?", frag.Lit(database)))
 	return err
