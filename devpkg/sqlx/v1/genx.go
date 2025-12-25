@@ -4,7 +4,9 @@ import (
 	"bytes"
 	_ "embed"
 	"go/types"
+	"log"
 	"strings"
+	"time"
 
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
@@ -64,10 +66,18 @@ func (x *g) Identifier() string {
 }
 
 func (x *g) Generate(c genx.Context, t types.Type) error {
+	cost := Span()
+
 	m := NewModel(c, t)
 	if m == nil {
 		return nil
 	}
+
+	log.Printf("genx:model generating %s ...\n", m.typ.Name())
+	defer func() {
+		log.Printf("cost: %fs\n", cost().Seconds())
+	}()
+
 	ctx := c.Context()
 	actions := byUniqueActions
 
@@ -184,4 +194,11 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 
 	c.Render(s.Snippets(s.NewLine(1), ss...))
 	return nil
+}
+
+func Span() func() time.Duration {
+	t := time.Now()
+	return func() time.Duration {
+		return time.Since(t)
+	}
 }

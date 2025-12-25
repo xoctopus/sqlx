@@ -158,7 +158,7 @@ func (c *connection) ExecContext(ctx context.Context, q string, args []driver.Na
 }
 
 func (c *connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
-	log := logx.FromContext(ctx)
+	log := logx.From(ctx)
 
 	log.Debug("=========== Transaction Begin     ===========")
 	// don't pass ctx into real driver to avoid connect discount

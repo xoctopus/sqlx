@@ -12,14 +12,13 @@ import (
 )
 
 func Example() {
-	cwd := must.NoErrorV(os.Getwd())
-
-	entry := filepath.Join(cwd, "..", "..", "..", "testdata")
+	root := filepath.Join(must.NoErrorV(os.Getwd()), "..", "..", "..")
 
 	ctx := genx.NewContext(&genx.Args{
 		Entrypoint: []string{
-			entry,
-			filepath.Join(entry, "v2"),
+			filepath.Join(root, "testdata"),
+			filepath.Join(root, "testdata", "v2"),
+			filepath.Join(root, "example", "models"),
 		},
 	})
 

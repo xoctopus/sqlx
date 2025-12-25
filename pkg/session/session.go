@@ -2,9 +2,9 @@ package session
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/xoctopus/x/contextx"
+	"github.com/xoctopus/x/misc/must"
 
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/builder"
@@ -27,6 +27,8 @@ type Session interface {
 	Database() string
 	// Schema logically
 	Schema() string
+	// Name returns session name
+	Name() string
 	// T picks table from session
 	T(any) builder.Table
 	// Tx exec query
@@ -54,27 +56,42 @@ func NewRO(rw adaptor.Adaptor, ro adaptor.Adaptor, name string) Session {
 	}
 }
 
+// For retrieves Session by session name or table
 func For(ctx context.Context, m any) Session {
 	switch x := m.(type) {
 	case interface{ Unwrap() builder.Model }:
-		return For(ctx, x)
+		return For(ctx, x.Unwrap())
 	case string:
-		return FromContext(ctx, x)
+		return From(ctx, x)
 	case builder.Model:
-		// if t, ok := catalogs.Load(x.TableName()); ok {
-		// 	x.TableName()
-		// }
-		// return FromContext(ctx)
+		if s, ok := catalogs.Load(x.TableName()); ok {
+			return From(ctx, s)
+		}
 	}
 	return nil
 }
 
-func FromContext(ctx context.Context, name string) Session {
-	s, ok := ctxSession.From(ctx)
-	if ok && s.Schema() == name {
-		return s
+type tSessionKey struct {
+	name string
+}
+
+// From retrieve Session from ctx by Session.Name
+func From(ctx context.Context, name string) Session {
+	s, ok := ctx.Value(tSessionKey{name}).(Session)
+	must.BeTrueF(ok, "missing session: %s", name)
+	return s
+}
+
+// With injects Session
+func With(ctx context.Context, session Session) context.Context {
+	return context.WithValue(ctx, tSessionKey{name: session.Name()}, session)
+}
+
+// Carry returns context carrier
+func Carry(session Session) contextx.Carrier {
+	return func(ctx context.Context) context.Context {
+		return With(ctx, session)
 	}
-	panic(fmt.Errorf("missing session '%s'", name))
 }
 
 type session struct {
@@ -124,5 +141,3 @@ func (s *session) Adaptor(options ...OptionFunc) adaptor.Adaptor {
 	}
 	return s.a
 }
-
-var ctxSession = contextx.NewT[Session]()

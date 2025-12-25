@@ -27,7 +27,7 @@ func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (stri
 
 	fragments := make([]frag.Fragment, 0)
 
-	for _, name := range slices.Sorted(builder.TableNames(curr)) {
+	for _, name := range slices.Sorted(builder.TableNames(next)) {
 		d := diff.Diff(ctx, a.Dialect(), curr.T(name), next.T(name))
 		if frag.IsNil(d) {
 			continue

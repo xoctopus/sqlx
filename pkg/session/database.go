@@ -10,6 +10,7 @@ import (
 
 	"github.com/xoctopus/sqlx/internal/diff"
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	_ "github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/migrator"
 )
@@ -31,6 +32,7 @@ type Database struct {
 
 func (d *Database) SetDefault() {}
 
+// ApplyCatalog should do before endpoint initialization
 func (d *Database) ApplyCatalog(name string, catalogs ...builder.Catalog) {
 	d.name = name
 	d.catalog = builder.NewCatalog()
@@ -74,7 +76,7 @@ func (d *Database) Init(ctx context.Context) error {
 		d.ro = db
 	}
 
-	RegisterCatalog(d.Name(), d.catalog)
+	register(d.Name(), d.catalog)
 
 	return nil
 }

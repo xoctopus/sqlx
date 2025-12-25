@@ -27,7 +27,7 @@ func Check(t testing.TB) {
 
 func Context(t testing.TB) context.Context {
 	t.Helper()
-	return logx.WithLogger(context.Background(), logx.Std(logx.NewHandler()))
+	return logx.With(context.Background(), logx.Std(logx.NewHandler()))
 }
 
 func NewAdaptor(t testing.TB, dsn string) adaptor.Adaptor {

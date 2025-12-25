@@ -71,10 +71,10 @@ func NewModel(g genx.Context, t types.Type) *Model {
 		if strings.HasPrefix(line, "@def ") {
 			line = strings.TrimSpace(strings.TrimPrefix(line, "@def "))
 			k := def.ParseKeyDef(line)
-			must.BeTrueF(k != nil, "failed to parse @def: %s", line)
+			must.BeTrueF(k != nil, "failed to parse %s @def: %s", m.typ.Name(), line)
 			for _, o := range k.Options {
 				_, exists := fm[o.Name]
-				must.BeTrueF(exists, "field def found: %s", o.Name)
+				must.BeTrueF(exists, "failed to parse %s field def not found: %s", m.typ.Name(), o.Name)
 			}
 			switch k.Kind {
 			case def.KEY_KIND__PRIMARY:
