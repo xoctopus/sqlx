@@ -14,7 +14,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
-	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TOrg *tOrg
@@ -35,9 +35,9 @@ func init() {
 		Name:      modeled.CT[Org, string](m.C("Name")),
 		Belonged:  modeled.CT[Org, UserID](m.C("Belonged")),
 		Manager:   modeled.CT[Org, UserID](m.C("Manager")),
-		CreatedAt: modeled.CT[Org, types.Timestamp](m.C("CreatedAt")),
-		UpdatedAt: modeled.CT[Org, types.Timestamp](m.C("UpdatedAt")),
-		DeletedAt: modeled.CT[Org, types.Timestamp](m.C("DeletedAt")),
+		CreatedAt: modeled.CT[Org, sqltime.Timestamp](m.C("CreatedAt")),
+		UpdatedAt: modeled.CT[Org, sqltime.Timestamp](m.C("UpdatedAt")),
+		DeletedAt: modeled.CT[Org, sqltime.Timestamp](m.C("DeletedAt")),
 	}
 }
 
@@ -64,12 +64,12 @@ type tOrg struct {
 	Belonged modeled.TCol[Org, UserID]
 	// Manager 组织管理者ID
 	Manager modeled.TCol[Org, UserID]
-	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt modeled.TCol[Org, types.Timestamp]
-	// UpdatedAt 更新时间 毫秒时间戳
-	UpdatedAt modeled.TCol[Org, types.Timestamp]
-	// DeletedAt 删除时间 毫秒时间戳
-	DeletedAt modeled.TCol[Org, types.Timestamp]
+	// CreatedAt 创建时间 秒时间戳
+	CreatedAt modeled.TCol[Org, sqltime.Timestamp]
+	// UpdatedAt 更新时间 秒时间戳
+	UpdatedAt modeled.TCol[Org, sqltime.Timestamp]
+	// DeletedAt 删除时间 秒时间戳
+	DeletedAt modeled.TCol[Org, sqltime.Timestamp]
 }
 
 // New creates a new Org

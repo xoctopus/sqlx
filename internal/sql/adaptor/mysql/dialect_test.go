@@ -20,6 +20,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 	. "github.com/xoctopus/sqlx/pkg/frag/testutil"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 func TestDialect_Hack(t *testing.T) {
@@ -53,9 +54,9 @@ func TestDialect_Hack(t *testing.T) {
 		builder.C("f_desc", builder.WithColDefOf("", `db:",default=('')"`)),
 		builder.C("f_float", builder.WithColDefOf(float32(0), "")),
 		builder.C("f_double", builder.WithColDefOf(float64(0), "")),
-		builder.C("f_created_at", builder.WithColDefOf(types.Datetime{}, `db:",precision=3,default=CURRENT_TIMESTAMP(3)"`)),
-		builder.C("f_updated_at", builder.WithColDefOf(types.Datetime{}, `db:",precision=3,default=CURRENT_TIMESTAMP(3),onupdate=CURRENT_TIMESTAMP(3)"`)),
-		builder.C("f_deleted_at", builder.WithColDefOf(types.Datetime{}, `db:",precision=3,default='0001-01-01 00:00:00'"`)),
+		builder.C("f_created_at", builder.WithColDefOf(sqltime.Datetime{}, `db:",precision=3,default=CURRENT_TIMESTAMP(3)"`)),
+		builder.C("f_updated_at", builder.WithColDefOf(sqltime.Datetime{}, `db:",precision=3,default=CURRENT_TIMESTAMP(3),onupdate=CURRENT_TIMESTAMP(3)"`)),
+		builder.C("f_deleted_at", builder.WithColDefOf(sqltime.Datetime{}, `db:",precision=3,default='0001-01-01 00:00:00'"`)),
 		builder.C("f_deprecated", builder.WithColDefOf("", `db:",deprecated"`)),
 	)
 	tab.(builder.KeysManager).AddKey(

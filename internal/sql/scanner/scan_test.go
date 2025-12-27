@@ -11,7 +11,7 @@ import (
 
 	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/pkg/errors"
-	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 type T struct {
@@ -236,7 +236,7 @@ func TestScan(t *testing.T) {
 			rows, err := db.Query("SELECT f_timestamp FROM t")
 			Expect(t, err, Be[error](nil))
 
-			v := &types.Timestamp{}
+			v := &sqltime.Timestamp{}
 			err = scanner.Scan(ctx, rows, v)
 			Expect(t, err, Succeed())
 			Expect(t, v.Int(), Equal(int64(593650800123)))
@@ -252,7 +252,7 @@ func TestScan(t *testing.T) {
 			rows, err := db.Query("SELECT f_timestamp FROM t")
 			Expect(t, err, Be[error](nil))
 
-			v := &types.Timestamp{}
+			v := &sqltime.Timestamp{}
 			err = scanner.Scan(ctx, rows, v)
 			Expect(t, err, ErrorEqual(t.Name()))
 		})

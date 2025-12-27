@@ -15,7 +15,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
-	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TUser *tUser
@@ -37,9 +37,9 @@ func init() {
 		Email:     modeled.CT[User, string](m.C("Email")),
 		Phone:     modeled.CT[User, string](m.C("Phone")),
 		Status:    modeled.CT[User, enums.UserStatus](m.C("Status")),
-		CreatedAt: modeled.CT[User, types.Datetime](m.C("CreatedAt")),
-		UpdatedAt: modeled.CT[User, types.Datetime](m.C("UpdatedAt")),
-		DeletedAt: modeled.CT[User, types.Datetime](m.C("DeletedAt")),
+		CreatedAt: modeled.CT[User, sqltime.Datetime](m.C("CreatedAt")),
+		UpdatedAt: modeled.CT[User, sqltime.Datetime](m.C("UpdatedAt")),
+		DeletedAt: modeled.CT[User, sqltime.Datetime](m.C("DeletedAt")),
 	}
 	Catalog.Add(TUser)
 }
@@ -69,12 +69,12 @@ type tUser struct {
 	Phone modeled.TCol[User, string]
 	// Status 用户状态
 	Status modeled.TCol[User, enums.UserStatus]
-	// CreatedAt 创建日期时间(毫秒)
-	CreatedAt modeled.TCol[User, types.Datetime]
-	// UpdatedAt 更新日期时间(毫秒)
-	UpdatedAt modeled.TCol[User, types.Datetime]
-	// DeletedAt 删除日期时间(毫秒)
-	DeletedAt modeled.TCol[User, types.Datetime]
+	// CreatedAt 创建日期时间(秒)
+	CreatedAt modeled.TCol[User, sqltime.Datetime]
+	// UpdatedAt 更新日期时间(秒)
+	UpdatedAt modeled.TCol[User, sqltime.Datetime]
+	// DeletedAt 删除日期时间(秒)
+	DeletedAt modeled.TCol[User, sqltime.Datetime]
 }
 
 // New creates a new User

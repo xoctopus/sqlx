@@ -8,6 +8,7 @@ import (
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 func TestOperationDatetime(t *testing.T) {
@@ -20,7 +21,7 @@ func TestOperationDatetime(t *testing.T) {
 			Expect(t, ops.CreatedAt.IsZero(), BeFalse())
 		})
 		t.Run("UserMarked", func(t *testing.T) {
-			ts := types.AsDatetime(time.Now())
+			ts := sqltime.AsDatetime(time.Now())
 			ops.CreatedAt = ts
 			ops.MarkCreatedAt()
 			Expect(t, ts.Equal(ops.CreatedAt.Unwrap()), BeTrue())
@@ -38,7 +39,7 @@ func TestOperationDatetime(t *testing.T) {
 			Expect(t, ops.UpdatedAt.IsZero(), BeFalse())
 		})
 		t.Run("UserMarked", func(t *testing.T) {
-			ts := types.AsDatetime(time.Now())
+			ts := sqltime.AsDatetime(time.Now())
 			ops.CreatedAt = ts
 			ops.UpdatedAt = ts
 			Expect(t, ts.Equal(ops.CreatedAt.Unwrap()), BeTrue())
@@ -56,6 +57,6 @@ func TestOperationDatetime(t *testing.T) {
 
 		col, _, defv := ops.SoftDeletion()
 		Expect(t, col, Equal("DeletedAt"))
-		Expect(t, defv, Equal[driver.Value](types.DatetimeZero))
+		Expect(t, defv, Equal[driver.Value](sqltime.DatetimeZero))
 	})
 }

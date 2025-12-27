@@ -14,7 +14,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
-	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TShipment *tShipment
@@ -37,10 +37,10 @@ func init() {
 		Carrier:     modeled.CT[Shipment, string](m.C("Carrier")),
 		TrackingNo:  modeled.CT[Shipment, string](m.C("TrackingNo")),
 		Status:      modeled.CT[Shipment, enums.ShipmentStatus](m.C("Status")),
-		ShippedAt:   modeled.CT[Shipment, types.Timestamp](m.C("ShippedAt")),
-		DeliveredAt: modeled.CT[Shipment, types.Timestamp](m.C("DeliveredAt")),
-		CreatedAt:   modeled.CT[Shipment, types.Timestamp](m.C("CreatedAt")),
-		UpdatedAt:   modeled.CT[Shipment, types.Timestamp](m.C("UpdatedAt")),
+		ShippedAt:   modeled.CT[Shipment, sqltime.Timestamp](m.C("ShippedAt")),
+		DeliveredAt: modeled.CT[Shipment, sqltime.Timestamp](m.C("DeliveredAt")),
+		CreatedAt:   modeled.CT[Shipment, sqltime.Timestamp](m.C("CreatedAt")),
+		UpdatedAt:   modeled.CT[Shipment, sqltime.Timestamp](m.C("UpdatedAt")),
 	}
 	Catalog.Add(TShipment)
 }
@@ -71,13 +71,13 @@ type tShipment struct {
 	// Status 物流状态
 	Status modeled.TCol[Shipment, enums.ShipmentStatus]
 	// ShippedAt 开始运输时间
-	ShippedAt modeled.TCol[Shipment, types.Timestamp]
+	ShippedAt modeled.TCol[Shipment, sqltime.Timestamp]
 	// DeliveredAt 抵达时间
-	DeliveredAt modeled.TCol[Shipment, types.Timestamp]
-	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt modeled.TCol[Shipment, types.Timestamp]
-	// UpdatedAt 更新时间 毫秒时间戳
-	UpdatedAt modeled.TCol[Shipment, types.Timestamp]
+	DeliveredAt modeled.TCol[Shipment, sqltime.Timestamp]
+	// CreatedAt 创建时间 秒时间戳
+	CreatedAt modeled.TCol[Shipment, sqltime.Timestamp]
+	// UpdatedAt 更新时间 秒时间戳
+	UpdatedAt modeled.TCol[Shipment, sqltime.Timestamp]
 }
 
 // New creates a new Shipment

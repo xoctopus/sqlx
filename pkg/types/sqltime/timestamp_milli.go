@@ -1,49 +1,48 @@
-package types
+package sqltime
 
 import (
 	"database/sql/driver"
 	"fmt"
 	"strconv"
 	"time"
-	_ "time/tzdata"
 )
 
-func ParseTimestamp(input string) (d Timestamp, err error) {
+func ParseTimestampMilli(input string) (d TimestampMilli, err error) {
 	for layout := range gConfig.inputs.Range {
 		t, e := time.ParseInLocation(layout, input, gConfig.timezone.Value())
 		if e == nil {
-			return Timestamp{t}, nil
+			return TimestampMilli{t}, nil
 		}
 		err = e
 	}
 	return d, err
 }
 
-func ParseTimestampWithLayout(input, layout string) (Timestamp, error) {
+func ParseTimestampMilliWithLayout(input, layout string) (TimestampMilli, error) {
 	t, err := time.ParseInLocation(layout, input, gConfig.timezone.Value())
 	if err != nil {
-		return TimestampUnixZero, err
+		return TimestampMilliZero, err
 	}
-	return Timestamp{t}, nil
+	return TimestampMilli{t}, nil
 }
 
-func AsTimestamp(t time.Time) Timestamp {
-	return Timestamp{t}
+func AsTimestampMilli(t time.Time) TimestampMilli {
+	return TimestampMilli{t.In(gConfig.timezone.Value())}
 }
 
-type Timestamp struct {
+type TimestampMilli struct {
 	time.Time `json:",inline"`
 }
 
-func (Timestamp) DBType(driver string) string {
+func (TimestampMilli) DBType(_ string) string {
 	return "bigint"
 }
 
-func (t Timestamp) Unwrap() time.Time {
+func (t TimestampMilli) Unwrap() time.Time {
 	return t.Time
 }
 
-func (t *Timestamp) Scan(src any) error {
+func (t *TimestampMilli) Scan(src any) error {
 	digital := int64(0)
 	switch v := src.(type) {
 	case []byte:
@@ -55,21 +54,21 @@ func (t *Timestamp) Scan(src any) error {
 	case int64:
 		digital = v
 	case nil:
-		*t = TimestampZero
+		*t = TimestampMilliZero
 		return nil
 	default:
 		return fmt.Errorf("cannot sql.Scan() strfmt.Timestamp from: %#v", v)
 	}
 
 	if digital < 0 {
-		*t = TimestampZero
+		*t = TimestampMilliZero
 		return nil
 	}
-	t.Time = time.Unix(digital/1e3, digital%1e3*1e6)
+	t.Time = time.Unix(digital/1e3, digital%1e3*1e6).In(gConfig.timezone.Value())
 	return nil
 }
 
-func (t Timestamp) Value() (driver.Value, error) {
+func (t TimestampMilli) Value() (driver.Value, error) {
 	unix := t.Int()
 	if unix < 0 {
 		unix = 0
@@ -77,27 +76,27 @@ func (t Timestamp) Value() (driver.Value, error) {
 	return unix, nil
 }
 
-func (t Timestamp) String() string {
+func (t TimestampMilli) String() string {
 	if t.IsZero() {
 		return ""
 	}
 	return t.Format(gConfig.output.Value())
 }
 
-func (t Timestamp) Format(layout string) string {
+func (t TimestampMilli) Format(layout string) string {
 	return t.In(gConfig.timezone.Value()).Format(layout)
 }
 
-func (t Timestamp) MarshalText() ([]byte, error) {
+func (t TimestampMilli) MarshalText() ([]byte, error) {
 	return []byte(t.String()), nil
 }
 
-func (t *Timestamp) UnmarshalText(data []byte) error {
+func (t *TimestampMilli) UnmarshalText(data []byte) error {
 	s := string(data)
 	if len(s) == 0 || s == "0" {
 		return nil
 	}
-	x, err := ParseTimestamp(s)
+	x, err := ParseTimestampMilli(s)
 	if err != nil {
 		return err
 	}
@@ -105,11 +104,11 @@ func (t *Timestamp) UnmarshalText(data []byte) error {
 	return err
 }
 
-func (t Timestamp) MarshalJSON() ([]byte, error) {
+func (t TimestampMilli) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Quote(t.String())), nil
 }
 
-func (t *Timestamp) UnmarshalJSON(data []byte) error {
+func (t *TimestampMilli) UnmarshalJSON(data []byte) error {
 	s, err := strconv.Unquote(string(data))
 	if err != nil {
 		return err
@@ -117,11 +116,11 @@ func (t *Timestamp) UnmarshalJSON(data []byte) error {
 	return t.UnmarshalText([]byte(s))
 }
 
-func (t Timestamp) Int() int64 {
+func (t TimestampMilli) Int() int64 {
 	return t.Time.UnixMilli()
 }
 
-func (t Timestamp) IsZero() bool {
+func (t TimestampMilli) IsZero() bool {
 	unix := t.Int()
-	return unix == 0 || unix == TimestampZero.Int()
+	return unix == 0 || unix == TimestampMilliZero.Int()
 }

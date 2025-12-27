@@ -1,4 +1,4 @@
-package types
+package sqltime
 
 import (
 	"database/sql/driver"

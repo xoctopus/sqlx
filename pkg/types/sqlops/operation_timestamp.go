@@ -1,4 +1,4 @@
-package types
+package sqlops
 
 import (
 	"database/sql/driver"
@@ -9,7 +9,7 @@ import (
 
 type CreationTime struct {
 	// CreatedAt 创建时间 秒时间戳
-	CreatedAt sqltime.Timestamp `db:"f_created_at,default='0'" json:"createdAt"`
+	CreatedAt sqltime.Timestamp `db:"created_at,default='0'" json:"createdAt"`
 }
 
 func (c *CreationTime) MarkCreatedAt() {
@@ -21,7 +21,7 @@ func (c *CreationTime) MarkCreatedAt() {
 type CreationModificationTime struct {
 	CreationTime
 	// UpdatedAt 更新时间 秒时间戳
-	UpdatedAt sqltime.Timestamp `db:"f_updated_at,default='0'" json:"updatedAt"`
+	UpdatedAt sqltime.Timestamp `db:"updated_at,default='0'" json:"updatedAt"`
 }
 
 func (cu *CreationModificationTime) MarkModifiedAt() {
@@ -41,7 +41,7 @@ func (cu *CreationModificationTime) MarkCreatedAt() {
 type CreationModificationDeletionTime struct {
 	CreationModificationTime
 	// DeletedAt 删除时间 秒时间戳
-	DeletedAt sqltime.Timestamp `db:"f_deleted_at,default='0'" json:"deletedAt,omitempty"`
+	DeletedAt sqltime.Timestamp `db:"deleted_at,default='0'" json:"deletedAt,omitempty"`
 }
 
 func (cmd CreationModificationDeletionTime) SoftDeletion() (string, []string, driver.Value) {

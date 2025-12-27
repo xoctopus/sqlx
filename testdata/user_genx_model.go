@@ -15,6 +15,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TUser *tUser
@@ -40,9 +41,9 @@ func init() {
 		Age:       modeled.CT[User, int](m.C("Age")),
 		Gender:    modeled.CT[User, Gender](m.C("Gender")),
 		Asset:     modeled.CT[User, types.Decimal](m.C("Asset")),
-		CreatedAt: modeled.CT[User, types.Datetime](m.C("CreatedAt")),
-		UpdatedAt: modeled.CT[User, types.Datetime](m.C("UpdatedAt")),
-		DeletedAt: modeled.CT[User, types.Datetime](m.C("DeletedAt")),
+		CreatedAt: modeled.CT[User, sqltime.Datetime](m.C("CreatedAt")),
+		UpdatedAt: modeled.CT[User, sqltime.Datetime](m.C("UpdatedAt")),
+		DeletedAt: modeled.CT[User, sqltime.Datetime](m.C("DeletedAt")),
 	}
 }
 
@@ -79,12 +80,12 @@ type tUser struct {
 	Gender modeled.TCol[User, Gender]
 	// Asset 资产 decimal(32,4)
 	Asset modeled.TCol[User, types.Decimal]
-	// CreatedAt 创建日期时间(毫秒)
-	CreatedAt modeled.TCol[User, types.Datetime]
-	// UpdatedAt 更新日期时间(毫秒)
-	UpdatedAt modeled.TCol[User, types.Datetime]
-	// DeletedAt 删除日期时间(毫秒)
-	DeletedAt modeled.TCol[User, types.Datetime]
+	// CreatedAt 创建日期时间(秒)
+	CreatedAt modeled.TCol[User, sqltime.Datetime]
+	// UpdatedAt 更新日期时间(秒)
+	UpdatedAt modeled.TCol[User, sqltime.Datetime]
+	// DeletedAt 删除日期时间(秒)
+	DeletedAt modeled.TCol[User, sqltime.Datetime]
 }
 
 // New creates a new User

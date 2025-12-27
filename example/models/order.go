@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/xoctopus/sqlx/example/enums"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 // Order 订单
@@ -39,9 +40,9 @@ type OrderData struct {
 	// Currency 结算币种
 	Currency enums.Currency `db:"currency"`
 	// PaidAt 订单支付时间
-	PaidAt types.Timestamp `db:"paid_at,default=0"`
+	PaidAt sqltime.Timestamp `db:"paid_at,default=0"`
 	// CanceledAt 订单取消时间
-	CanceledAt types.Timestamp `db:"canceled_at,default=0"`
+	CanceledAt sqltime.Timestamp `db:"canceled_at,default=0"`
 	// Status 订单状态
 	Status enums.OrderStatus `db:"status"`
 }

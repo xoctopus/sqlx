@@ -8,6 +8,7 @@ import (
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 func TestOperationTimestamp(t *testing.T) {
@@ -20,7 +21,7 @@ func TestOperationTimestamp(t *testing.T) {
 			Expect(t, ops.CreatedAt.IsZero(), BeFalse())
 		})
 		t.Run("UserMarked", func(t *testing.T) {
-			ts := types.AsTimestamp(time.Now())
+			ts := sqltime.AsTimestamp(time.Now())
 			ops.CreatedAt = ts
 			ops.MarkCreatedAt()
 			Expect(t, ts.Equal(ops.CreatedAt.Unwrap()), BeTrue())
@@ -38,7 +39,7 @@ func TestOperationTimestamp(t *testing.T) {
 			Expect(t, ops.UpdatedAt.IsZero(), BeFalse())
 		})
 		t.Run("UserMarked", func(t *testing.T) {
-			ts := types.AsTimestamp(time.Now())
+			ts := sqltime.AsTimestamp(time.Now())
 			ops.CreatedAt = ts
 			ops.UpdatedAt = ts
 			Expect(t, ts.Equal(ops.CreatedAt.Unwrap()), BeTrue())

@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/xoctopus/sqlx/example/enums"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 // Shipment 物流
@@ -33,7 +34,7 @@ type ShipmentData struct {
 	// Status 物流状态
 	Status enums.ShipmentStatus `db:"status"`
 	// ShippedAt 开始运输时间
-	ShippedAt types.Timestamp `db:"shipped_at"`
+	ShippedAt sqltime.Timestamp `db:"shipped_at"`
 	// DeliveredAt 抵达时间
-	DeliveredAt types.Timestamp `db:"delivered_at"`
+	DeliveredAt sqltime.Timestamp `db:"delivered_at"`
 }

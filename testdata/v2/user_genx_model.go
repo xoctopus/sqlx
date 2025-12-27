@@ -13,7 +13,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
-	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 	"github.com/xoctopus/sqlx/testdata"
 )
 
@@ -39,8 +39,8 @@ func init() {
 		Nickname:  modeled.CT[User, string](m.C("Nickname")),
 		Gender:    modeled.CT[User, testdata.Gender](m.C("Gender")),
 		Desc:      modeled.CT[User, string](m.C("Desc")),
-		CreatedAt: modeled.CT[User, types.Datetime](m.C("CreatedAt")),
-		UpdatedAt: modeled.CT[User, types.Datetime](m.C("UpdatedAt")),
+		CreatedAt: modeled.CT[User, sqltime.Datetime](m.C("CreatedAt")),
+		UpdatedAt: modeled.CT[User, sqltime.Datetime](m.C("UpdatedAt")),
 	}
 }
 
@@ -76,10 +76,10 @@ type tUser struct {
 	Gender modeled.TCol[User, testdata.Gender]
 	// Desc 描述 new added
 	Desc modeled.TCol[User, string]
-	// CreatedAt 创建日期时间(毫秒)
-	CreatedAt modeled.TCol[User, types.Datetime]
-	// UpdatedAt 更新日期时间(毫秒)
-	UpdatedAt modeled.TCol[User, types.Datetime]
+	// CreatedAt 创建日期时间(秒)
+	CreatedAt modeled.TCol[User, sqltime.Datetime]
+	// UpdatedAt 更新日期时间(秒)
+	UpdatedAt modeled.TCol[User, sqltime.Datetime]
 }
 
 // New creates a new User

@@ -16,6 +16,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TProduct *tProduct
@@ -39,9 +40,9 @@ func init() {
 		Price:       modeled.CT[Product, types.Decimal](m.C("Price")),
 		Currency:    modeled.CT[Product, enums.Currency](m.C("Currency")),
 		Status:      modeled.CT[Product, enums.ProductStatus](m.C("Status")),
-		CreatedAt:   modeled.CT[Product, types.Timestamp](m.C("CreatedAt")),
-		UpdatedAt:   modeled.CT[Product, types.Timestamp](m.C("UpdatedAt")),
-		DeletedAt:   modeled.CT[Product, types.Timestamp](m.C("DeletedAt")),
+		CreatedAt:   modeled.CT[Product, sqltime.Timestamp](m.C("CreatedAt")),
+		UpdatedAt:   modeled.CT[Product, sqltime.Timestamp](m.C("UpdatedAt")),
+		DeletedAt:   modeled.CT[Product, sqltime.Timestamp](m.C("DeletedAt")),
 	}
 	Catalog.Add(TProduct)
 }
@@ -75,12 +76,12 @@ type tProduct struct {
 	Currency modeled.TCol[Product, enums.Currency]
 	// Status 产品销售状态
 	Status modeled.TCol[Product, enums.ProductStatus]
-	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt modeled.TCol[Product, types.Timestamp]
-	// UpdatedAt 更新时间 毫秒时间戳
-	UpdatedAt modeled.TCol[Product, types.Timestamp]
-	// DeletedAt 删除时间 毫秒时间戳
-	DeletedAt modeled.TCol[Product, types.Timestamp]
+	// CreatedAt 创建时间 秒时间戳
+	CreatedAt modeled.TCol[Product, sqltime.Timestamp]
+	// UpdatedAt 更新时间 秒时间戳
+	UpdatedAt modeled.TCol[Product, sqltime.Timestamp]
+	// DeletedAt 删除时间 秒时间戳
+	DeletedAt modeled.TCol[Product, sqltime.Timestamp]
 }
 
 // New creates a new Product

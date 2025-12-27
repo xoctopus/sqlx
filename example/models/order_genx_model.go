@@ -15,6 +15,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TOrder *tOrder
@@ -36,11 +37,11 @@ func init() {
 		OrderNo:    modeled.CT[Order, string](m.C("OrderNo")),
 		Amount:     modeled.CT[Order, types.Decimal](m.C("Amount")),
 		Currency:   modeled.CT[Order, enums.Currency](m.C("Currency")),
-		PaidAt:     modeled.CT[Order, types.Timestamp](m.C("PaidAt")),
-		CanceledAt: modeled.CT[Order, types.Timestamp](m.C("CanceledAt")),
+		PaidAt:     modeled.CT[Order, sqltime.Timestamp](m.C("PaidAt")),
+		CanceledAt: modeled.CT[Order, sqltime.Timestamp](m.C("CanceledAt")),
 		Status:     modeled.CT[Order, enums.OrderStatus](m.C("Status")),
-		CreatedAt:  modeled.CT[Order, types.Timestamp](m.C("CreatedAt")),
-		UpdatedAt:  modeled.CT[Order, types.Timestamp](m.C("UpdatedAt")),
+		CreatedAt:  modeled.CT[Order, sqltime.Timestamp](m.C("CreatedAt")),
+		UpdatedAt:  modeled.CT[Order, sqltime.Timestamp](m.C("UpdatedAt")),
 	}
 	Catalog.Add(TOrder)
 }
@@ -71,15 +72,15 @@ type tOrder struct {
 	// Currency 结算币种
 	Currency modeled.TCol[Order, enums.Currency]
 	// PaidAt 订单支付时间
-	PaidAt modeled.TCol[Order, types.Timestamp]
+	PaidAt modeled.TCol[Order, sqltime.Timestamp]
 	// CanceledAt 订单取消时间
-	CanceledAt modeled.TCol[Order, types.Timestamp]
+	CanceledAt modeled.TCol[Order, sqltime.Timestamp]
 	// Status 订单状态
 	Status modeled.TCol[Order, enums.OrderStatus]
-	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt modeled.TCol[Order, types.Timestamp]
-	// UpdatedAt 更新时间 毫秒时间戳
-	UpdatedAt modeled.TCol[Order, types.Timestamp]
+	// CreatedAt 创建时间 秒时间戳
+	CreatedAt modeled.TCol[Order, sqltime.Timestamp]
+	// UpdatedAt 更新时间 秒时间戳
+	UpdatedAt modeled.TCol[Order, sqltime.Timestamp]
 }
 
 // New creates a new Order

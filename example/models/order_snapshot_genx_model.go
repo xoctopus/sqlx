@@ -14,6 +14,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types"
+	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
 var TOrderSnapshot *tOrderSnapshot
@@ -36,7 +37,7 @@ func init() {
 		Price:       modeled.CT[OrderSnapshot, types.Decimal](m.C("Price")),
 		Quantity:    modeled.CT[OrderSnapshot, int64](m.C("Quantity")),
 		Subtotal:    modeled.CT[OrderSnapshot, types.Decimal](m.C("Subtotal")),
-		CreatedAt:   modeled.CT[OrderSnapshot, types.Timestamp](m.C("CreatedAt")),
+		CreatedAt:   modeled.CT[OrderSnapshot, sqltime.Timestamp](m.C("CreatedAt")),
 	}
 	Catalog.Add(TOrderSnapshot)
 }
@@ -69,8 +70,8 @@ type tOrderSnapshot struct {
 	Quantity modeled.TCol[OrderSnapshot, int64]
 	// Subtotal 订单金额
 	Subtotal modeled.TCol[OrderSnapshot, types.Decimal]
-	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt modeled.TCol[OrderSnapshot, types.Timestamp]
+	// CreatedAt 创建时间 秒时间戳
+	CreatedAt modeled.TCol[OrderSnapshot, sqltime.Timestamp]
 }
 
 // New creates a new OrderSnapshot

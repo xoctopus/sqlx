@@ -6,7 +6,7 @@ tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
 	github.com/xoctopus/datatypex v0.2.1
-	github.com/xoctopus/genx v0.1.7
+	github.com/xoctopus/genx v0.1.8
 	github.com/xoctopus/logx v0.1.1
 	github.com/xoctopus/pkgx v0.1.4
 	github.com/xoctopus/typx v0.3.3
@@ -17,7 +17,6 @@ require (
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/lib/pq v1.10.9
 )
 
 // extended datatypes
