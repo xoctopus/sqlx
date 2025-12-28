@@ -54,7 +54,7 @@ type JSONDBType struct {
 	typ string
 }
 
-func (t JSONDBType) DBType() string {
+func (t JSONDBType) DBType(driver string) string {
 	if t.typ != "" {
 		return t.typ
 	}
