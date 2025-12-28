@@ -34,9 +34,9 @@ func TestJSON(t *testing.T) {
 			Expect(t, v, Equal[driver.Value]("[1]"))
 		})
 		t.Run("DatabaseType", func(t *testing.T) {
-			Expect(t, arr.DBType(), Equal("TEXT"))
+			Expect(t, arr.DBType(""), Equal("TEXT"))
 			arr.WithDBType("JSON")
-			Expect(t, arr.DBType(), Equal("JSON"))
+			Expect(t, arr.DBType(""), Equal("JSON"))
 		})
 	})
 

@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	DatetimeZero     = Datetime{Timestamp: TimestampZero}
-	DatetimeUnixZero = Datetime{Timestamp: TimestampUnixZero}
+	DatetimeZero           = Datetime{Timestamp: TimestampZero}
+	DatetimeUnixZero       = Datetime{Timestamp: TimestampUnixZero}
+	DatetimeEpoch          = "1970-01-01 00:00:00"
+	DatetimeEpochPrecision = "1970-01-01 00:00:00.000"
 )
 
 func AsDatetime(t time.Time) Datetime {

@@ -44,7 +44,7 @@ type CreationModificationDeletionDatetime struct {
 }
 
 func (cud CreationModificationDeletionDatetime) SoftDeletion() (string, []string, driver.Value) {
-	return "DeletedAt", []string{"UpdatedAt"}, sqltime.DatetimeZero
+	return "DeletedAt", []string{"UpdatedAt"}, sqltime.DatetimeEpoch
 }
 
 func (cud *CreationModificationDeletionDatetime) MarkDeletedAt() {
