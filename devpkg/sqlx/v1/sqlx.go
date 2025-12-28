@@ -209,19 +209,35 @@ func (m *Model) ModeledColInitList(ctx context.Context) s.Snippet {
 func (m *Model) Ident() s.Snippet { return m.ident }
 
 func (m *Model) ModeledM(ctx context.Context) s.Snippet {
-	return s.Expose(ctx, _modeled, "M", m.ident)
+	return s.Compose(
+		s.ExposeUnsafe(ctx, _modeled, "M"),
+		s.Block("["), m.ident, s.Block("]"),
+	)
+	// return s.Expose(ctx, _modeled, "M", m.ident)
 }
 
 func (m *Model) ModeledTable(ctx context.Context) s.Snippet {
-	return s.Expose(ctx, _modeled, "Table", m.ident)
+	return s.Compose(
+		s.ExposeUnsafe(ctx, _modeled, "Table"),
+		s.Block("["), m.ident, s.Block("]"),
+	)
+	// return s.Expose(ctx, _modeled, "Table", m.ident)
 }
 
 func (m *Model) ModeledTCol(ctx context.Context, t typx.Type) s.Snippet {
-	return s.Expose(ctx, _modeled, "TCol", m.ident, s.Ident(ctx, t))
+	return s.Compose(
+		s.ExposeUnsafe(ctx, _modeled, "TCol"),
+		s.Block("["), m.ident, s.Block(", "), s.Ident(ctx, t), s.Block("]"),
+	)
+	// return s.Expose(ctx, _modeled, "TCol", m.ident, s.Ident(ctx, t))
 }
 
 func (m *Model) ModeledCT(ctx context.Context, t typx.Type) s.Snippet {
-	return s.Expose(ctx, _modeled, "CT", m.ident, s.Ident(ctx, t))
+	return s.Compose(
+		s.ExposeUnsafe(ctx, _modeled, "CT"),
+		s.Block("["), m.ident, s.Block(", "), s.Ident(ctx, t), s.Block("]"),
+	)
+	// return s.Expose(ctx, _modeled, "CT", m.ident, s.Ident(ctx, t))
 }
 
 func (m *Model) TableName() s.Snippet {
