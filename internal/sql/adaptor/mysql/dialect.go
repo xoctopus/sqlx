@@ -236,8 +236,13 @@ func (d dialect) datatype(typ typx.Type, def builder.ColumnDef) string {
 	must.BeTrueF(typ != nil, "column def missing type info")
 	// from descriptor
 	if rt, ok := typ.Unwrap().(reflect.Type); ok {
-		v := reflect.New(rt).Interface()
-		if desc, ok := v.(builder.WithDatatypeDesc); ok {
+		rv := reflect.New(rt)
+		ptr := rv.Interface()
+		if desc, ok := ptr.(builder.WithDatatypeDesc); ok {
+			return strings.ToUpper(desc.DBType("mysql"))
+		}
+		val := rv.Elem().Interface()
+		if desc, ok := val.(builder.WithDatatypeDesc); ok {
 			return strings.ToUpper(desc.DBType("mysql"))
 		}
 	}
