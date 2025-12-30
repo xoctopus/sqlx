@@ -119,7 +119,7 @@ func (t *Timestamp) UnmarshalJSON(data []byte) error {
 }
 
 func (t Timestamp) Int() int64 {
-	return t.Time.Unix()
+	return t.Unix()
 }
 
 func (t Timestamp) IsZero() bool {

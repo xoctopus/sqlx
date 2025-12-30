@@ -2,10 +2,12 @@ package hack
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"os"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/xoctopus/logx"
 	. "github.com/xoctopus/x/testx"
@@ -21,7 +23,8 @@ func Check(t testing.TB) {
 		t.Skip("should depend on postgres/mysql")
 	}
 	once.Do(func() {
-		// time.Sleep(time.Second * 5) // to wait dependencies ready
+		fmt.Println("HACK_TEST ENABLED")
+		time.Sleep(time.Second * 5) // to wait dependencies ready
 	})
 }
 

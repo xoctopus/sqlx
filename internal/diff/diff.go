@@ -118,8 +118,6 @@ func Diff(ctx context.Context, d adaptor.Dialect, curr, next builder.Table) frag
 			// diff datatype and modify
 			typCurr, _ := frag.Collect(ctx, d.DBType(builder.GetColDef(currc)))
 			typNext, _ := frag.Collect(ctx, d.DBType(builder.GetColDef(nextc)))
-			typCurr = strings.ToUpper(typCurr)
-			typNext = strings.ToUpper(typNext)
 			if !strings.EqualFold(typCurr, typNext) {
 				dd.columns[nextc.Name()] = ACT_MODIFY_COL
 				dd.do(ACT_MODIFY_COL, nextc.Name(), d.ModifyColumn(nextc, currc))

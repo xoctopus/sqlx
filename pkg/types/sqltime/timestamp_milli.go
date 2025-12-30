@@ -117,7 +117,7 @@ func (t *TimestampMilli) UnmarshalJSON(data []byte) error {
 }
 
 func (t TimestampMilli) Int() int64 {
-	return t.Time.UnixMilli()
+	return t.UnixMilli()
 }
 
 func (t TimestampMilli) IsZero() bool {

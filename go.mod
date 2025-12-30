@@ -1,16 +1,16 @@
 module github.com/xoctopus/sqlx
 
-go 1.25.4
+go 1.25.5
 
 tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
 	github.com/xoctopus/datatypex v0.2.1
-	github.com/xoctopus/genx v0.1.9
+	github.com/xoctopus/genx v0.1.10
 	github.com/xoctopus/logx v0.1.1
-	github.com/xoctopus/pkgx v0.1.4
-	github.com/xoctopus/typx v0.3.3
-	github.com/xoctopus/x v0.2.6
+	github.com/xoctopus/pkgx v0.1.5
+	github.com/xoctopus/typx v0.3.4
+	github.com/xoctopus/x v0.2.7
 )
 
 // drivers

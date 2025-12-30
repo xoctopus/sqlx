@@ -11,7 +11,6 @@ import (
 
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
-	"github.com/xoctopus/pkgx/pkg/pkgx"
 	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/stringsx"
@@ -103,7 +102,6 @@ func NewModel(g genx.Context, t types.Type) *Model {
 type Model struct {
 	typ    typx.Type
 	ptr    typx.Type
-	doc    *pkgx.Doc
 	fields []*structs.Field
 
 	ident s.Snippet
@@ -252,7 +250,7 @@ func (m *Model) TableDesc() s.Snippet {
 }
 
 func (m *Model) Register() s.Snippet {
-	if register, _ := m.attrs[AttrRegister]; len(register) > 0 {
+	if register := m.attrs[AttrRegister]; len(register) > 0 {
 		return s.BlockF("%s.Add(T%s)", register, m.typ.Name())
 	}
 	return nil
@@ -321,7 +319,7 @@ func (m *Model) UniqueConditions(ctx context.Context, names []string) s.Snippet 
 		if i > 0 {
 			code.WriteString("\n")
 		}
-		code.WriteString(fmt.Sprintf("\t\tT#T#.%s.AsCond(#builder.Eq#(m.%s)),", name, name))
+		_, _ = fmt.Fprintf(code, "\t\tT#T#.%s.AsCond(#builder.Eq#(m.%s)),", name, name)
 	}
 	return s.Template(
 		code,
