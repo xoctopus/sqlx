@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/xoctopus/datatypex"
 	"github.com/xoctopus/x/flagx"
 
 	"github.com/xoctopus/sqlx/internal/diff"
@@ -16,8 +15,8 @@ import (
 )
 
 type Database struct {
-	Endpoint datatypex.Endpoint
-	Readonly datatypex.Endpoint
+	Endpoint Endpoint
+	Readonly Endpoint
 
 	AutoMigration   bool
 	DryRun          bool
