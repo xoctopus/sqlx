@@ -1,0 +1,205 @@
+
+<a name="v0.1.16"></a>
+## [v0.1.16](https://github.com/xoctopus/sqlx/compare/v0.1.15...v0.1.16)
+
+> 2026-01-04
+
+### Chore
+
+* update dependencies
+
+
+<a name="v0.1.15"></a>
+## [v0.1.15](https://github.com/xoctopus/sqlx/compare/v0.1.14...v0.1.15)
+
+> 2026-01-04
+
+### Chore
+
+* update dependencies
+
+
+<a name="v0.1.14"></a>
+## [v0.1.14](https://github.com/xoctopus/sqlx/compare/v0.1.13...v0.1.14)
+
+> 2026-01-04
+
+### Chore
+
+* update dependencies
+
+
+<a name="v0.1.13"></a>
+## [v0.1.13](https://github.com/xoctopus/sqlx/compare/v0.1.12...v0.1.13)
+
+> 2026-01-02
+
+### Feat
+
+* **session:** migrate endpoint
+
+
+<a name="v0.1.12"></a>
+## [v0.1.12](https://github.com/xoctopus/sqlx/compare/v0.0.11...v0.1.12)
+
+> 2025-12-30
+
+### Chore
+
+* add linter and fixing
+
+
+<a name="v0.0.11"></a>
+## [v0.0.11](https://github.com/xoctopus/sqlx/compare/v0.0.10...v0.0.11)
+
+> 2025-12-29
+
+### Fix
+
+* diff column datatype and timestamp default value
+
+
+<a name="v0.0.10"></a>
+## [v0.0.10](https://github.com/xoctopus/sqlx/compare/v0.0.9...v0.0.10)
+
+> 2025-12-28
+
+
+<a name="v0.0.9"></a>
+## [v0.0.9](https://github.com/xoctopus/sqlx/compare/v0.0.8...v0.0.9)
+
+> 2025-12-28
+
+### Fix
+
+* **adaptor:** mysql dsn parser
+
+
+<a name="v0.0.8"></a>
+## [v0.0.8](https://github.com/xoctopus/sqlx/compare/v0.0.7...v0.0.8)
+
+> 2025-12-28
+
+
+<a name="v0.0.7"></a>
+## [v0.0.7](https://github.com/xoctopus/sqlx/compare/v0.0.6...v0.0.7)
+
+> 2025-12-28
+
+### Fix
+
+* **adaptor:** check datatype descriptor
+
+
+<a name="v0.0.6"></a>
+## [v0.0.6](https://github.com/xoctopus/sqlx/compare/v0.0.5...v0.0.6)
+
+> 2025-12-28
+
+### Feat
+
+* **devpkg:** use unsafe exposer for speeding generating
+
+
+<a name="v0.0.5"></a>
+## [v0.0.5](https://github.com/xoctopus/sqlx/compare/v0.0.4...v0.0.5)
+
+> 2025-12-28
+
+### Feat
+
+* **types:** enrich basic types
+
+
+<a name="v0.0.4"></a>
+## [v0.0.4](https://github.com/xoctopus/sqlx/compare/v0.0.3...v0.0.4)
+
+> 2025-12-25
+
+### Fix
+
+* session injections
+
+
+<a name="v0.0.3"></a>
+## [v0.0.3](https://github.com/xoctopus/sqlx/compare/v0.0.2...v0.0.3)
+
+> 2025-12-24
+
+### Feat
+
+* curd operations generate
+* **devpkg:** curd generated
+
+
+<a name="v0.0.2"></a>
+## [v0.0.2](https://github.com/xoctopus/sqlx/compare/v0.0.1...v0.0.2)
+
+> 2025-12-15
+
+### Chore
+
+* regen
+* regenerated
+
+### Ci
+
+* fix ci-cover with hack_dep cover filter
+* fix ci-cover with hack_dep
+* ignore testing for hack package
+
+### Feat
+
+* table for testing and hack test checker
+* **adaptor:** mysql driver
+* **session:** exports
+
+### Fix
+
+* romove column tag context once attr
+* make column default option literal; KeyDefine support column name or field name
+* **builder:** remove context depends on table scanning
+* **devpkg:** remove context depends on table scanning
+
+### Refact
+
+* rename OptionsFieldNames => OptionsNames
+* rename OptionsFieldNames => OptionsNames
+
+### Test
+
+* use fixed hack data
+* **frag:** unit test
+
+
+<a name="v0.0.1"></a>
+## v0.0.1
+
+> 2025-12-03
+
+### Chore
+
+* bump dependencies and adaption
+* bump dependencies
+* bump dependencies
+* clearify frag APIs
+
+### Ci
+
+* add .github ci flow
+
+### Feat
+
+* table def generator
+* table def generator
+* sql fragments
+* **builder:** mysql-on_duplicate pg-on_conflict
+* **builder:** sql builder APIs
+* **internal:** sql scanner,driver,adapter; scoped builder; error defines
+* **sqltypes:** feat(sqltypes): add fundamental sql types
+* **sqltypes:** add fundamental sql types
+
+### Fix
+
+* fix unit tests
+
