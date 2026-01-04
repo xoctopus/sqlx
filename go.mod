@@ -5,9 +5,9 @@ go 1.25.5
 tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
-	github.com/xoctopus/genx v0.1.12
+	github.com/xoctopus/genx v0.1.13
 	github.com/xoctopus/logx v0.1.1
-	github.com/xoctopus/pkgx v0.1.8
+	github.com/xoctopus/pkgx v0.1.9
 	github.com/xoctopus/typx v0.3.4
 	github.com/xoctopus/x v0.2.10
 )
