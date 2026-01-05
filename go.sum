@@ -9,8 +9,8 @@ github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX
 github.com/kisielk/sqlstruct v0.0.0-20201105191214-5f3e10d3ab46/go.mod h1:yyMNCyc/Ib3bDTKd379tNMpB/7/H5TjM2Y9QJ5THLbE=
 github.com/shopspring/decimal v1.4.0 h1:bxl37RwXBklmTi0C79JfXCEBD1cqqHt0bbgBAGFp81k=
 github.com/shopspring/decimal v1.4.0/go.mod h1:gawqmDU56v4yIKSwfBSFip1HdCCXN8/+DMd9qYNcwME=
-github.com/xoctopus/genx v0.1.14 h1:i/nOLbJe1jmWh1GvIKYEqipdR9zPf2fsCqTtqWrzGMo=
-github.com/xoctopus/genx v0.1.14/go.mod h1:RWS1f7UzFjeApKCLH4p+HUSIM9CZ/hM9Ohhpd2/E6LY=
+github.com/xoctopus/genx v0.1.15 h1:p1GT7+FlTCNGlSbdt1suZ/7I+Pb7u/UTKWphMoYUvWw=
+github.com/xoctopus/genx v0.1.15/go.mod h1:qVlON2kAMjzyo9eNR2gpFiUgkq8RSsHGNogi3LbpuHQ=
 github.com/xoctopus/logx v0.1.1 h1:Y4/IDiphRQeoN4EqAtP9Wt+77b44f6GG/PQXUqvsEgU=
 github.com/xoctopus/logx v0.1.1/go.mod h1:EWenMh0WU80DPrRo6KcgKlwNSwLG6TR9OvXd6z9tZyM=
 github.com/xoctopus/pkgx v0.1.10 h1:PbmUQCrH8ZJI+eq7+yyuQCR/tJA8F+JYDgEz1XydJn4=
