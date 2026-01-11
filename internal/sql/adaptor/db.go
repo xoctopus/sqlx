@@ -3,6 +3,7 @@ package adaptor
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"runtime"
 
@@ -67,8 +68,8 @@ func (d *db) Query(ctx context.Context, f frag.Fragment) (*sql.Rows, error) {
 
 func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) {
 	var (
-		entry = false
-		tx    *sql.Tx
+		entry = false // if tx scope created
+		tx    *sql.Tx // tx from context or begin tx.
 	)
 
 	if exec := ExecutorFrom(ctx); exec != nil {
@@ -93,17 +94,13 @@ func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) 
 				if rollback == nil {
 					return fmt.Errorf("cause: %w", caught)
 				}
-				return fmt.Errorf("caught: %w rollback: %v", caught, rollback)
+				return fmt.Errorf("caught: %w rollback: %w", caught, rollback)
 			}
 			switch e := caught.(type) {
 			case runtime.Error:
 				panic(cause(e, rollback))
 			case error:
-				if rollback != nil {
-					err = cause(e, rollback)
-				} else {
-					err = e
-				}
+				err = cause(e, rollback)
 				return
 			default:
 				panic(cause(fmt.Errorf("%v", e), rollback))
@@ -111,7 +108,9 @@ func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) 
 		}
 		if entry {
 			if err != nil {
-				err = tx.Rollback()
+				if rollback := tx.Rollback(); rollback != nil {
+					err = errors.Join(err, rollback)
+				}
 			} else {
 				err = tx.Commit()
 			}
