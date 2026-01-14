@@ -112,3 +112,17 @@ func (d *Endpoint) Run(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (d *Endpoint) Close() error {
+	if d.db != nil {
+		if err := d.db.Close(); err != nil {
+			return err
+		}
+	}
+	if d.ro != nil {
+		if err := d.ro.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
