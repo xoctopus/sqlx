@@ -1,4 +1,14 @@
 
+<a name="v0.1.19"></a>
+## [v0.1.19](https://github.com/xoctopus/sqlx/compare/v0.1.18...v0.1.19)
+
+> 2026-01-15
+
+### Chore
+
+* hacking testing for session injection
+
+
 <a name="v0.1.18"></a>
 ## [v0.1.18](https://github.com/xoctopus/sqlx/compare/v0.1.17...v0.1.18)
 
