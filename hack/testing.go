@@ -9,11 +9,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/xoctopus/confx/pkg/types"
 	"github.com/xoctopus/logx"
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	_ "github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
+	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/session"
 )
 
 var once sync.Once
@@ -46,4 +49,20 @@ func NewAdaptor(t testing.TB, dsn string) adaptor.Adaptor {
 		_ = a.Close()
 	})
 	return a
+}
+
+func WithSession(ctx context.Context, t testing.TB, dsn string, catalogs ...builder.Catalog) context.Context {
+	Check(t)
+
+	_, err := url.Parse(dsn)
+	Expect(t, err, Succeed())
+
+	ep := session.Endpoint{
+		Endpoint: types.Endpoint[session.EndpointOption]{Address: dsn},
+	}
+
+	ep.ApplyCatalog("sqlx.hack", catalogs...)
+	Expect(t, ep.Init(ctx), Succeed())
+
+	return session.With(ctx, ep.Session())
 }

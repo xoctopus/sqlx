@@ -10,18 +10,6 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 )
 
-type OptionFunc func(*option)
-
-type option struct {
-	ReadOnly bool
-}
-
-func ReadOnly() OptionFunc {
-	return func(o *option) {
-		o.ReadOnly = true
-	}
-}
-
 type Session interface {
 	// Database physically endpoint
 	Database() string
@@ -131,7 +119,7 @@ func (s *session) Tx(ctx context.Context, exec func(context.Context) error) erro
 }
 
 func (s *session) Adaptor(options ...OptionFunc) adaptor.Adaptor {
-	opt := &option{}
+	opt := &AdaptorOption{}
 	for _, o := range options {
 		o(opt)
 	}

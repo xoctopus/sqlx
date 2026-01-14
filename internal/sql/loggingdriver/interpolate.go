@@ -59,7 +59,7 @@ const (
 )
 
 func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string, error) {
-	// TODO
+	// TODO placeholder in text
 	// placeholder is literal character: SELECT x as '?' FROM t WHERE name like '%?%'
 	// driver.NamedValue unfolded: {Name: @paramN Value: func(n int) string{ return strings.Repeat(".?", n)[1:] }()
 	if strings.Count(q, "?") != len(args) {
@@ -85,6 +85,7 @@ func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string
 				if v == nil {
 					buf.WriteString("NULL")
 				} else {
+					// TODO mysql do not support E'' as bytes value
 					buf.WriteString("E'")
 					escape(buf, v)
 					buf.WriteByte('\'')

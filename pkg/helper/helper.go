@@ -9,6 +9,11 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 )
 
+// TODO constrains of m
+// v single struct{}
+// v []any
+// ignore /expect
+
 func ColumnsAndValuesForInsertion(m any) (builder.Cols, []any) {
 	fields := structs.TableFields(m)
 	cols := make([]builder.Col, 0, len(fields))

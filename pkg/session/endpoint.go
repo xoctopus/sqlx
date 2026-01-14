@@ -1,103 +1,114 @@
 package session
 
 import (
+	"context"
 	"fmt"
-	"net/url"
-	"strconv"
-	"strings"
+
+	"github.com/xoctopus/confx/pkg/types"
+	"github.com/xoctopus/x/flagx"
+
+	"github.com/xoctopus/sqlx/internal/diff"
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	_ "github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
+	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/migrator"
 )
 
-func ParseEndpoint(text string) (*Endpoint, error) {
-	u, err := url.Parse(text)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse endpoint from %q, [cause:%w]", text, err)
-	}
-
-	ep := &Endpoint{
-		Scheme: u.Scheme,
-		Param:  u.Query(),
-		Base:   strings.TrimPrefix(u.Path, "/"),
-	}
-
-	ep.Host = u.Hostname()
-	if u.Port() != "" {
-		port, _ := strconv.ParseUint(u.Port(), 10, 16)
-		ep.Port = uint16(port)
-	}
-
-	if u.User != nil {
-		ep.Username = u.User.Username()
-		password, _ := u.User.Password()
-		ep.Password = Password(password)
-	}
-
-	return ep, nil
-}
-
 type Endpoint struct {
-	Scheme   string
-	Host     string
-	Port     uint16
-	Base     string
-	Username string
-	Password Password
-	Param    url.Values
+	types.Endpoint[EndpointOption]
+	Readonly types.Endpoint[EndpointOption]
+
+	name    string
+	catalog builder.Catalog
+	db      adaptor.Adaptor
+	ro      adaptor.Adaptor
 }
 
-func (e Endpoint) String() string {
-	u := &url.URL{
-		Scheme:   e.Scheme,
-		Host:     e.Hostname(),
-		RawQuery: e.Param.Encode(),
+// ApplyCatalog should do before endpoint initialization
+func (d *Endpoint) ApplyCatalog(name string, catalogs ...builder.Catalog) {
+	d.name = name
+	d.catalog = builder.NewCatalog()
+
+	for _, catalog := range catalogs {
+		for table := range catalog.Tables() {
+			d.catalog.Add(table)
+		}
 	}
-	if e.Base != "" {
-		u.Path = "/" + e.Base
+}
+
+func (d *Endpoint) Init(ctx context.Context) error {
+	if d.db != nil {
+		return nil
 	}
 
-	if e.Username != "" || e.Password != "" {
-		u.User = url.UserPassword(e.Username, e.Password.String())
+	if err := d.Endpoint.Init(); err != nil {
+		return fmt.Errorf("failed to init main endpoint: %w", err)
 	}
-
-	s, _ := url.QueryUnescape(u.String())
-	return s
-}
-
-func (e Endpoint) SecurityString() string {
-	if e.Password != "" {
-		e.Password = Password(e.Password.SecurityString())
-
-	}
-	return e.String()
-}
-
-func (e Endpoint) IsZero() bool {
-	return e.Host == ""
-}
-
-func (e Endpoint) Hostname() string {
-	if e.Port == 0 {
-		return e.Host
-	}
-	return fmt.Sprintf("%s:%d", e.Host, e.Port)
-}
-
-func (e Endpoint) MarshalText() ([]byte, error) {
-	return []byte(e.String()), nil
-}
-
-func (e *Endpoint) UnmarshalText(text []byte) error {
-	ep, err := ParseEndpoint(string(text))
+	main := d.Endpoint
+	db, err := adaptor.Open(ctx, main.String())
 	if err != nil {
 		return err
 	}
-	*e = *ep
+
+	d.db = db
+
+	if !d.Readonly.IsZero() {
+		if !d.Readonly.IsZero() {
+			if err = d.Readonly.Init(); err != nil {
+				return fmt.Errorf("failed to init readonly endpoint: %w", err)
+			}
+		}
+		// readonly endpoint
+		ro := d.Readonly
+		// reuse main configurations
+		if ro.Auth.IsZero() {
+			ro.Auth = main.Auth
+		}
+		ro.AddOption("_ro", "true")
+		db, err = adaptor.Open(ctx, ro.String())
+		if err != nil {
+			return err
+		}
+		d.ro = db
+	}
+
+	register(d.Name(), d.catalog)
+
 	return nil
 }
 
-const MaskedPassword = "--------"
+func (d *Endpoint) Name() string {
+	return d.name
+}
 
-type Password string
+func (d *Endpoint) Session() Session {
+	if d.ro != nil {
+		return NewRO(d.db, d.ro, d.Name())
+	}
+	return New(d.db, d.Name())
+}
 
-func (p Password) String() string { return string(p) }
+func (d *Endpoint) Catalog() builder.Catalog {
+	return d.catalog
+}
 
-func (p Password) SecurityString() string { return MaskedPassword }
+func (d *Endpoint) Run(ctx context.Context) error {
+	o := d.Endpoint.Option
+
+	if o.AutoMigration {
+		f := flagx.NewFlag[diff.Mode]()
+		if o.DryRun {
+			f.With(diff.MODE_DRY_RUN)
+		}
+		if o.CreateTableOnly {
+			f.With(diff.MODE_CREATE_TABLE)
+		}
+		ctx = diff.CtxMode.With(ctx, f)
+		q, err := migrator.Migrate(ctx, d.db, d.catalog)
+		if err != nil {
+			return err
+		}
+		fmt.Println(q)
+	}
+	return nil
+}

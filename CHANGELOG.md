@@ -1,4 +1,22 @@
 
+<a name="v0.1.17"></a>
+## [v0.1.17](https://github.com/xoctopus/sqlx/compare/v0.1.16...v0.1.17)
+
+> 2026-01-11
+
+### Chore
+
+* format config and regen
+* **deps:** bump codecov/codecov-action from 4 to 5 ([#1](https://github.com/xoctopus/sqlx/issues/1))
+* **deps:** bump actions/setup-go from 5 to 6 ([#2](https://github.com/xoctopus/sqlx/issues/2))
+* **deps:** bump actions/checkout from 4 to 6 ([#3](https://github.com/xoctopus/sqlx/issues/3))
+* **deps:** bump github.com/xoctopus/x from 0.2.10 to 0.2.11 ([#4](https://github.com/xoctopus/sqlx/issues/4))
+
+### Fix
+
+* **adaptor:** check rollback error in tx failure
+
+
 <a name="v0.1.16"></a>
 ## [v0.1.16](https://github.com/xoctopus/sqlx/compare/v0.1.15...v0.1.16)
 

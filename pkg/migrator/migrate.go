@@ -16,7 +16,7 @@ import (
 var CtxMode = diff.CtxMode
 
 // Migrate migrates tables
-// TODOs:
+// TODO migrations
 // 1. check use create table mode only
 // 2. if adaptor supports DDL transaction
 func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (string, error) {
