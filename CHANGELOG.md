@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.20...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.21...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.1.21"></a>
+## [v0.1.21](https://github.com/xoctopus/sqlx/compare/v0.1.20...v0.1.21)
+
+> 2026-01-16
+
+### Fix
+
+* **hack:** add WithSession cleanup
 
 
 <a name="v0.1.20"></a>
