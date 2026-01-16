@@ -11,6 +11,7 @@ import (
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	_ "github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/migrator"
 )
 
@@ -74,7 +75,36 @@ func (d *Endpoint) Init(ctx context.Context) error {
 
 	register(d.Name(), d.catalog)
 
+	if v := d.LivenessCheck(ctx); !v.Reachable {
+		return fmt.Errorf("failed to probe liveness: %s", v.Message)
+	}
+
 	return nil
+}
+
+func (d *Endpoint) LivenessCheck(ctx context.Context) (v types.LivenessData) {
+	var db adaptor.Adaptor
+	if d.db != nil {
+		db = d.db
+	}
+	if d.ro != nil {
+		db = d.ro
+	}
+	if db == nil {
+		v.Message = "connection lost"
+		return
+	}
+
+	span := types.Cost()
+	_, err := db.Query(ctx, frag.Query("SELECT 1"))
+	cost := span()
+	if err != nil {
+		v.Message = err.Error()
+		return
+	}
+	v.Reachable = true
+	v.RTT = types.Duration(cost)
+	return
 }
 
 func (d *Endpoint) Name() string {

@@ -1,4 +1,18 @@
 
+<a name="HEAD"></a>
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.19...HEAD)
+
+> 2026-01-15
+
+### Chore
+
+* **deps:** bump github.com/xoctopus/genx from 0.1.14 to 0.1.16 ([#6](https://github.com/xoctopus/sqlx/issues/6))
+
+### Doc
+
+* update CHANGELOG
+
+
 <a name="v0.1.19"></a>
 ## [v0.1.19](https://github.com/xoctopus/sqlx/compare/v0.1.18...v0.1.19)
 
