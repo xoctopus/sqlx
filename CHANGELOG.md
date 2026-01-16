@@ -1,8 +1,14 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.19...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.20...HEAD)
 
-> 2026-01-15
+> 0001-01-01
+
+
+<a name="v0.1.20"></a>
+## [v0.1.20](https://github.com/xoctopus/sqlx/compare/v0.1.19...v0.1.20)
+
+> 2026-01-16
 
 ### Chore
 
@@ -11,6 +17,10 @@
 ### Doc
 
 * update CHANGELOG
+
+### Feat
+
+* **session:** impl endpoint LivenessCheck
 
 
 <a name="v0.1.19"></a>

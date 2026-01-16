@@ -44,9 +44,7 @@ func NewAdaptor(t testing.TB, dsn string) adaptor.Adaptor {
 		})
 	Expect(t, err, Succeed())
 
-	t.Cleanup(func() {
-		_ = a.Close()
-	})
+	t.Cleanup(func() { _ = a.Close() })
 	return a
 }
 
@@ -67,6 +65,8 @@ func WithSession(ctx context.Context, t testing.TB, dsn string, catalogs ...buil
 			return err
 		})
 	Expect(t, err, Succeed())
+
+	t.Cleanup(func() { _ = ep.Close() })
 
 	return session.With(ctx, ep.Session())
 }
