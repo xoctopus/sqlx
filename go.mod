@@ -7,7 +7,7 @@ tool github.com/xoctopus/sqlx/internal/cmd/example
 require (
 	github.com/xoctopus/confx v0.2.18
 	github.com/xoctopus/genx v0.1.16
-	github.com/xoctopus/logx v0.1.1
+	github.com/xoctopus/logx v0.1.2
 	github.com/xoctopus/pkgx v0.1.10
 	github.com/xoctopus/typx v0.3.4
 	github.com/xoctopus/x v0.2.11
