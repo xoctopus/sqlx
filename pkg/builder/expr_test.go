@@ -358,6 +358,7 @@ func ExampleSelect() {
 		tUser,
 		Where(CT[int]("F_id").AsCond(Eq(1))),
 		ForUpdate(),
+		SkipLocked(),
 		Comment("select 1 row for update"),
 	)
 	Print(context.Background(), f)
@@ -373,7 +374,7 @@ func ExampleSelect() {
 	// SELECT DISTINCT ON (f_org_id),f_id,f_name FROM t_user ORDER BY (f_created_at)
 	// []
 	// -- select 1 row for update
-	// SELECT * FROM t_user WHERE f_id = ? FOR UPDATE
+	// SELECT * FROM t_user WHERE f_id = ? FOR UPDATE SKIP LOCKED
 	// [1]
 }
 
@@ -562,6 +563,16 @@ func ExampleUpdate() {
 		)
 	Print(context.Background(), f)
 
+	f = Update(t_stu).
+		Set(
+			ColumnsAndValues(t_stu.C("f_score"), t_stu.C("f_score").Fragment("(#+1)%100")),
+		).
+		Where(
+			CC[int](t_stu.C("f_id")).AsCond(Eq(1)),
+			Comment("update by column fragment"),
+		)
+	Print(context.Background(), f)
+
 	// Output:
 	// -- update from postgres supported
 	// UPDATE t_stu SET f_score = ?, f_class = t_class.f_class FROM t_class WHERE t_stu.f_id = t_class.f_stu_id
@@ -578,6 +589,9 @@ func ExampleUpdate() {
 	// -- update ignore
 	// UPDATE IGNORE t_stu SET f_score = ? WHERE f_id = ?
 	// [100 1]
+	// -- update by column fragment
+	// UPDATE t_stu SET f_score = (f_score+1)%100 WHERE f_id = ?
+	// [1]
 }
 
 func Example_test() {

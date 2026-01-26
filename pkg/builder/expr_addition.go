@@ -27,6 +27,7 @@ const (
 	addition_RETURNING
 	addition_FOR_UPDATE
 	addition_COMBINATION
+	addition_SKIP_LOCKD
 	addition_COMMENT = 127
 )
 
