@@ -22,10 +22,6 @@ func init() {
 	adaptor.Register(&mycli{})
 }
 
-// func Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
-// 	return (&mycli{dsn: dsn}).Open(ctx, dsn)
-// }
-
 type mycli struct {
 	dialect
 	adaptor.DB
@@ -69,9 +65,6 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 		dsn.Scheme == d.DriverName(),
 		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
 	)
-	// pass, _ := dsn.User.Password()
-	// pass, _ = url.QueryUnescape(pass)
-	// dsn.User = url.UserPassword(dsn.User.Username(), pass)
 	database := adaptor.DatabaseNameFromDSN(dsn)
 	conn, err := d.Connector().OpenConnector(dsn.String())
 	if err != nil {

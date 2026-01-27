@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.22...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.23...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.1.23"></a>
+## [v0.1.23](https://github.com/xoctopus/sqlx/compare/v0.1.22...v0.1.23)
+
+> 2026-01-26
+
+### Feat
+
+* **builder:** add SKIP_LOCKED addition
 
 
 <a name="v0.1.22"></a>

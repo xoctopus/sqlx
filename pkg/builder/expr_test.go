@@ -357,9 +357,32 @@ func ExampleSelect() {
 	f = Select(nil).From(
 		tUser,
 		Where(CT[int]("F_id").AsCond(Eq(1))),
-		ForUpdate(),
-		SkipLocked(),
+		ForUpdateSkipLocked(),
 		Comment("select 1 row for update"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(nil).From(
+		tUser,
+		Where(CT[int]("F_id").AsCond(Eq(1))),
+		ForUpdateNoWait(),
+		Comment("select 1 row for update"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(nil).From(
+		tUser,
+		Where(CT[int]("F_id").AsCond(Eq(1))),
+		ForShareSkipLocked(),
+		Comment("select 1 row for share"),
+	)
+	Print(context.Background(), f)
+
+	f = Select(nil).From(
+		tUser,
+		Where(CT[int]("F_id").AsCond(Eq(1))),
+		ForShareNoWait(),
+		Comment("select 1 row for share"),
 	)
 	Print(context.Background(), f)
 
@@ -375,6 +398,15 @@ func ExampleSelect() {
 	// []
 	// -- select 1 row for update
 	// SELECT * FROM t_user WHERE f_id = ? FOR UPDATE SKIP LOCKED
+	// [1]
+	// -- select 1 row for update
+	// SELECT * FROM t_user WHERE f_id = ? FOR UPDATE NOWAIT
+	// [1]
+	// -- select 1 row for share
+	// SELECT * FROM t_user WHERE f_id = ? FOR SHARE SKIP LOCKED
+	// [1]
+	// -- select 1 row for share
+	// SELECT * FROM t_user WHERE f_id = ? FOR SHARE NOWAIT
 	// [1]
 }
 

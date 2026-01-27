@@ -26,8 +26,8 @@ const (
 	addition_LIMIT
 	addition_RETURNING
 	addition_FOR_UPDATE
+	addition_FOR_SHARE
 	addition_COMBINATION
-	addition_SKIP_LOCKD
 	addition_COMMENT = 127
 )
 

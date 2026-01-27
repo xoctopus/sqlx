@@ -48,6 +48,19 @@ func NewAdaptor(t testing.TB, dsn string) adaptor.Adaptor {
 	return a
 }
 
+func NewAdaptorError(t testing.TB, dsn string) error {
+	Check(t)
+
+	_, err := url.Parse(dsn)
+	Expect(t, err, Succeed())
+
+	return (&retry.Retry{Repeats: 5, Interval: 3 * time.Second}).
+		Do(func() (err error) {
+			_, err = adaptor.Open(Context(t), dsn)
+			return err
+		})
+}
+
 func WithSession(ctx context.Context, t testing.TB, dsn string, catalogs ...builder.Catalog) context.Context {
 	Check(t)
 
