@@ -157,4 +157,10 @@ CREATE INDEX i_org_id ON demo (f_org_id) USING BTREE;`))
 		Expect(t, mysql.UnwrapError(err), NotBeNil[*mysqldriver.MySQLError]())
 		Expect(t, mysql.UnwrapError(errors.New("any")), BeNil[*mysqldriver.MySQLError]())
 	})
+
+	t.Run("EmptyKey", func(t *testing.T) {
+	})
+
+	t.Run("ColumnName", func(t *testing.T) {
+	})
 }

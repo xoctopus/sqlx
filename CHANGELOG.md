@@ -1,8 +1,24 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.23...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.24...HEAD)
 
-> 0001-01-01
+> 2026-01-27
+
+### Chore
+
+* **deps:** bump github.com/xoctopus/x from 0.2.11 to 0.2.12 ([#8](https://github.com/xoctopus/sqlx/issues/8))
+* **deps:** bump github.com/xoctopus/logx from 0.1.1 to 0.1.2 ([#9](https://github.com/xoctopus/sqlx/issues/9))
+* **deps:** bump github.com/xoctopus/confx from 0.2.18 to 0.2.19 ([#10](https://github.com/xoctopus/sqlx/issues/10))
+
+
+<a name="v0.1.24"></a>
+## [v0.1.24](https://github.com/xoctopus/sqlx/compare/v0.1.23...v0.1.24)
+
+> 2026-01-27
+
+### Feat
+
+* **builder:** add ForUpdate/ForShare with modifiers
 
 
 <a name="v0.1.23"></a>

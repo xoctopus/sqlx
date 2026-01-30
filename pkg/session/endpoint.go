@@ -3,6 +3,9 @@ package session
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/xoctopus/confx/pkg/types"
 	"github.com/xoctopus/x/flagx"
@@ -135,10 +138,19 @@ func (d *Endpoint) Run(ctx context.Context) error {
 		}
 		ctx = diff.CtxMode.With(ctx, f)
 		q, err := migrator.Migrate(ctx, d.db, d.catalog)
+		fmt.Println(q)
+
+		if dir, ok := migrator.CtxOutput.From(ctx); ok {
+			filename := filepath.Join(
+				dir,
+				d.name+"_"+time.Now().Format("20060102_150405.000")+".sql",
+			)
+			_ = os.WriteFile(filename, []byte(q), 0o666)
+		}
+
 		if err != nil {
 			return err
 		}
-		fmt.Println(q)
 	}
 	return nil
 }

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/xoctopus/x/contextx"
+
 	"github.com/xoctopus/sqlx/internal/diff"
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/internal/sql/loggingdriver"
@@ -13,7 +15,11 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
-var CtxMode = diff.CtxMode
+var (
+	CtxMode = diff.CtxMode
+	// CtxOutput migration result output dir
+	CtxOutput = contextx.NewT[string]()
+)
 
 // Migrate migrates tables
 // TODO migrations
