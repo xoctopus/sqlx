@@ -74,5 +74,5 @@ func Open(ctx context.Context, dsn string) (Adaptor, error) {
 			return adaptor.(Connector).Open(ctx, u)
 		}
 	}
-	return nil, fmt.Errorf("missing adaptor for %s", u.Scheme)
+	return nil, fmt.Errorf("missing adaptor: %s", dsn)
 }
