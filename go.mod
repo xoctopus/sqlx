@@ -10,7 +10,7 @@ require (
 	github.com/xoctopus/logx v0.1.2
 	github.com/xoctopus/pkgx v0.1.10
 	github.com/xoctopus/typx v0.3.4
-	github.com/xoctopus/x v0.2.12
+	github.com/xoctopus/x v0.3.2
 )
 
 // drivers
