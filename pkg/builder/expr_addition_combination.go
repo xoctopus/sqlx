@@ -53,12 +53,18 @@ func (c *combination) IsNil() bool {
 
 func (c *combination) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield(c.operator+" ", nil)
+		if !yield(c.operator+" ", nil) {
+			return
+		}
 		if c.method != "" {
-			yield(c.method+" ", nil)
+			if !yield(c.method+" ", nil) {
+				return
+			}
 		}
 		for q, args := range c.stmt.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

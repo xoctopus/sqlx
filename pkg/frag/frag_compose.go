@@ -26,10 +26,14 @@ func (f *compose) Frag(ctx context.Context) Iter {
 		i := 0
 		for frag := range NonNil(f.seq) {
 			if i > 0 {
-				yield(f.sep, nil)
+				if !yield(f.sep, nil) {
+					return
+				}
 			}
 			for q, args := range frag.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 				i++
 			}
 		}

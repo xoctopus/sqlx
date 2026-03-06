@@ -1,14 +1,34 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.24...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.26...HEAD)
 
-> 2026-01-27
+> 0001-01-01
+
+
+<a name="v0.1.26"></a>
+## [v0.1.26](https://github.com/xoctopus/sqlx/compare/v0.1.25...v0.1.26)
+
+> 2026-02-02
+
+### Chore
+
+* missing adaptor error
+
+
+<a name="v0.1.25"></a>
+## [v0.1.25](https://github.com/xoctopus/sqlx/compare/v0.1.24...v0.1.25)
+
+> 2026-01-30
 
 ### Chore
 
 * **deps:** bump github.com/xoctopus/x from 0.2.11 to 0.2.12 ([#8](https://github.com/xoctopus/sqlx/issues/8))
 * **deps:** bump github.com/xoctopus/logx from 0.1.1 to 0.1.2 ([#9](https://github.com/xoctopus/sqlx/issues/9))
 * **deps:** bump github.com/xoctopus/confx from 0.2.18 to 0.2.19 ([#10](https://github.com/xoctopus/sqlx/issues/10))
+
+### Feat
+
+* **migrator:** support migrator output to file
 
 
 <a name="v0.1.24"></a>

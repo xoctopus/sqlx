@@ -28,12 +28,14 @@ type RelUser struct {
 type UserData struct {
 	// Name 用户姓名
 	Name string `db:"f_name,width=127"`
+	// IsMember 是否为会员
+	IsMember bool `db:"f_is_member,default=0"`
 	// RealName 真实姓名
 	RealName string `db:"f_real_name"`
 	// Username 用户姓名
 	Username string `db:"f_username,width=255"`
 	// Nickname 用户昵称
-	Nickname string `db:"f_nick_name,width=127"`
+	Nickname string `db:"f_nick_name,width=128,default=''"`
 	// Age 年龄
 	Age int `db:"f_age"`
 	// Gender 性别

@@ -23,9 +23,13 @@ func (vs Values[T]) Frag(_ context.Context) Iter {
 		i := 0
 		for v := range vs {
 			if i == 0 {
-				yield("?", []any{v})
+				if !yield("?", []any{v}) {
+					return
+				}
 			} else {
-				yield(",?", []any{v})
+				if !yield(",?", []any{v}) {
+					return
+				}
 			}
 			i++
 		}
@@ -54,7 +58,9 @@ func ArgIter(ctx context.Context, v any) Iter {
 		if !IsNil(x) {
 			return func(yield func(string, []any) bool) {
 				for query, args := range x.Frag(ctx) {
-					yield(query, args)
+					if !yield(query, args) {
+						return
+					}
 				}
 			}
 		}
@@ -81,7 +87,9 @@ func ArgIter(ctx context.Context, v any) Iter {
 				rv := reflect.ValueOf(x)
 				return Values[any](func(yield func(any) bool) {
 					for xx := range rv.Seq() {
-						yield(xx.Interface())
+						if !yield(xx.Interface()) {
+							return
+						}
 					}
 				}).Frag(ctx)
 			}
@@ -130,7 +138,9 @@ func argsIter(ctx context.Context, v any) Iter {
 		rv := reflect.ValueOf(v)
 		return Values[any](func(yield func(any) bool) {
 			for i := 0; i < rv.Len(); i++ {
-				yield(rv.Index(i).Interface())
+				if !yield(rv.Index(i).Interface()) {
+					return
+				}
 			}
 		}).Frag(ctx)
 	}

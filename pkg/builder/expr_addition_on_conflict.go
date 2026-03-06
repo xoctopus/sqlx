@@ -59,7 +59,9 @@ func (o *onconflict) IsNil() bool {
 
 func (o *onconflict) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("ON CONFLICT ", nil)
+		if !yield("ON CONFLICT ", nil) {
+			return
+		}
 
 		for q, args := range frag.Block(
 			frag.ComposeSeq(
@@ -70,16 +72,24 @@ func (o *onconflict) Frag(ctx context.Context) frag.Iter {
 				),
 			),
 		).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
-		yield(" DO ", nil)
+		if !yield(" DO ", nil) {
+			return
+		}
 		if o.nothing {
-			yield("NOTHING", nil)
+			if !yield("NOTHING", nil) {
+				return
+			}
 			return
 		}
 
-		yield("UPDATE SET ", nil)
+		if !yield("UPDATE SET ", nil) {
+			return
+		}
 
 		frags := iterx.Map(
 			slices.Values(o.assignments),
@@ -91,7 +101,9 @@ func (o *onconflict) Frag(ctx context.Context) frag.Iter {
 			},
 		)
 		for q, args := range frag.ComposeSeq(", ", frag.NonNil(frags)).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

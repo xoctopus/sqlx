@@ -9,9 +9,9 @@ import (
 
 	"github.com/xoctopus/x/misc/must"
 
-	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 type action struct {
@@ -115,14 +115,15 @@ func Diff(ctx context.Context, d adaptor.Dialect, curr, next builder.Table) frag
 				// }
 				continue
 			}
+			name := nextc.Name()
 			// diff datatype and modify
 			typCurr, _ := frag.Collect(ctx, d.DBType(builder.GetColDef(currc)))
 			typNext, _ := frag.Collect(ctx, d.DBType(builder.GetColDef(nextc)))
 			if !strings.EqualFold(typCurr, typNext) {
-				dd.columns[nextc.Name()] = ACT_MODIFY_COL
-				dd.do(ACT_MODIFY_COL, nextc.Name(), d.ModifyColumn(nextc, currc))
+				dd.columns[name] = ACT_MODIFY_COL
+				dd.do(ACT_MODIFY_COL, name, d.ModifyColumn(nextc, currc))
 			}
-			dd.columns[nextc.Name()] = ACT_KEEP_COL
+			dd.columns[name] = ACT_KEEP_COL
 			continue
 		}
 	}

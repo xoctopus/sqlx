@@ -8,9 +8,9 @@ import (
 	"github.com/xoctopus/x/misc/must"
 
 	"github.com/xoctopus/sqlx/internal/def"
-	"github.com/xoctopus/sqlx/internal/sql/adaptor"
-	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
+	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
 
 type TSchemaTableIndex struct {
@@ -28,20 +28,21 @@ func (TSchemaTableIndex) TableName() string {
 }
 
 type TSchemaTableColumn struct {
-	TableSchema       string `db:"table_schema"`
-	Table             string `db:"table_name"`
-	ColumnName        string `db:"column_name"`
-	RawDataType       string `db:"data_type"`
-	DataType          string `db:"column_type"`
-	VarcharLength     uint64 `db:"character_maximum_length"` // char,varchar
-	BinaryLength      uint64 `db:"character_octet_length"`   // binary,varbinary
-	NumericWidth      uint64 `db:"numeric_precision"`        // decimal,numeric,float,double
-	NumericPrecision  uint64 `db:"numeric_scale"`            // decimal,numeric
-	DatetimePrecision uint64 `db:"datetime_precision"`       // datetime/timestamp/time
-	DefaultValue      string `db:"column_default"`
-	IsNullable        string `db:"is_nullable"`
-	Extra             string `db:"extra"`
-	OrdinalPosition   string `db:"ordinal_position"`
+	TableSchema       string  `db:"table_schema"`
+	Table             string  `db:"table_name"`
+	ColumnName        string  `db:"column_name"`
+	RawDataType       string  `db:"data_type"`
+	DataType          string  `db:"column_type"`
+	VarcharLength     *uint64 `db:"character_maximum_length"` // char,varchar
+	BinaryLength      *uint64 `db:"character_octet_length"`   // binary,varbinary
+	DatetimePrecision *uint64 `db:"datetime_precision"`       // datetime/timestamp/time
+	NumericWidth      *uint64 `db:"numeric_precision"`        // decimal,numeric,float,double
+	NumericPrecision  *uint64 `db:"numeric_scale"`            // decimal,numeric
+	DefaultValue      *string `db:"column_default"`
+	IsNullable        string  `db:"is_nullable"`
+	Comment           string  `db:"column_comment"`
+	Extra             string  `db:"extra"`
+	OrdinalPosition   string  `db:"ordinal_position"`
 }
 
 func (TSchemaTableColumn) TableName() string {
@@ -49,31 +50,66 @@ func (TSchemaTableColumn) TableName() string {
 }
 
 func (t *TSchemaTableColumn) ToCol() builder.Col {
-	d := &def.ColumnDef{}
-	if strings.ToLower(t.Extra) == "auto_increment" {
-		d.AutoInc = true
+	d := &def.ColumnDef{
+		DefineFrom: def.DefineFromCatalog,
 	}
-	if t.DefaultValue != "" {
-		d.Default = &t.DefaultValue
+	if len(t.Extra) > 0 {
+		extra := strings.ToUpper(t.Extra)
+		if extra == "AUTO_INCREMENT" {
+			d.AutoInc = true
+		} else {
+			if strings.HasPrefix(extra, "DEFAULT_GENERATED") {
+				following := strings.TrimPrefix(extra, "DEFAULT_GENERATED")
+				following = strings.TrimSpace(following)
+				if strings.HasPrefix(following, "ON UPDATE") {
+					onUpdate := strings.TrimPrefix(following, "ON UPDATE")
+					onUpdate = strings.TrimSpace(onUpdate)
+					d.OnUpdate = new(onUpdate)
+				}
+			}
+		}
 	}
-	if t.IsNullable == "YES" {
+	if t.DefaultValue != nil {
+		d.Default = t.DefaultValue
+	}
+	if strings.ToUpper(t.IsNullable) == "YES" {
 		d.Null = true
 	}
-	d.DataType = t.DataType
-	datatype := strings.ToLower(t.RawDataType)
-	switch datatype {
-	case "char", "varchar":
-		d.Width = t.VarcharLength
-	case "binary", "varbinary":
-		d.Width = t.BinaryLength
-	case "datetime", "timestamp", "time":
-		d.Precision = t.DatetimePrecision
-	case "decimal", "numeric":
-		// skip float/double precision width and precision define
-		// https://dev.mysql.com/doc/refman/8.0/en/floating-point-types.html
-		d.Width = t.NumericPrecision
-		d.Precision = t.NumericPrecision
+	d.DataType = strings.ToUpper(t.RawDataType)
+	d.IsUnsigned = new(strings.HasSuffix(strings.ToUpper(t.DataType), "UNSIGNED"))
+	if _, ok := TextBases[d.DataType]; ok {
+		if t.VarcharLength != nil && *t.VarcharLength != TextBasesDefaultWidth[d.DataType] {
+			d.Width = t.VarcharLength
+		}
 	}
+	if _, ok := BinaryBases[d.DataType]; ok {
+		if t.BinaryLength != nil && *t.BinaryLength != BinaryBasesDefaultWidth[d.DataType] {
+			d.Width = t.BinaryLength
+		}
+	}
+	if _, ok := DatetimeBases[d.DataType]; ok {
+		if t.DatetimePrecision != nil && *t.DatetimePrecision != DatetimeBasesDefaultPrecision[d.DataType] {
+			d.Precision = t.DatetimePrecision
+		}
+	}
+	if _, ok := IntegerBases[d.DataType]; ok {
+		if t.NumericWidth != nil {
+			unsigned := *d.IsUnsigned
+			if !unsigned && *t.NumericWidth != IntegerBasesDefaultWidth[d.DataType] ||
+				unsigned && *t.NumericWidth != UnsignedIntegerBasesDefaultWidth[d.DataType] {
+				d.Width = t.NumericWidth
+			}
+		}
+	}
+	if _, ok := FloatBases[d.DataType]; ok {
+		if t.NumericPrecision != nil && t.NumericWidth != nil &&
+			FloatBasesDefaultWidth[d.DataType] != *t.NumericWidth &&
+			FloatBasesDefaultPrecision[d.DataType] != *t.NumericPrecision {
+			d.Width = t.NumericWidth
+			d.Precision = t.NumericPrecision
+		}
+	}
+	d.Comment = t.Comment
 	return builder.C(t.ColumnName, builder.WithColDef(d))
 }
 
@@ -160,7 +196,7 @@ func ScanCatalog(ctx context.Context, a adaptor.Adaptor, database string) (build
 			}
 
 			k := builder.Key(nil)
-			if name := strings.ToLower(i.IndexName); name == "primary" {
+			if name := strings.ToUpper(i.IndexName); name == "PRIMARY" {
 				k = builder.PK(builder.ColsOf(cols...), options...)
 			} else {
 				if i.NonUnique != 0 {

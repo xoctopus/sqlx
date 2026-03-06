@@ -14,11 +14,11 @@ import (
 
 	"github.com/xoctopus/sqlx/hack"
 	"github.com/xoctopus/sqlx/internal/def"
-	"github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
-	"github.com/xoctopus/sqlx/internal/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	. "github.com/xoctopus/sqlx/pkg/frag/testutil"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
+	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/types"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
@@ -77,7 +77,7 @@ func TestDialect_Hack(t *testing.T) {
     f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'PK ID',
     f_name VARCHAR(255) NOT NULL DEFAULT '',
     f_org_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
-    f_bool BOOLEAN NOT NULL,
+    f_bool TINYINT NOT NULL,
     f_tinyint TINYINT NOT NULL,
     f_tinyint_unsigned TINYINT UNSIGNED NOT NULL,
     f_smallint SMALLINT NOT NULL,
@@ -127,7 +127,7 @@ CREATE INDEX i_org_id ON demo (f_org_id) USING BTREE;`))
 	t.Run("ModifyColumn", func(t *testing.T) {
 		currc := tab.C("f_name")
 		nextc := builder.C("f_name", builder.WithColDefOf("", `db:",default=('')"`)).Of(tab)
-		Expect(t, d.ModifyColumn(nextc, currc), BeFragment("ALTER TABLE demo MODIFY COLUMN f_name TEXT NOT NULL DEFAULT (''); /* from VARCHAR(255) NOT NULL DEFAULT '' */"))
+		Expect(t, d.ModifyColumn(nextc, currc), BeFragment("ALTER TABLE demo MODIFY COLUMN f_name TEXT NOT NULL DEFAULT (''); -- from VARCHAR(255) NOT NULL DEFAULT ''"))
 
 		currc = tab.C("f_name")
 		nextc = tab.C("f_name")

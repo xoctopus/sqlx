@@ -225,7 +225,9 @@ func (t *table) Keys() iter.Seq[Key] {
 func TableNames(c Catalog) iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for t := range c.Tables() {
-			yield(t.TableName())
+			if !yield(t.TableName()) {
+				return
+			}
 		}
 	}
 }
@@ -274,7 +276,9 @@ func (t *tables) Tables() iter.Seq[Table] {
 			for e := t.l.Front(); e != nil; e = e.Next() {
 				// x := e.Value.(Table)
 				// emit(x)
-				yield(e.Value.(Table))
+				if !yield(e.Value.(Table)) {
+					return
+				}
 			}
 		}
 

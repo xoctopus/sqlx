@@ -37,31 +37,49 @@ func (s *StmtInsert) Frag(ctx context.Context) frag.Iter {
 		comments := ExtractAdditions(addition_COMMENT, s.additions...)
 		if !frag.IsNil(comments) {
 			for q, args := range comments.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
-			yield("\n", nil)
+			if !yield("\n", nil) {
+				return
+			}
 		}
 
-		yield("INSERT", nil)
+		if !yield("INSERT", nil) {
+			return
+		}
 
 		for i := range s.modifiers {
-			yield(" "+s.modifiers[i], nil)
+			if !yield(" "+s.modifiers[i], nil) {
+				return
+			}
 		}
 
-		yield(" INTO ", nil)
+		if !yield(" INTO ", nil) {
+			return
+		}
 
 		for q, args := range s.table.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
-		yield(" ", nil)
+		if !yield(" ", nil) {
+			return
+		}
 
 		for q, args := range s.assignments.Frag(WithToggles(ctx, TOGGLE__ASSIGNMENTS)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
 		for q, args := range s.additions.Frag(WithToggles(ctx, TOGGLE__SKIP_COMMENTS)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

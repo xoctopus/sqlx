@@ -59,15 +59,21 @@ func (o *order) IsNil() bool {
 func (o *order) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		for q, args := range frag.Block(o.by).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 		if o.mode != "" {
-			yield(" "+o.mode, nil)
+			if !yield(" "+o.mode, nil) {
+				return
+			}
 		}
 		for _, x := range o.ex {
 			if !frag.IsNil(x) {
 				for q, args := range x.Frag(ctx) {
-					yield(q, args)
+					if !yield(q, args) {
+						return
+					}
 				}
 			}
 		}
@@ -88,11 +94,15 @@ func (o *orders) IsNil() bool {
 
 func (o *orders) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("ORDER BY ", nil)
+		if !yield("ORDER BY ", nil) {
+			return
+		}
 
 		iter := frag.ComposeSeq(",", frag.NonNil(slices.Values(o.orders))).Frag(ctx)
 		for q, args := range iter {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }
@@ -132,13 +142,19 @@ func (d *distinct) IsNil() bool {
 
 func (d *distinct) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("DISTINCT ON (", nil)
+		if !yield("DISTINCT ON (", nil) {
+			return
+		}
 
 		iter := frag.ComposeSeq(",", frag.NonNil(slices.Values(d.on))).Frag(ctx)
 		for q, args := range iter {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
-		yield(")", nil)
+		if !yield(")", nil) {
+			return
+		}
 	}
 }

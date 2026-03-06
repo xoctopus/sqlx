@@ -46,6 +46,7 @@ func TestParseKeyDef(t *testing.T) {
 			},
 		},
 		// invalid
+		{def: ""},
 		{def: "index"},
 		{def: "u_idx"},
 		{def: "pk"},

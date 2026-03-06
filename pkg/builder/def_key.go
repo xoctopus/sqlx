@@ -119,13 +119,19 @@ func KeyColumnsDefOf(k Key) frag.Fragment {
 		return func(yield func(string, []any) bool) {
 			for i, o := range kd.ColumnOptions() {
 				if i > 0 {
-					yield(",", nil)
+					if !yield(",", nil) {
+						return
+					}
 				}
 				c := cols.C(o.Name)
 				must.BeTrueF(c != nil, "missing column: %s", o.Name)
-				yield(c.Name(), nil)
+				if !yield(c.Name(), nil) {
+					return
+				}
 				if len(o.Options) > 0 {
-					yield(" "+strings.Join(o.Options, " "), nil)
+					if !yield(" "+strings.Join(o.Options, " "), nil) {
+						return
+					}
 				}
 			}
 		}
@@ -181,13 +187,18 @@ func (k *key) String() string {
 
 func (k *key) Cols() iter.Seq[Col] {
 	return func(yield func(Col) bool) {
+		if k.table == nil {
+			return
+		}
 		names := map[string]bool{}
 		for _, opt := range k.options {
 			names[opt.Name] = true
 		}
 		for c := range k.table.Cols() {
 			if names[c.FieldName()] || names[c.Name()] {
-				yield(c)
+				if !yield(c) {
+					return
+				}
 			}
 		}
 	}
@@ -225,7 +236,9 @@ func (ks *keys) AddKey(followers ...Key) {
 func (ks *keys) Keys() iter.Seq[Key] {
 	return func(yield func(Key) bool) {
 		for _, k := range ks.ks {
-			yield(k)
+			if !yield(k) {
+				return
+			}
 		}
 	}
 }

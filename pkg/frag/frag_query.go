@@ -63,7 +63,9 @@ func (p *pair) Frag(ctx context.Context) Iter {
 			switch c {
 			case '@': // named arguments
 				if tmp.Len() > 0 {
-					yield(tmp.String(), nil)
+					if !yield(tmp.String(), nil) {
+						return
+					}
 				}
 				tmp.Reset()
 
@@ -86,12 +88,16 @@ func (p *pair) Frag(ctx context.Context) Iter {
 					v, ok := p.set[arg]
 					must.BeTrueF(ok, "missing named argument query: %s arg: %s", p.query, arg)
 					for q, args := range ArgIter(ctx, v) {
-						yield(q, args)
+						if !yield(q, args) {
+							return
+						}
 					}
 				}
 			case '?': // placeholder
 				if tmp.Len() > 0 {
-					yield(tmp.String(), nil)
+					if !yield(tmp.String(), nil) {
+						return
+					}
 				}
 				tmp.Reset()
 				must.BeTrueF(
@@ -101,7 +107,9 @@ func (p *pair) Frag(ctx context.Context) Iter {
 				)
 				arg := p.args[idx]
 				for q, args := range ArgIter(ctx, arg) {
-					yield(q, args)
+					if !yield(q, args) {
+						return
+					}
 				}
 				idx++
 			default:
@@ -109,7 +117,9 @@ func (p *pair) Frag(ctx context.Context) Iter {
 			}
 		}
 		if tmp.Len() > 0 {
-			yield(tmp.String(), nil)
+			if !yield(tmp.String(), nil) {
+				return
+			}
 		}
 	}
 }

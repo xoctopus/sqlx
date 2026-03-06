@@ -24,6 +24,7 @@ func TestColumns(t *testing.T) {
 
 	Expect(t, cs.Len(), Equal(0))
 	Expect(t, cs.C(""), BeNil[builder.Col]())
+	Expect(t, cs.Pick().Len(), Equal(cs.Len()))
 
 	cs.(builder.ColsManager).AddCol(
 		builder.C(

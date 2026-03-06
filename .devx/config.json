@@ -10,6 +10,7 @@
 			"_genx_",
 			"main.go",
 			"testing.go",
+			"testutil/",
 			"example/"
 		],
 		"format_ignore": [

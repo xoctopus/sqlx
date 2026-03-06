@@ -10,7 +10,7 @@
 @def builder.And
 @def builder.Comment
 @def ListComment
-@def session.For
+@def session.MustFor
 @def builder.Select
 @def helper.Scan
 --List
@@ -29,7 +29,7 @@ func (m *#T#) List(ctx #context.Context#, cond #builder.SqlCondition#, adds #bui
 		#builder.Comment#(#ListComment#),
 	)
 
-	rows, err := #session.For#(ctx, m).Adaptor().Query(
+	rows, err := #session.MustFor#(ctx, m).Adaptor().Query(
 		ctx,
 		#builder.Select#(cols).From(T#T#, adds...),
 	)

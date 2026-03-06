@@ -30,12 +30,12 @@ func TestParseColDef(t *testing.T) {
 		},
 		{
 			name: "Width",
-			def:  &def.ColumnDef{Width: 10},
+			def:  &def.ColumnDef{Width: ptrx.Ptr(uint64(10))},
 			tag:  reflect.StructTag(`db:",width=10"`),
 		},
 		{
 			name: "Precision",
-			def:  &def.ColumnDef{Precision: 10},
+			def:  &def.ColumnDef{Precision: ptrx.Ptr(uint64(10))},
 			tag:  reflect.StructTag(`db:",precision=10"`),
 		},
 		{

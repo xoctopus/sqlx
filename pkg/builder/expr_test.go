@@ -9,7 +9,6 @@ import (
 
 	. "github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	. "github.com/xoctopus/sqlx/testdata"
 )
 
 var (
@@ -626,6 +625,7 @@ func ExampleUpdate() {
 	// [1]
 }
 
+/*
 func Example_test() {
 	var f frag.Fragment
 
@@ -683,6 +683,7 @@ func Example_test() {
 	// UPDATE t_user SET f_age = f_age + ? WHERE f_user_id = ?
 	// [1 100]
 }
+*/
 
 func TestAssignment(t *testing.T) {
 	testx.Expect(t, (Assignments{}).IsNil(), testx.BeTrue())

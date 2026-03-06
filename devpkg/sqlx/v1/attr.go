@@ -16,11 +16,11 @@ var attrs = []Attr{
 	AttrRegister,
 }
 
-func HasAttr(x string) Attr {
-	for _, a := range attrs {
+func HasAttr(x string) (a Attr) {
+	for _, a = range attrs {
 		if strings.EqualFold(string(a), x) {
-			return a
+			break
 		}
 	}
-	return ""
+	return a
 }

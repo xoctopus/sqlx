@@ -29,9 +29,13 @@ func (w *where) IsNil() bool {
 
 func (w *where) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("WHERE ", nil)
+		if !yield("WHERE ", nil) {
+			return
+		}
 		for q, args := range w.condition.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

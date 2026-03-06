@@ -29,6 +29,7 @@ type Adaptor interface {
 	DriverName() string
 	Schema() string
 	Endpoint() string
+	CanOption() bool
 
 	Dialect() Dialect
 	Catalog(context.Context) (builder.Catalog, error)

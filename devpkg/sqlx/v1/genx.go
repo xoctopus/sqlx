@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"go/types"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/xoctopus/genx/pkg/genx"
@@ -34,11 +33,11 @@ type uniqueAction struct {
 	code []byte
 }
 
-var byUniqueActions = []*uniqueAction{
-	{name: "Fetch", code: tplFetchByUnique},
-	{name: "Update", code: tplUpdateByUnique},
-	{name: "Delete", code: tplDeleteByUnique},
-}
+// var byUniqueActions = []*uniqueAction{
+// 	{name: "Fetch", code: tplFetchByUnique},
+// 	{name: "Update", code: tplUpdateByUnique},
+// 	{name: "Delete", code: tplDeleteByUnique},
+// }
 
 var (
 	// typesPath   = "github.com/xoctopus/sqlx/pkg/types"
@@ -79,13 +78,13 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 	}()
 
 	ctx := c.Context()
-	actions := byUniqueActions
+	// actions := byUniqueActions
 
-	if m.HasSoftDeletion() {
-		actions = append(byUniqueActions, &uniqueAction{
-			name: "MarkDeletion", code: tplSoftDeleteByUnique,
-		})
-	}
+	// if m.HasSoftDeletion() {
+	// 	actions = append(byUniqueActions, &uniqueAction{
+	// 		name: "MarkDeletion", code: tplSoftDeleteByUnique,
+	// 	})
+	// }
 
 	ss := []s.Snippet{
 		s.Template(
@@ -111,86 +110,86 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.ArgExposeUnsafe(ctx, _builder, "GetColDef").WithName("builder.GetColDef"),
 			s.ArgExposeUnsafe(ctx, _builder, "ColumnsAndValues").WithName("builder.ColumnsAndValues"),
 		),
-		s.Template(
-			bytes.NewReader(tplCreate),
-			s.Arg(ctx, "T", m.Ident()),
-			s.Arg(ctx, "CreationMarker", m.CreationMarker()),
-			s.Arg(ctx, "CreateComment", m.CommentOf("Create")),
-			s.ArgExposeUnsafe(ctx, "context", "Context"),
-			s.ArgExposeUnsafe(ctx, _helper, "ColumnsAndValuesForInsertion").WithName("helper.ColumnsAndValuesForInsertion"),
-			s.ArgExposeUnsafe(ctx, _session, "For").WithName("session.For"),
-			s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
-			s.ArgExposeUnsafe(ctx, _builder, "Insert").WithName("builder.Insert"),
-		),
-		s.Template(
-			bytes.NewReader(tplList),
-			s.Arg(ctx, "T", m.Ident()),
-			s.Arg(ctx, "ListComment", m.CommentOf("List")),
-			s.Arg(ctx, "SoftDeletionCondition", m.SoftDeletionCondition(ctx)),
-			s.ArgExposeUnsafe(ctx, "context", "Context"),
-			s.ArgExposeUnsafe(ctx, _builder, "SqlCondition").WithName("builder.SqlCondition"),
-			s.ArgExposeUnsafe(ctx, _builder, "Additions").WithName("builder.Additions"),
-			s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
-			s.ArgExposeUnsafe(ctx, _builder, "Select").WithName("builder.Select"),
-			s.ArgExposeUnsafe(ctx, _builder, "Col").WithName("builder.Col"),
-			s.ArgExposeUnsafe(ctx, _builder, "ColsOf").WithName("builder.ColsOf"),
-			s.ArgExposeUnsafe(ctx, _builder, "And").WithName("builder.And"),
-			s.ArgExposeUnsafe(ctx, _builder, "Where").WithName("builder.Where"),
-			s.ArgExposeUnsafe(ctx, _frag, "Fragment").WithName("frag.Fragment"),
-			s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
-			s.ArgExposeUnsafe(ctx, _session, "For").WithName("session.For"),
-		),
+		// s.Template(
+		// 	bytes.NewReader(tplCreate),
+		// 	s.Arg(ctx, "T", m.Ident()),
+		// 	s.Arg(ctx, "CreationMarker", m.CreationMarker()),
+		// 	s.Arg(ctx, "CreateComment", m.CommentOf("Create")),
+		// 	s.ArgExposeUnsafe(ctx, "context", "Context"),
+		// 	s.ArgExposeUnsafe(ctx, _helper, "ColumnsAndValuesForInsertion").WithName("helper.ColumnsAndValuesForInsertion"),
+		// 	s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Insert").WithName("builder.Insert"),
+		// ),
+		// s.Template(
+		// 	bytes.NewReader(tplList),
+		// 	s.Arg(ctx, "T", m.Ident()),
+		// 	s.Arg(ctx, "ListComment", m.CommentOf("List")),
+		// 	s.Arg(ctx, "SoftDeletionCondition", m.SoftDeletionCondition(ctx)),
+		// 	s.ArgExposeUnsafe(ctx, "context", "Context"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "SqlCondition").WithName("builder.SqlCondition"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Additions").WithName("builder.Additions"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Select").WithName("builder.Select"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Col").WithName("builder.Col"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "ColsOf").WithName("builder.ColsOf"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "And").WithName("builder.And"),
+		// 	s.ArgExposeUnsafe(ctx, _builder, "Where").WithName("builder.Where"),
+		// 	s.ArgExposeUnsafe(ctx, _frag, "Fragment").WithName("frag.Fragment"),
+		// 	s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
+		// 	s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
+		// ),
 	}
 
-	for _, action := range actions {
-		for _, names := range m.UniqueNames() {
-			suffix := strings.Join(names, "And")
-			args := []*s.TArg{
-				s.Arg(ctx, "T", m.Ident()),
-				s.Arg(ctx, "UniqueSuffix", s.Block(suffix)),
-				s.Arg(ctx, "UniqueConds", m.UniqueConditions(ctx, names)),
-				s.Arg(ctx, "UniqueFields", m.UniqueFields(names)),
-				s.Arg(ctx, "SoftDeletionCondition", m.SoftDeletionCondition(ctx)),
-				s.Arg(ctx, action.name+"Comment", m.CommentOf(action.name+"By"+suffix)),
-				s.Arg(ctx, "ModificationMarker", m.ModificationMarker()),
-				s.Arg(ctx, "DeletionMarker", m.DeletionMarker()),
-				s.ArgExposeUnsafe(ctx, "context", "Context"),
-				s.ArgExposeUnsafe(ctx, _frag, "Fragment").WithName("frag.Fragment"),
-				s.ArgExposeUnsafe(ctx, _builder, "Select").WithName("builder.Select"),
-				s.ArgExposeUnsafe(ctx, _builder, "Update").WithName("builder.Update"),
-				s.ArgExposeUnsafe(ctx, _builder, "Delete").WithName("builder.Delete"),
-				s.ArgExposeUnsafe(ctx, _builder, "Where").WithName("builder.Where"),
-				s.ArgExposeUnsafe(ctx, _builder, "Limit").WithName("builder.Limit"),
-				s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
-				s.ArgExposeUnsafe(ctx, _builder, "And").WithName("builder.And"),
-				s.ArgExposeUnsafe(ctx, _builder, "Col").WithName("builder.Col"),
-				s.ArgExposeUnsafe(ctx, _builder, "CC").WithName("builder.CC"),
-				s.ArgExposeUnsafe(ctx, _builder, "Eq").WithName("builder.Eq"),
-				s.ArgExposeUnsafe(ctx, _builder, "Neq").WithName("builder.Neq"),
-				s.ArgExposeUnsafe(ctx, _session, "For").WithName("session.For"),
-				s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
-			}
+	// for _, action := range actions {
+	// 	for _, names := range m.UniqueNames() {
+	// 		suffix := strings.Join(names, "And")
+	// 		args := []*s.TArg{
+	// 			s.Arg(ctx, "T", m.Ident()),
+	// 			s.Arg(ctx, "UniqueSuffix", s.Block(suffix)),
+	// 			s.Arg(ctx, "UniqueConds", m.UniqueConditions(ctx, names)),
+	// 			s.Arg(ctx, "UniqueFields", m.UniqueFields(names)),
+	// 			s.Arg(ctx, "SoftDeletionCondition", m.SoftDeletionCondition(ctx)),
+	// 			s.Arg(ctx, action.name+"Comment", m.CommentOf(action.name+"By"+suffix)),
+	// 			s.Arg(ctx, "ModificationMarker", m.ModificationMarker()),
+	// 			s.Arg(ctx, "DeletionMarker", m.DeletionMarker()),
+	// 			s.ArgExposeUnsafe(ctx, "context", "Context"),
+	// 			s.ArgExposeUnsafe(ctx, _frag, "Fragment").WithName("frag.Fragment"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Select").WithName("builder.Select"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Update").WithName("builder.Update"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Delete").WithName("builder.Delete"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Where").WithName("builder.Where"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Limit").WithName("builder.Limit"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "And").WithName("builder.And"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Col").WithName("builder.Col"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "CC").WithName("builder.CC"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Eq").WithName("builder.Eq"),
+	// 			s.ArgExposeUnsafe(ctx, _builder, "Neq").WithName("builder.Neq"),
+	// 			s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
+	// 			s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
+	// 		}
 
-			if action.name == "Update" {
-				args = append(
-					args,
-					s.Arg(ctx, "codex.New", s.ExposeUnsafe(ctx, _codex, "New")),
-					s.Arg(ctx, "errors.NOTFOUND", s.ExposeUnsafe(ctx, _errors, "NOTFOUND")),
-				)
-			}
-			if action.name == "MarkDeletion" {
-				args = append(
-					args,
-					s.ArgExposeUnsafe(ctx, "database/sql/driver", "Value").WithName("driver.Value"),
-				)
-			}
+	// 		if action.name == "Update" {
+	// 			args = append(
+	// 				args,
+	// 				s.Arg(ctx, "codex.New", s.ExposeUnsafe(ctx, _codex, "New")),
+	// 				s.Arg(ctx, "errors.NOTFOUND", s.ExposeUnsafe(ctx, _errors, "NOTFOUND")),
+	// 			)
+	// 		}
+	// 		if action.name == "MarkDeletion" {
+	// 			args = append(
+	// 				args,
+	// 				s.ArgExposeUnsafe(ctx, "database/sql/driver", "Value").WithName("driver.Value"),
+	// 			)
+	// 		}
 
-			ss = append(
-				ss,
-				s.Template(bytes.NewReader(action.code), args...),
-			)
-		}
-	}
+	// 		ss = append(
+	// 			ss,
+	// 			s.Template(bytes.NewReader(action.code), args...),
+	// 		)
+	// 	}
+	// }
 
 	c.Render(s.Snippets(s.NewLine(1), ss...))
 	return nil

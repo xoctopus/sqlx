@@ -30,18 +30,28 @@ func (s *StmtDelete) Frag(ctx context.Context) frag.Iter {
 		comments := ExtractAdditions(addition_COMMENT, s.additions...)
 		if !frag.IsNil(comments) {
 			for q, args := range comments.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
-			yield("\n", nil)
+			if !yield("\n", nil) {
+				return
+			}
 		}
-		yield("DELETE FROM ", nil)
+		if !yield("DELETE FROM ", nil) {
+			return
+		}
 
 		for q, args := range s.table.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
 		for q, args := range s.additions.Frag(WithToggles(ctx, TOGGLE__SKIP_COMMENTS)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

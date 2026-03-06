@@ -37,9 +37,13 @@ func (c *comment) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		for i, line := range c.lines {
 			if i > 0 {
-				yield("\n", nil)
+				if !yield("\n", nil) {
+					return
+				}
 			}
-			yield("-- "+line, nil)
+			if !yield("-- "+line, nil) {
+				return
+			}
 		}
 	}
 }

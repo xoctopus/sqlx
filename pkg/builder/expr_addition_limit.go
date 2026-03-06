@@ -37,9 +37,13 @@ func (l *limit) IsNil() bool {
 
 func (l *limit) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield(fmt.Sprintf("LIMIT %d", l.count), nil)
+		if !yield(fmt.Sprintf("LIMIT %d", l.count), nil) {
+			return
+		}
 		if l.offset > 0 {
-			yield(fmt.Sprintf(" OFFSET %d", l.offset), nil)
+			if !yield(fmt.Sprintf(" OFFSET %d", l.offset), nil) {
+				return
+			}
 		}
 	}
 }

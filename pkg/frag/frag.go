@@ -26,7 +26,9 @@ func NonNil[F Fragment](seq iter.Seq[F]) iter.Seq[Fragment] {
 			if IsNil(frag) {
 				continue
 			}
-			yield(frag)
+			if !yield(frag) {
+				return
+			}
 		}
 	}
 }

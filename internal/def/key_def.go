@@ -15,6 +15,9 @@ import "strings"
 //	| pk           |                    | ID                            |
 func ParseKeyDef(def string) *KeyDefine {
 	parts := strings.Fields(def)
+	if len(parts) == 0 {
+		return nil
+	}
 
 	d := &KeyDefine{}
 	switch parts[0] {

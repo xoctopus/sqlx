@@ -75,47 +75,70 @@ func (s *StmtUpdate) Frag(ctx context.Context) frag.Iter {
 		comments := ExtractAdditions(addition_COMMENT, s.additions...)
 		if !frag.IsNil(comments) {
 			for q, args := range comments.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
-			yield("\n", nil)
+			if !yield("\n", nil) {
+				return
+			}
 		}
 
-		yield("UPDATE", nil)
+		if !yield("UPDATE", nil) {
+			return
+		}
 
 		for i := range s.modifiers {
-			yield(" "+s.modifiers[i], nil)
+			if !yield(" "+s.modifiers[i], nil) {
+				return
+			}
 		}
 
-		yield(" ", nil)
+		if !yield(" ", nil) {
+			return
+		}
 
 		for q, args := range s.table.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
 		joins := ExtractAdditions(addition_JOIN, s.additions...)
 		if !frag.IsNil(joins) {
 			for q, args := range joins.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 
 		if assignments := s.assignments; assignments != nil {
-			yield(" SET ", nil)
-
+			if !yield(" SET ", nil) {
+				return
+			}
 			for q, args := range frag.ComposeSeq(", ", frag.NonNil(assignments)).Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 
 		if s.from != nil {
-			yield(" FROM ", nil)
+			if !yield(" FROM ", nil) {
+				return
+			}
 			for q, args := range s.from.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 
 		for q, args := range s.additions.Frag(WithToggles(ctx, TOGGLE__SKIP_COMMENTS, TOGGLE__SKIP_JOIN)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

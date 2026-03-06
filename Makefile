@@ -2,7 +2,7 @@
 # go package info
 MODULE_PATH    := $(shell cat go.mod | grep ^module -m 1 | awk '{ print $$2; }' || '')
 MODULE_NAME    := $(shell basename $(MODULE_PATH))
-TEST_IGNORES   := "_gen.go|.pb.go|_mock.go|_genx_|main.go|testing.go|example/"
+TEST_IGNORES   := "_gen.go|.pb.go|_mock.go|_genx_|main.go|testing.go|example/|testutil/"
 FORMAT_IGNORES := ".git/,.xgo/,*.pb.go,*_genx_*"
 
 # git repository info
@@ -125,10 +125,18 @@ fmt: dep clean
 		-project-name ${MODULE_PATH} \
 		-excludes $(FORMAT_IGNORES) ./...
 
+fmt-check: fmt
+	@echo "==> checking code format"
+	@if [ -n "$$(git status --porcelain)" ]; then \
+		echo "code is not properly formatted."; \
+		exit 1; \
+	fi
+
 lint: dep
 	@echo "==> linting"
 	@echo ">>>golangci-lint"
 	@golangci-lint run
+	@go vet ./...
 	@echo "done"
 
 clean:

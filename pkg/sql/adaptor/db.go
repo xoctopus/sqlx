@@ -26,6 +26,10 @@ type db struct {
 	err func(error) error
 }
 
+func (d *db) D() *sql.DB {
+	return d.DB
+}
+
 func (d *db) Exec(ctx context.Context, f frag.Fragment) (sql.Result, error) {
 	if frag.IsNil(f) {
 		return nil, nil

@@ -4,15 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/internal/structs"
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
-
-// TODO constrains of m
-// v single struct{}
-// v []any
-// ignore /expect
 
 func ColumnsAndValuesForInsertion(m any) (builder.Cols, []any) {
 	fields := structs.TableFields(m)

@@ -7,13 +7,13 @@ import (
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/hack"
-	"github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
 )
 
 func TestOpen_Hack(t *testing.T) {
 	t.Run("FailedToAuth", func(t *testing.T) {
-		err := hack.NewAdaptorError(t, "mysql://user1:pass@localhost:13306/test")
+		err := hack.NewInvalidAdaptor(t, "mysql://user1:pass@localhost:13306/test")
 		Expect(t, err, Failed())
 		Expect(t, mysql.IsUnknownDatabaseError(err), BeFalse())
 
@@ -22,11 +22,11 @@ func TestOpen_Hack(t *testing.T) {
 		Expect(t, any(ue), NotBeNil[any]())
 	})
 	t.Run("InvalidSchema", func(t *testing.T) {
-		err := hack.NewAdaptorError(t, "invalid://user1:pass@localhost:13306/test")
+		err := hack.NewInvalidAdaptor(t, "invalid://user1:pass@localhost:13306/test")
 		Expect(t, err, ErrorContains("missing adaptor"))
 	})
 	t.Run("NeedCreateDatabase", func(t *testing.T) {
-		err := hack.NewAdaptorError(t, "mysql://root@localhost:13306/invalid.db")
+		err := hack.NewInvalidAdaptor(t, "mysql://root@localhost:13306/invalid.db")
 		Expect(t, err, Failed())
 		ue := mysql.UnwrapError(err)
 		Expect(t, ue.Number, Equal(uint16(1064))) // caused by invalid database name

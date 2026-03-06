@@ -20,9 +20,13 @@ func (e *exists) IsNil() bool {
 
 func (e *exists) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("EXISTS ", nil)
+		if !yield("EXISTS ", nil) {
+			return
+		}
 		for q, args := range frag.Block(e.f).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

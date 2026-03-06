@@ -43,20 +43,30 @@ func (w *WithStmt) IsNil() bool {
 
 func (w *WithStmt) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("WITH", nil)
+		if !yield("WITH", nil) {
+			return
+		}
 
 		if len(w.modifiers) > 0 {
-			yield(" "+strings.Join(w.modifiers, " "), nil)
+			if !yield(" "+strings.Join(w.modifiers, " "), nil) {
+				return
+			}
 		}
 
 		for i, t := range w.tables {
 			if i > 0 {
-				yield(",", nil)
+				if !yield(",", nil) {
+					return
+				}
 			}
-			yield(" ", nil)
+			if !yield(" ", nil) {
+				return
+			}
 
 			for q, args := range t.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 
 			iter := frag.Block(
@@ -66,19 +76,27 @@ func (w *WithStmt) Frag(ctx context.Context) frag.Iter {
 				),
 			).Frag(ctx)
 			for q, args := range iter {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 
-			yield(" AS ", nil)
+			if !yield(" AS ", nil) {
+				return
+			}
 
 			iter = frag.Block(w.asList[i](t)).Frag(ctx)
 			for q, args := range iter {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 
 		for q, args := range w.stmt(w.tables...).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

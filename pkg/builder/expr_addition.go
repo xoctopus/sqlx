@@ -54,7 +54,9 @@ func (as Additions) Frag(ctx context.Context) frag.Iter {
 			}
 
 			if a.Type() != addition_COMMENT {
-				yield(" ", nil)
+				if !yield(" ", nil) {
+					return
+				}
 			}
 
 			for q, args := range a.Frag(ctx) {

@@ -19,7 +19,7 @@ func main() {
 		Entrypoint: []string{
 			filepath.Join(cwd, "example", "models"),
 			filepath.Join(cwd, "example", "enums"),
-			// filepath.Join(cwd, "pkg", "types"),
+			filepath.Join(cwd, "testdata"),
 		},
 	})
 

@@ -36,20 +36,30 @@ func (g *groupby) IsNil() bool {
 
 func (g *groupby) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
-		yield("GROUP BY ", nil)
+		if !yield("GROUP BY ", nil) {
+			return
+		}
 
 		for i, group := range g.groups {
 			if i > 0 {
-				yield(",", nil)
+				if !yield(",", nil) {
+					return
+				}
 			}
 			for q, args := range group.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 		if !(frag.IsNil(g.having)) {
-			yield(" HAVING ", nil)
+			if !yield(" HAVING ", nil) {
+				return
+			}
 			for q, args := range g.having.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 	}

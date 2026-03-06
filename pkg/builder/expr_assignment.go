@@ -53,21 +53,29 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 		if usev || len(a.values) > 1 {
 			// (f_a,f_b...)
 			for q, args := range frag.Block(a.cols).Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 			values := a.values
 
 			if len(values) == 1 {
 				if stmt, ok := values[0].(SelectStatement); ok {
-					yield(" ", nil)
+					if !yield(" ", nil) {
+						return
+					}
 					for q, args := range stmt.Frag(ctx) {
-						yield(q, args)
+						if !yield(q, args) {
+							return
+						}
 					}
 					return
 				}
 			}
 
-			yield(" VALUES ", nil)
+			if !yield(" VALUES ", nil) {
+				return
+			}
 			frags := iterx.Map(
 				slices.Chunk(values, a.count),
 				func(values []any) frag.Fragment {
@@ -78,12 +86,16 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 				},
 			)
 			for q, args := range frag.BlockWithoutBrackets(frags).Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 			return
 		}
 		for q, args := range a.cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
 		value := a.values[0]
@@ -92,7 +104,9 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 		}
 
 		for q, args := range frag.Query(" = ?", value).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

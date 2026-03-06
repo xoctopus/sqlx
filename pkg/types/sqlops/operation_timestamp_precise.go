@@ -9,7 +9,7 @@ import (
 
 type CreationTimePrecise struct {
 	// CreatedAt 创建时间 毫秒时间戳
-	CreatedAt sqltime.TimestampMilli `db:"created_at,default='0'" json:"createdAt"`
+	CreatedAt sqltime.TimestampMilli `db:"created_at,default=0" json:"createdAt"`
 }
 
 func (c *CreationTimePrecise) MarkCreatedAt() {
@@ -21,7 +21,7 @@ func (c *CreationTimePrecise) MarkCreatedAt() {
 type CreationModificationTimePrecise struct {
 	CreationTimePrecise
 	// UpdatedAt 更新时间 毫秒时间戳
-	UpdatedAt sqltime.TimestampMilli `db:"updated_at,default='0'" json:"updatedAt"`
+	UpdatedAt sqltime.TimestampMilli `db:"updated_at,default=0" json:"updatedAt"`
 }
 
 func (cu *CreationModificationTimePrecise) MarkModifiedAt() {
@@ -41,7 +41,7 @@ func (cu *CreationModificationTimePrecise) MarkCreatedAt() {
 type CreationModificationDeletionTimePrecise struct {
 	CreationModificationTimePrecise
 	// DeletedAt 删除时间 毫秒时间戳
-	DeletedAt sqltime.TimestampMilli `db:"deleted_at,default='0'" json:"deletedAt,omitempty"`
+	DeletedAt sqltime.TimestampMilli `db:"deleted_at,default=0" json:"deletedAt,omitempty"`
 }
 
 func (cmd CreationModificationDeletionTimePrecise) SoftDeletion() (string, []string, driver.Value) {

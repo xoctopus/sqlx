@@ -118,10 +118,6 @@ type Model struct {
 	tDeletionMarker     types.Type
 }
 
-func (m *Model) String() string {
-	return m.typ.String()
-}
-
 func (m *Model) PrimaryColList() s.Snippet {
 	if m.primary != nil {
 		return s.Strings(",", "\n", m.primary.OptionsStrings()...)
@@ -242,11 +238,11 @@ func (m *Model) TableName() s.Snippet {
 	return s.BlockRaw(m.attrs[AttrTableName])
 }
 
-func (m *Model) TableDesc() s.Snippet {
+func (m *Model) TableDesc() (snip s.Snippet) {
 	if len(m.desc) > 0 {
-		return s.Strings(",", "\n", m.desc...)
+		snip = s.Strings(",", "\n", m.desc...)
 	}
-	return nil
+	return snip
 }
 
 func (m *Model) Register() s.Snippet {

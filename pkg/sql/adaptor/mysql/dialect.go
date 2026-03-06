@@ -7,15 +7,17 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
 
-	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 type dialect struct{}
@@ -44,17 +46,25 @@ func (d dialect) CreateTableIfNotExists(t builder.Table) []frag.Fragment {
 								continue
 							}
 							if i > 0 {
-								yield(",", nil)
+								if !yield(",", nil) {
+									return
+								}
 							}
 							i++
-							yield("\n\t", nil)
+							if !yield("\n\t", nil) {
+								return
+							}
 
 							for q, args := range c.Frag(ctx) {
-								yield(q, args)
+								if !yield(q, args) {
+									return
+								}
 							}
 							yield(" ", nil)
 							for q, args := range d.DBType(def).Frag(ctx) {
-								yield(q, args)
+								if !yield(q, args) {
+									return
+								}
 							}
 						}
 						for k := range t.Keys() {
@@ -64,7 +74,9 @@ func (d dialect) CreateTableIfNotExists(t builder.Table) []frag.Fragment {
 									builder.ColsIterOf(k.Cols()),
 								)
 								for q, args := range f.Frag(ctx) {
-									yield(q, args)
+									if !yield(q, args) {
+										return
+									}
 								}
 							}
 						}
@@ -148,12 +160,12 @@ func (d dialect) ModifyColumn(next, curr builder.Col) frag.Fragment {
 	typNext, _ := frag.Collect(context.Background(), d.DBType(nextDef))
 	typCurr, _ := frag.Collect(context.Background(), d.DBType(currDef))
 
-	if typNext == typCurr {
+	if strings.EqualFold(typNext, typCurr) {
 		return nil
 	}
 
 	return frag.Query(
-		"ALTER TABLE @table MODIFY COLUMN @col @next; /* from @prev */",
+		"ALTER TABLE @table MODIFY COLUMN @col @next; -- from @prev",
 		frag.NamedArgs{
 			"table": builder.GetColTable(next),
 			"col":   next,
@@ -217,7 +229,8 @@ func (d dialect) DropIndex(k builder.Key) frag.Fragment {
 }
 
 func (d dialect) DBType(def builder.ColumnDef) frag.Fragment {
-	modifiers := d.modifiers(def, d.datatype(def.Type, def))
+	d.datatype(def.Type, &def)
+	modifiers := d.modifiers(def)
 	fragments := make([]frag.Fragment, 0, len(modifiers))
 
 	for _, modifier := range modifiers {
@@ -227,105 +240,146 @@ func (d dialect) DBType(def builder.ColumnDef) frag.Fragment {
 	return frag.Compose(" ", fragments...)
 }
 
-func (d dialect) datatype(typ typx.Type, def builder.ColumnDef) string {
-	// from catalog
-	if def.DataType != "" {
-		return def.DataType
+func (d dialect) datatype(typ typx.Type, dd *builder.ColumnDef) {
+	switch dd.DefineFrom {
+	case def.DefineFromCatalog, def.DefineFromUser:
+		return
 	}
 
 	must.BeTrueF(typ != nil, "column def missing type info")
-	// from descriptor
 	if rt, ok := typ.Unwrap().(reflect.Type); ok {
 		rv := reflect.New(rt)
 		ptr := rv.Interface()
 		if desc, ok := ptr.(builder.WithDatatypeDesc); ok {
-			return strings.ToUpper(desc.DBType("mysql"))
-		}
-		val := rv.Elem().Interface()
-		if desc, ok := val.(builder.WithDatatypeDesc); ok {
-			return strings.ToUpper(desc.DBType("mysql"))
+			dd.DataType = strings.ToUpper(desc.DBType("mysql"))
+			return
+		} else {
+			val := rv.Elem().Interface()
+			if desc, ok = val.(builder.WithDatatypeDesc); ok {
+				dd.DataType = strings.ToUpper(desc.DBType("mysql"))
+				return
+			}
 		}
 	}
 
-	datatype := ""
-	switch kind := typ.Kind(); kind {
-	case reflect.Pointer:
-		datatype = d.datatype(typ.Elem(), def)
-	case reflect.Bool:
-		datatype = "BOOLEAN"
-	case reflect.Int8:
-		datatype = "TINYINT"
-	case reflect.Uint8:
-		datatype = "TINYINT UNSIGNED"
-	case reflect.Int16:
-		datatype = "SMALLINT"
-	case reflect.Uint16:
-		datatype = "SMALLINT UNSIGNED"
-	case reflect.Int32, reflect.Int:
-		datatype = "INT"
-	case reflect.Uint32, reflect.Uint:
-		datatype = "INT UNSIGNED"
-	case reflect.Int64:
-		datatype = "BIGINT"
-	case reflect.Uint64:
-		datatype = "BIGINT UNSIGNED"
-	case reflect.Float32:
-		datatype = "FLOAT"
-	case reflect.Float64:
-		datatype = "DOUBLE PRECISION"
-	case reflect.String:
-		if def.Width != 0 {
-			datatype = "VARCHAR"
-		} else {
-			datatype = "TEXT"
-		}
-	default:
-		if typ.PkgPath() == "time" && typ.Name() == "Time" {
-			datatype = "DATETIME"
-		} else {
-			panic(fmt.Errorf("unsupported column type: %s", typ))
+	if dd.DataType == "" {
+		switch kind := typ.Kind(); kind {
+		case reflect.Pointer:
+			d.datatype(typ.Elem(), dd)
+		case reflect.Bool:
+			dd.DataType = "TINYINT"
+		case reflect.Int8, reflect.Uint8:
+			dd.DataType = "TINYINT"
+		case reflect.Int16, reflect.Uint16:
+			dd.DataType = "SMALLINT"
+		case reflect.Int32, reflect.Int, reflect.Uint32, reflect.Uint:
+			dd.DataType = "INT"
+		case reflect.Int64, reflect.Uint64:
+			dd.DataType = "BIGINT"
+		case reflect.Float32:
+			dd.DataType = "FLOAT"
+		case reflect.Float64:
+			dd.DataType = "DOUBLE PRECISION"
+		case reflect.String:
+			if dd.Width != nil && *dd.Width != 0 {
+				dd.DataType = "VARCHAR"
+			} else {
+				dd.DataType = "TEXT"
+			}
+		default:
+			if typ.PkgPath() == "time" && typ.Name() == "Time" {
+				dd.DataType = "DATETIME"
+			} else {
+				panic(fmt.Errorf("unsupported column type: %s", typ))
+			}
 		}
 	}
-	return datatype
+
+	if dd.IsUnsigned == nil {
+		switch typ.Kind() {
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			dd.IsUnsigned = new(true)
+		default:
+		}
+	}
 }
 
-func (d dialect) modifiers(def builder.ColumnDef, datatype string) (modifiers []string) {
+func (d dialect) modifiers(dd builder.ColumnDef) (modifiers []string) {
 	// DataType => datatype(width,precision) eg: VARCHAR(width); DATETIME(precision); DECIMAL(width,precision);
 	// here skip width determined types eg: BIGINT, TINYINT
 	// ref: https://dev.mysql.com/doc/refman/8.0/en/numeric-type-attributes.html
-	if (def.Width != 0 || def.Precision != 0) &&
-		slices.Contains([]string{"VARCHAR", "DECIMAL", "NUMERIC", "DATETIME"}, datatype) {
-		datatype += "("
-		ss := make([]string, 0, 2)
-		if def.Width != 0 {
-			ss = append(ss, fmt.Sprintf("%d", def.Width))
+	datatype := dd.DataType
+	s := ""
+	if dd.Width != nil || dd.Precision != nil {
+		if dd.Width != nil && *dd.Width > 0 {
+			s += strconv.FormatUint(*dd.Width, 10)
 		}
-		if def.Precision != 0 {
-			ss = append(ss, fmt.Sprintf("%d", def.Precision))
+		if dd.Precision != nil && *dd.Precision > 0 {
+			if dd.Width != nil {
+				s += ","
+			}
+			s += strconv.FormatUint(*dd.Precision, 10)
 		}
-		datatype += strings.Join(ss, ",")
-		datatype += ")"
 	}
+	if len(s) > 0 {
+		datatype += "(" + s + ")"
+	}
+
+	unsigned := dd.IsUnsigned != nil && *dd.IsUnsigned
+	if v, ok := DefaultWithWidth(dd.DataType, unsigned); ok && v == datatype {
+		datatype = dd.DataType
+	}
+
 	modifiers = append(modifiers, datatype)
 
+	if dd.IsUnsigned != nil && *dd.IsUnsigned {
+		modifiers = append(modifiers, "UNSIGNED")
+	}
+
 	// Null ==> NOT NULL
-	if !def.Null {
+	if !dd.Null {
 		modifiers = append(modifiers, "NOT NULL")
 	}
 	// Default ==> DEFAULT ...
-	if v := def.Default; v != nil {
-		modifiers = append(modifiers, "DEFAULT "+*v)
+	if v := dd.Default; v != nil {
+		p := *v
+		needquoted := false
+		if _, ok := MustQuoteBases[dd.DataType]; ok {
+			needquoted = true
+			up := strings.ToUpper(p)
+			for _, k := range DefaultKeywords { // Keywords like NOW CURRENT_TIMESTAMP
+				if strings.HasPrefix(up, k) {
+					needquoted = false
+					break
+				}
+			}
+			if needquoted {
+				if dd.DefineFrom != def.DefineFromCatalog {
+					needquoted = !strings.HasPrefix(p, "'")
+				}
+			}
+
+			if needquoted {
+				needquoted = !(strings.HasPrefix(p, "(") && strings.HasSuffix(p, ")"))
+			}
+		}
+		if needquoted {
+			p = "'" + strings.ReplaceAll(p, "'", "''") + "'"
+		}
+
+		modifiers = append(modifiers, "DEFAULT")
+		modifiers = append(modifiers, p)
 	}
 	// OnUpdate ==> ON UPDATE ...
-	if v := def.OnUpdate; v != nil {
+	if v := dd.OnUpdate; v != nil {
 		modifiers = append(modifiers, "ON UPDATE "+*v)
 	}
 	// AutoInc ==> AUTO_INCREMENT
-	if def.AutoInc {
+	if dd.AutoInc {
 		modifiers = append(modifiers, "AUTO_INCREMENT")
 	}
 	// Comment ==> COMMENT '...'
-	if v := def.Comment; v != "" {
+	if v := dd.Comment; v != "" {
 		modifiers = append(modifiers, "COMMENT '"+v+"'")
 	}
 	return modifiers
@@ -340,19 +394,18 @@ func (d dialect) IsConflictError(err error) bool {
 }
 
 func IsUnknownDatabaseError(err error) bool {
-	var e *mysql.MySQLError
-	return errors.As(err, &e) && e.Number == 1049
+	target, ok := errors.AsType[*mysql.MySQLError](err)
+	return ok && target.Number == 1049
 }
 
 func IsConflictError(err error) bool {
-	var e *mysql.MySQLError
-	return errors.As(err, &e) && e.Number == 1062
+	target, ok := errors.AsType[*mysql.MySQLError](err)
+	return ok && target.Number == 1062
 }
 
 func UnwrapError(err error) *mysql.MySQLError {
-	var e *mysql.MySQLError
-	if errors.As(err, &e) {
-		return e
+	if target, ok := errors.AsType[*mysql.MySQLError](err); ok {
+		return target
 	}
 	return nil
 }

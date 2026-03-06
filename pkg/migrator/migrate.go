@@ -9,10 +9,10 @@ import (
 	"github.com/xoctopus/x/contextx"
 
 	"github.com/xoctopus/sqlx/internal/diff"
-	"github.com/xoctopus/sqlx/internal/sql/adaptor"
-	"github.com/xoctopus/sqlx/internal/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
+	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 )
 
 var (
@@ -22,9 +22,6 @@ var (
 )
 
 // Migrate migrates tables
-// TODO migrations
-// 1. check use create table mode only
-// 2. if adaptor supports DDL transaction
 func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (string, error) {
 	curr, err := a.Catalog(ctx)
 	if err != nil {

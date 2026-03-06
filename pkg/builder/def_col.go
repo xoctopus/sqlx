@@ -487,7 +487,9 @@ func (cs *columns) Len() int {
 func (cs *columns) Cols() iter.Seq[Col] {
 	return func(yield func(Col) bool) {
 		for _, c := range cs.l {
-			yield(c)
+			if !yield(c) {
+				return
+			}
 		}
 	}
 }
@@ -531,12 +533,16 @@ func (cs *columns) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		fragments := func(yield func(frag.Fragment) bool) {
 			for _, c := range cs.l {
-				yield(c)
+				if !yield(c) {
+					return
+				}
 			}
 		}
 
 		for q, args := range frag.ComposeSeq(",", fragments).Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

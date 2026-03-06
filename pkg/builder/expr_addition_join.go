@@ -77,26 +77,40 @@ func (j *join) Frag(ctx context.Context) frag.Iter {
 		if j.method != "" {
 			method = j.method + " " + method
 		}
-		yield(method, nil)
+		if !yield(method, nil) {
+			return
+		}
 
 		for q, args := range j.target.Frag(ctx) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 
 		if !frag.IsNil(j.cond) {
-			yield(" ON ", nil)
+			if !yield(" ON ", nil) {
+				return
+			}
 			for q, args := range j.cond.Frag(ctx) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
 		}
 
 		if len(j.cols) > 0 {
-			yield(" USING (", nil)
+			if !yield(" USING (", nil) {
+				return
+			}
 			cols := frag.ComposeSeq(",", frag.NonNil(slices.Values(j.cols)))
 			for q, args := range cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
-				yield(q, args)
+				if !yield(q, args) {
+					return
+				}
 			}
-			yield(")", nil)
+			if !yield(")", nil) {
+				return
+			}
 		}
 	}
 }

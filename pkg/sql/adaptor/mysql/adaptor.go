@@ -11,11 +11,11 @@ import (
 	"github.com/xoctopus/x/codex"
 	"github.com/xoctopus/x/misc/must"
 
-	"github.com/xoctopus/sqlx/internal/sql/adaptor"
-	"github.com/xoctopus/sqlx/internal/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/errors"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
+	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 )
 
 func init() {
@@ -28,6 +28,10 @@ type mycli struct {
 
 	database string
 	dsn      *url.URL
+}
+
+func (d *mycli) CanOption() bool {
+	return true
 }
 
 func (d *mycli) Dialect() adaptor.Dialect {
@@ -66,6 +70,17 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
 	)
 	database := adaptor.DatabaseNameFromDSN(dsn)
+
+	// option := &Option{}
+	// if err := textx.UnmarshalURL(dsn.Query(), option); err != nil {
+	// 	return nil, fmt.Errorf("failed to parse url query: %v", err)
+	// }
+	// query, err := textx.MarshalURL(option)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to marshal url query: %v", err)
+	// }
+	// dsn.RawQuery = query.Encode()
+
 	conn, err := d.Connector().OpenConnector(dsn.String())
 	if err != nil {
 		return nil, err

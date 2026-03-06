@@ -18,6 +18,8 @@ func (l literal) IsNil() bool {
 
 func (l literal) Frag(ctx context.Context) Iter {
 	return func(yield func(string, []any) bool) {
-		yield(string(l), nil)
+		if !yield(string(l), nil) {
+			return
+		}
 	}
 }
