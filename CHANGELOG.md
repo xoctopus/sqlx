@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.27...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.0...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.0"></a>
+## [v0.2.0](https://github.com/xoctopus/sqlx/compare/v0.1.27...v0.2.0)
+
+> 2026-03-08
+
+### Chore
+
+* **deps:** bump xoctopus/{x,genx,pkgx,typx} to latest
 
 
 <a name="v0.1.27"></a>
