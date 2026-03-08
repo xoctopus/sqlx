@@ -2,11 +2,19 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.0...HEAD)
 
-> 2026-03-08
+> 2026-03-09
+
+### Chore
+
+* add drivers for pg and sqlite
 
 ### Doc
 
 * update CHANGELOG
+
+### Feat
+
+* **session:** session and adaptor with underlying sql.DB
 
 
 <a name="v0.2.0"></a>
