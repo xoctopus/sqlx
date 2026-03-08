@@ -30,10 +30,6 @@ type mycli struct {
 	dsn      *url.URL
 }
 
-func (d *mycli) CanOption() bool {
-	return true
-}
-
 func (d *mycli) Dialect() adaptor.Dialect {
 	return d.dialect
 }
@@ -44,13 +40,6 @@ func (d *mycli) DriverName() string {
 
 func (d *mycli) Schema() string {
 	return d.database
-}
-
-func (d *mycli) Endpoint() string {
-	return (&url.URL{
-		Scheme: d.dsn.Scheme,
-		Host:   d.dsn.Host,
-	}).String()
 }
 
 func (d *mycli) Connector() driver.DriverContext {

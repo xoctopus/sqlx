@@ -16,9 +16,17 @@ import (
 )
 
 var (
+	// CtxMode diff options
 	CtxMode = diff.CtxMode
 	// CtxOutput migration result output dir
 	CtxOutput = contextx.NewT[string]()
+)
+
+type Mode = diff.Mode
+
+const (
+	DIFF_MODE_CREATE_TABLE = diff.MODE_CREATE_TABLE
+	DIFF_MODE_DRY_RUN      = diff.MODE_DRY_RUN
 )
 
 // Migrate migrates tables

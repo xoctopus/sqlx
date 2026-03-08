@@ -141,7 +141,6 @@ func ScanCatalog(ctx context.Context, a adaptor.Adaptor, database string) (build
 		if t = catalog.T(s.Table); t == nil {
 			t = builder.T(s.Table)
 			t = t.(builder.WithSchema).WithSchema(a.Schema())
-			t = t.(builder.WithDatabase).WithDatabase(a.Endpoint())
 			catalog.Add(t)
 		}
 		t.(builder.ColsManager).AddCol(s.ToCol())

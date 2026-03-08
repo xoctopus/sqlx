@@ -1,7 +1,6 @@
 package mysql_test
 
 import (
-	"errors"
 	"testing"
 
 	. "github.com/xoctopus/x/testx"
@@ -17,7 +16,6 @@ func TestOpen_Hack(t *testing.T) {
 		Expect(t, err, Failed())
 		Expect(t, mysql.IsUnknownDatabaseError(err), BeFalse())
 
-		t.Logf("%s: %T xxx %T", err.Error(), err, errors.Unwrap(err))
 		ue := mysql.UnwrapError(err)
 		Expect(t, any(ue), NotBeNil[any]())
 	})
@@ -34,7 +32,6 @@ func TestOpen_Hack(t *testing.T) {
 		t.Run("Success", func(t *testing.T) {
 			d := hack.NewAdaptor(t, "mysql://root@localhost:13306/fresh")
 
-			Expect(t, d.Endpoint(), Equal("mysql://localhost:13306"))
 			dialect := d.Dialect()
 			_, err = d.Exec(hack.Context(t), dialect.SwitchSchema("mysql"))
 			Expect(t, err, Succeed())
