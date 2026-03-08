@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.26...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.1.27...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.1.27"></a>
+## [v0.1.27](https://github.com/xoctopus/sqlx/compare/v0.1.26...v0.1.27)
+
+> 2026-03-06
+
+### Fix
+
+* fix confused column diff from catalog and user define
 
 
 <a name="v0.1.26"></a>

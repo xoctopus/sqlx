@@ -5,11 +5,11 @@ go 1.26.0
 tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
-	github.com/xoctopus/genx v0.1.16
-	github.com/xoctopus/logx v0.2.6
-	github.com/xoctopus/pkgx v0.1.10
-	github.com/xoctopus/typx v0.3.4
-	github.com/xoctopus/x v0.3.8
+	github.com/xoctopus/genx v0.2.0
+	github.com/xoctopus/logx v0.3.0
+	github.com/xoctopus/pkgx v0.4.0
+	github.com/xoctopus/typx v0.4.0
+	github.com/xoctopus/x v0.4.0
 )
 
 // drivers
