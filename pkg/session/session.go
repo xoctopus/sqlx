@@ -2,16 +2,23 @@ package session
 
 import (
 	"context"
+	"sync/atomic"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
-// Session presents a connection to a rdb logically
+// Session is a logical isolation unit and operational handle for database
+// adapters.
+// eg:
+//
+//	a specific MySQL database
+//	a specific search_path in same PostgreSQL database
+//	a particular SQLite database file.
 type Session interface {
 	// Schema logically isolation
 	Schema() string
-	// Name returns session name
+	// Name returns session name. this is global unique identifier for Session
 	Name() string
 	// T picks table from session
 	T(any) builder.Table
@@ -19,14 +26,6 @@ type Session interface {
 	Tx(context.Context, func(context.Context) error) error
 	// Adaptor returns session adaptor
 	Adaptor(...AdaptorOptionApplier) adaptor.Adaptor
-}
-
-type WithSession interface {
-	WithSession(Session)
-}
-
-type HasSession interface {
-	HasSession() Session
 }
 
 func New(a adaptor.Adaptor, name string) Session {
@@ -47,11 +46,15 @@ func NewReadonly(rw adaptor.Adaptor, ro adaptor.Adaptor, name string) Session {
 }
 
 type session struct {
-	database string
-	schema   string
 	name     string
-	a        adaptor.Adaptor
-	ro       adaptor.Adaptor
+	database string
+
+	schema  string
+	curr    string
+	escaped atomic.Bool
+
+	a  adaptor.Adaptor
+	ro adaptor.Adaptor
 }
 
 func (s *session) Schema() string {

@@ -25,7 +25,8 @@ type iNoIndexDef struct {
 // tNoIndexDef includes modeled table, indexes and column list.
 type tNoIndexDef struct {
 	modeled.Table[NoIndexDef]
-	I iNoIndexDef
+	I       iNoIndexDef
+	session string
 }
 
 // New creates a new NoIndexDef
@@ -47,6 +48,18 @@ func (t *tNoIndexDef) AssignmentFor(m *NoIndexDef, expects ...builder.Col) build
 		}
 	}
 	return builder.ColumnsAndValues(cols, vals...)
+}
+
+// WithSession with session for tNoIndexDef
+func (t *tNoIndexDef) WithSession(s string) *tNoIndexDef {
+	t2 := *t
+	t2.session = s
+	return &t2
+}
+
+// Session returns session of tNoIndexDef
+func (t tNoIndexDef) Session() string {
+	return t.session
 }
 
 // TableName returns database table name of NoIndexDef

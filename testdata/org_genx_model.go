@@ -45,7 +45,8 @@ type iOrg struct {
 // tOrg includes modeled table, indexes and column list.
 type tOrg struct {
 	modeled.Table[Org]
-	I iOrg
+	I       iOrg
+	session string
 
 	ID modeled.TCol[Org, uint64]
 	// OrgID 组织ID
@@ -83,6 +84,18 @@ func (t *tOrg) AssignmentFor(m *Org, expects ...builder.Col) builder.Assignment 
 		}
 	}
 	return builder.ColumnsAndValues(cols, vals...)
+}
+
+// WithSession with session for tOrg
+func (t *tOrg) WithSession(s string) *tOrg {
+	t2 := *t
+	t2.session = s
+	return &t2
+}
+
+// Session returns session of tOrg
+func (t tOrg) Session() string {
+	return t.session
 }
 
 // TableName returns database table name of Org

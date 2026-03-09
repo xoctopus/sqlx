@@ -51,7 +51,8 @@ type iOrder struct {
 // tOrder includes modeled table, indexes and column list.
 type tOrder struct {
 	modeled.Table[Order]
-	I iOrder
+	I       iOrder
+	session string
 
 	ID modeled.TCol[Order, uint64]
 	// @rel User.UserID
@@ -95,6 +96,18 @@ func (t *tOrder) AssignmentFor(m *Order, expects ...builder.Col) builder.Assignm
 		}
 	}
 	return builder.ColumnsAndValues(cols, vals...)
+}
+
+// WithSession with session for tOrder
+func (t *tOrder) WithSession(s string) *tOrder {
+	t2 := *t
+	t2.session = s
+	return &t2
+}
+
+// Session returns session of tOrder
+func (t tOrder) Session() string {
+	return t.session
 }
 
 // TableName returns database table name of Order

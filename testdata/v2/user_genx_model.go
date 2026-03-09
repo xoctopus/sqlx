@@ -48,7 +48,8 @@ type iUser struct {
 // tUser includes modeled table, indexes and column list.
 type tUser struct {
 	modeled.Table[User]
-	I iUser
+	I       iUser
+	session string
 
 	ID modeled.TCol[User, uint64]
 	// UserID 用户ID
@@ -94,6 +95,18 @@ func (t *tUser) AssignmentFor(m *User, expects ...builder.Col) builder.Assignmen
 		}
 	}
 	return builder.ColumnsAndValues(cols, vals...)
+}
+
+// WithSession with session for tUser
+func (t *tUser) WithSession(s string) *tUser {
+	t2 := *t
+	t2.session = s
+	return &t2
+}
+
+// Session returns session of tUser
+func (t tUser) Session() string {
+	return t.session
 }
 
 // TableName returns database table name of User

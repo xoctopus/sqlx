@@ -51,7 +51,8 @@ type iProduct struct {
 // tProduct includes modeled table, indexes and column list.
 type tProduct struct {
 	modeled.Table[Product]
-	I iProduct
+	I       iProduct
+	session string
 
 	ID modeled.TCol[Product, uint64]
 	// @rel Product.ProductID
@@ -95,6 +96,18 @@ func (t *tProduct) AssignmentFor(m *Product, expects ...builder.Col) builder.Ass
 		}
 	}
 	return builder.ColumnsAndValues(cols, vals...)
+}
+
+// WithSession with session for tProduct
+func (t *tProduct) WithSession(s string) *tProduct {
+	t2 := *t
+	t2.session = s
+	return &t2
+}
+
+// Session returns session of tProduct
+func (t tProduct) Session() string {
+	return t.session
 }
 
 // TableName returns database table name of Product

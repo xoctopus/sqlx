@@ -29,9 +29,6 @@ func TestDiff_mysql(t *testing.T) {
 
 	t.Run("InitUserV1_1st", func(t *testing.T) {
 		actions := diff.Diff(cbg, d.Dialect(), nil, builder.TFrom(&testdata.User{}))
-
-		q, _ := frag.Collect(cbg, actions)
-		t.Log(q)
 		testx.Expect(t, actions, testutil.BeFragment(`CREATE TABLE IF NOT EXISTS t_user (
 	f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	f_user_id BIGINT UNSIGNED NOT NULL,

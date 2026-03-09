@@ -32,7 +32,9 @@ type table[M Model] struct {
 func (t *table[M]) MCols() iter.Seq[Col[M]] {
 	return func(yield func(Col[M]) bool) {
 		for c := range t.Cols() {
-			yield(CastC[M](c))
+			if !yield(CastC[M](c)) {
+				return
+			}
 		}
 	}
 }
@@ -40,7 +42,9 @@ func (t *table[M]) MCols() iter.Seq[Col[M]] {
 func (t *table[M]) MKeys() iter.Seq[Key[M]] {
 	return func(yield func(Key[M]) bool) {
 		for k := range t.Keys() {
-			yield(CastK[M](k))
+			if !yield(CastK[M](k)) {
+				return
+			}
 		}
 	}
 }
