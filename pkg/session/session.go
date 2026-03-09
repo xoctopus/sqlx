@@ -17,7 +17,8 @@ import (
 //	a particular SQLite database file.
 type Session interface {
 	// Schema logically isolation
-	Schema() string
+	// Schema() string
+
 	// Name returns session name. this is global unique identifier for Session
 	Name() string
 	// T picks table from session

@@ -9,10 +9,6 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 )
 
-type ModelWrapper interface {
-	Unwrap() builder.Table
-}
-
 // For retrieves Session by session name or table
 func For(ctx context.Context, m any) (Session, bool) {
 	k := ""
