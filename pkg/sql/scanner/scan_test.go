@@ -165,11 +165,10 @@ func TestScan(t *testing.T) {
 		mockRows.AddRow(10)
 		_ = mock.ExpectQuery("SELECT .+ FROM t").WillReturnRows(mockRows)
 
-		v := Any("")
 		rows, err := db.Query("SELECT count(1) FROM t")
 		Expect(t, err, Be[error](nil))
 
-		err = scanner.Scan(ctx, rows, &v)
+		err = scanner.Scan(ctx, rows, new(Any("")))
 		Expect(t, err, Not(Be[error](nil)))
 	})
 

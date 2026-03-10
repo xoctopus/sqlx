@@ -2,7 +2,19 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.1...HEAD)
 
-> 0001-01-01
+> 2026-03-09
+
+### Chore
+
+* clean code
+
+### Ci
+
+* update Makefile
+
+### Feat
+
+* session name uniqueness
 
 
 <a name="v0.2.1"></a>

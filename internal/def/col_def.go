@@ -60,8 +60,14 @@ func (d *ColumnDef) ParseDBTag(flag *reflectx.Flag) {
 		case "autoinc":
 			d.AutoInc = true
 		case "default":
-			ov := o.Value()
-			d.Default = &ov
+			// NOTE: here is no special processing is performed during parsing
+			// default values; instead, the raw content is retrieved in its entirety.
+			// eg:
+			// - For a `varchar` with tag: `default='content'`, `'content'` will be retrieved.
+			// - For a `datetime` with tag: `default=CURRENT_TIMESTAMP` or `default='2001-01-01'`.
+			// consider whether to wrap the default value in single quotes to
+			// prevent unintended errors.
+			d.Default = new(o.Value())
 		case "width":
 			ov := o.Unquoted()
 			v, err := strconv.ParseUint(ov, 10, 64)
