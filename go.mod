@@ -5,7 +5,6 @@ go 1.26.0
 tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
-	github.com/jackc/pgx/v5 v5.8.0
 	github.com/xoctopus/genx v0.2.0
 	github.com/xoctopus/logx v0.3.0
 	github.com/xoctopus/pkgx v0.4.0
@@ -17,6 +16,7 @@ require (
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-sql-driver/mysql v1.9.3
+	github.com/jackc/pgx/v5 v5.8.0
 	modernc.org/sqlite v1.46.1
 )
 
