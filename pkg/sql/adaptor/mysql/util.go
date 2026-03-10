@@ -147,7 +147,10 @@ func DefaultWithWidth(t string, unsigned bool) (string, bool) {
 		}
 		return t + "(11)", true
 	case "BIGINT":
-		return t + "(20)", true
+		if unsigned {
+			return t + "(20)", true
+		}
+		return t + "(19)", true
 	case "BIT":
 		return t + "(1)", true
 	case "TINYTEXT", "TINYBLOB":

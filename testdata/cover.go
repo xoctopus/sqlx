@@ -1,3 +1,5 @@
+// Package testdata for testing
+// +genx:doc
 package testdata
 
 // NotStruct

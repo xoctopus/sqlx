@@ -74,7 +74,7 @@ func TestDialect_Hack(t *testing.T) {
 
 		q, _ = loggingdriver.DefaultInterpolate(q, named)
 		Expect(t, q, Equal(`CREATE TABLE IF NOT EXISTS demo (
-    f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'PK ID',
+    f_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     f_name VARCHAR(255) NOT NULL DEFAULT '',
     f_org_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
     f_bool TINYINT NOT NULL,

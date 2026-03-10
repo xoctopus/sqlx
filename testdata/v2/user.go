@@ -1,3 +1,5 @@
+// Package v2 for testing
+// +genx:doc
 package v2
 
 import (

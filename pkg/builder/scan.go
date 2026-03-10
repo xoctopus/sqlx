@@ -2,8 +2,10 @@ package builder
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/xoctopus/typx/pkg/typx"
+	"github.com/xoctopus/x/docx"
 
 	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/internal/structs"
@@ -46,6 +48,12 @@ func scan(m any) Table {
 		}
 		if text, ok := comments[c.fname]; ok {
 			c.def.Comment = text
+		} else {
+			if x, ok := m.(docx.Doc); ok {
+				if lines, _ := x.DocOf(f.FieldName); len(lines) > 0 {
+					c.def.Comment = strings.Join(lines, " ")
+				}
+			}
 		}
 		if lines, ok := descs[c.fname]; ok {
 			c.def.Desc = lines

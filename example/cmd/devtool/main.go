@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	_ "github.com/xoctopus/genx/devpkg/docx"
 	_ "github.com/xoctopus/genx/devpkg/enumx"
 	"github.com/xoctopus/genx/pkg/genx"
 	"github.com/xoctopus/x/misc/must"
@@ -20,6 +21,7 @@ func main() {
 			filepath.Join(cwd, "example", "models"),
 			filepath.Join(cwd, "example", "enums"),
 			filepath.Join(cwd, "testdata"),
+			filepath.Join(cwd, "testdata", "v2"),
 		},
 	})
 

@@ -4,9 +4,17 @@
 
 > 2026-03-10
 
+### Chore
+
+* **deps:** bump filippo.io/edwards25519 to v1.1.1
+
 ### Fix
 
 * reordered go.mod
+
+### Test
+
+* fix example testing
 
 
 <a name="v0.2.2"></a>

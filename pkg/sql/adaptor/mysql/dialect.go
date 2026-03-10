@@ -378,10 +378,10 @@ func (d dialect) modifiers(dd builder.ColumnDef) (modifiers []string) {
 	if dd.AutoInc {
 		modifiers = append(modifiers, "AUTO_INCREMENT")
 	}
-	// Comment ==> COMMENT '...'
-	if v := dd.Comment; v != "" {
-		modifiers = append(modifiers, "COMMENT '"+v+"'")
-	}
+	// // Comment ==> COMMENT '...'
+	// if v := dd.Comment; v != "" {
+	// 	modifiers = append(modifiers, "COMMENT '"+v+"'")
+	// }
 	return modifiers
 }
 
