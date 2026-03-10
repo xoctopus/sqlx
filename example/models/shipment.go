@@ -30,7 +30,7 @@ type ShipmentData struct {
 	// Carrier 物流运营商
 	Carrier string `db:"carrier,width=64"`
 	// TrackingNo 物流单号
-	TrackingNo string `db:"tracking_no"`
+	TrackingNo string `db:"tracking_no,width=128"`
 	// Status 物流状态
 	Status enums.ShipmentStatus `db:"status"`
 	// ShippedAt 开始运输时间

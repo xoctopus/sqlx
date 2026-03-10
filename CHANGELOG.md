@@ -1,11 +1,22 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.1...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.2...HEAD)
 
-> 2026-03-09
+> 2026-03-10
+
+### Fix
+
+* reordered go.mod
+
+
+<a name="v0.2.2"></a>
+## [v0.2.2](https://github.com/xoctopus/sqlx/compare/v0.2.1...v0.2.2)
+
+> 2026-03-10
 
 ### Chore
 
+* add comments for column parse
 * clean code
 
 ### Ci
