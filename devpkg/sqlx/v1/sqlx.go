@@ -67,8 +67,8 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	}
 
 	for _, line := range e.Doc().Desc() {
-		if strings.HasPrefix(line, "@def ") {
-			line = strings.TrimSpace(strings.TrimPrefix(line, "@def "))
+		if after, ok := strings.CutPrefix(line, "@def "); ok {
+			line = strings.TrimSpace(after)
 			k := def.ParseKeyDef(line)
 			must.BeTrueF(k != nil, "failed to parse %s @def: %s", m.typ.Name(), line)
 			for _, o := range k.Options {
@@ -85,8 +85,8 @@ func NewModel(g genx.Context, t types.Type) *Model {
 			}
 			continue
 		}
-		if strings.HasPrefix(line, "@attr ") {
-			line = strings.TrimSpace(strings.TrimPrefix(line, "@attr "))
+		if after, ok := strings.CutPrefix(line, "@attr "); ok {
+			line = strings.TrimSpace(after)
 			if parts := strings.SplitN(line, "=", 2); len(parts) == 2 {
 				if attr := HasAttr(parts[0]); attr != "" {
 					m.attrs[attr] = parts[1]

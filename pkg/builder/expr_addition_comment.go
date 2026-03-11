@@ -10,7 +10,7 @@ import (
 func Comment(lines ...string) Addition {
 	c := &comment{}
 	for _, text := range lines {
-		for _, line := range strings.Split(text, "\n") {
+		for line := range strings.SplitSeq(text, "\n") {
 			line = strings.TrimSpace(line)
 			if len(line) > 0 {
 				c.lines = append(c.lines, line)

@@ -69,11 +69,7 @@ func (t *TimestampMilli) Scan(src any) error {
 }
 
 func (t TimestampMilli) Value() (driver.Value, error) {
-	unix := t.Int()
-	if unix < 0 {
-		unix = 0
-	}
-	return unix, nil
+	return max(t.Int(), 0), nil
 }
 
 func (t TimestampMilli) String() string {

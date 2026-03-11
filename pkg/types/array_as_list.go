@@ -73,7 +73,7 @@ func (aa *ArrayAsList[T]) Append(values ...T) {
 func (aa *ArrayAsList[T]) AppendString(values ...string) error {
 	typed := make([]T, 0, len(values))
 	for _, v := range values {
-		for _, part := range strings.Split(v, ",") {
+		for part := range strings.SplitSeq(v, ",") {
 			tv := new(T)
 			switch reflect.TypeFor[T]().Kind() {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

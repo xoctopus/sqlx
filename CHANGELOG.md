@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.4...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.5...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.5"></a>
+## [v0.2.5](https://github.com/xoctopus/sqlx/compare/v0.2.4...v0.2.5)
+
+> 2026-03-11
+
+### Feat
+
+* **helper:** add CVsForInsertion
 
 
 <a name="v0.2.4"></a>

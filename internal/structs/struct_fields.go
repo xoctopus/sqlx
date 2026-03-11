@@ -161,7 +161,7 @@ func value(v reflect.Value, indexes []int) reflect.Value {
 	v = reflectx.Indirect(v)
 	fv := v
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		idx := indexes[i]
 		fv = fv.Field(idx)
 

@@ -58,11 +58,11 @@ func (t *TSchemaTableColumn) ToCol() builder.Col {
 		if extra == "AUTO_INCREMENT" {
 			d.AutoInc = true
 		} else {
-			if strings.HasPrefix(extra, "DEFAULT_GENERATED") {
-				following := strings.TrimPrefix(extra, "DEFAULT_GENERATED")
+			if after, ok := strings.CutPrefix(extra, "DEFAULT_GENERATED"); ok {
+				following := after
 				following = strings.TrimSpace(following)
-				if strings.HasPrefix(following, "ON UPDATE") {
-					onUpdate := strings.TrimPrefix(following, "ON UPDATE")
+				if after, ok := strings.CutPrefix(following, "ON UPDATE"); ok {
+					onUpdate := after
 					onUpdate = strings.TrimSpace(onUpdate)
 					d.OnUpdate = new(onUpdate)
 				}

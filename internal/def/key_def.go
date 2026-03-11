@@ -96,8 +96,7 @@ func (d *KeyDefine) OptionsStrings() []string {
 }
 
 func ResolveKeyColumnOptions(s string) (options []KeyColumnOption) {
-	fields := strings.Split(s, ";")
-	for _, field := range fields {
+	for field := range strings.SplitSeq(s, ";") {
 		if parts := strings.Split(field, ","); len(parts) > 0 {
 			option := KeyColumnOption{
 				Name:    parts[0],

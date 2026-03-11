@@ -41,7 +41,7 @@ func (cu *CreationModificationTime) MarkCreatedAt() {
 type CreationModificationDeletionTime struct {
 	CreationModificationTime
 	// DeletedAt 删除时间 秒时间戳
-	DeletedAt sqltime.Timestamp `db:"deleted_at,default=0" json:"deletedAt,omitempty"`
+	DeletedAt sqltime.Timestamp `db:"deleted_at,default=0" json:"deletedAt,omitzero"`
 }
 
 func (cmd CreationModificationDeletionTime) SoftDeletion() (string, []string, driver.Value) {
