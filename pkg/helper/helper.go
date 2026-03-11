@@ -6,6 +6,8 @@ import (
 
 	"github.com/xoctopus/sqlx/internal/structs"
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
 
@@ -23,6 +25,16 @@ func ColumnsAndValuesForInsertion(m any) (builder.Cols, []any) {
 }
 
 func Scan(ctx context.Context, rows *sql.Rows, dst any) error {
+	return scanner.Scan(ctx, rows, dst)
+}
+
+func QueryAndScan(ctx context.Context, a adaptor.Adaptor, f frag.Fragment, dst any) error {
+	rows, err := a.Query(ctx, f)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
 	return scanner.Scan(ctx, rows, dst)
 }
 
