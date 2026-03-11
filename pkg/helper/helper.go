@@ -4,21 +4,39 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/xoctopus/x/reflectx"
+
 	"github.com/xoctopus/sqlx/internal/structs"
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/builder/modeled"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
 
-func ColumnsAndValuesForInsertion(m any) (builder.Cols, []any) {
-	fields := structs.TableFields(m)
+// CVsForInsertion generates columns and values for insertion
+func CVsForInsertion[M builder.Model](ms ...M) (builder.Cols, []any) {
+	if len(ms) == 0 {
+		return nil, nil
+	}
+
+	m0 := (&modeled.Newer[M]{}).Model()
+	fields := structs.TableFields(reflectx.IndirectNew(m0))
+
 	cols := make([]builder.Col, 0, len(fields))
-	vals := make([]any, 0, len(fields))
 	for _, f := range fields {
 		if !f.Field.ColumnDef.AutoInc && f.Value.IsValid() {
 			cols = append(cols, builder.C(f.Field.ColumnName))
-			vals = append(vals, f.Value.Interface())
+		}
+	}
+
+	vals := make([]any, 0, len(fields)*len(ms))
+	for i := range ms {
+		fs := structs.TableFields(reflectx.IndirectNew(&ms[i]))
+		for _, f := range fs {
+			if !f.Field.ColumnDef.AutoInc && f.Value.IsValid() {
+				vals = append(vals, f.Value.Interface())
+			}
 		}
 	}
 	return builder.ColsOf(cols...), vals

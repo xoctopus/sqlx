@@ -1,11 +1,28 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.2...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.4...HEAD)
+
+> 0001-01-01
+
+
+<a name="v0.2.4"></a>
+## [v0.2.4](https://github.com/xoctopus/sqlx/compare/v0.2.3...v0.2.4)
+
+> 2026-03-11
+
+### Feat
+
+* **helper:** add QueryAndScan
+
+
+<a name="v0.2.3"></a>
+## [v0.2.3](https://github.com/xoctopus/sqlx/compare/v0.2.2...v0.2.3)
 
 > 2026-03-10
 
 ### Chore
 
+* use runtime doc as column comment
 * **deps:** bump filippo.io/edwards25519 to v1.1.1
 
 ### Fix

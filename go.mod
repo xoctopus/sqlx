@@ -6,10 +6,10 @@ tool github.com/xoctopus/sqlx/internal/cmd/example
 
 require (
 	github.com/xoctopus/genx v0.2.0
-	github.com/xoctopus/logx v0.3.0
+	github.com/xoctopus/logx v0.3.1
 	github.com/xoctopus/pkgx v0.4.0
 	github.com/xoctopus/typx v0.4.0
-	github.com/xoctopus/x v0.4.0
+	github.com/xoctopus/x v0.4.4
 )
 
 // drivers

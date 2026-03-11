@@ -185,7 +185,7 @@ func TableFields(v any) []*TableField {
 
 func TableFieldsSeq(v any) iter.Seq[*TableField] {
 	return func(yield func(*TableField) bool) {
-		rv := reflectx.Indirect(reflect.ValueOf(v))
+		rv := reflectx.Indirect(v)
 		must.BeTrueF(rv.IsValid(), "struct value must be valid")
 
 		tableName := ""
