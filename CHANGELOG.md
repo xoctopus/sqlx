@@ -2,7 +2,12 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.5...HEAD)
 
-> 0001-01-01
+> 2026-03-17
+
+### Chore
+
+* go fix for mordernization
+* **deps:** bump genx to v0.2.1
 
 
 <a name="v0.2.5"></a>
