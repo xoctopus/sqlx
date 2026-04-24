@@ -380,15 +380,35 @@ func NotLike[T ~string](s T) ColValuer[T] {
 	}
 }
 
+// Deprecated: use MatchPrefix or MatchSuffix
 func LLike[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, "%"+s)
 	}
 }
 
+// Deprecated: use MatchPrefix or MatchSuffix
 func RLike[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, s+"%")
+	}
+}
+
+func MatchPrefix[T ~string](s T) ColValuer[T] {
+	return func(c Col) frag.Fragment {
+		return frag.Query("? LIKE ?", c, s+"%")
+	}
+}
+
+func MatchSuffix[T ~string](s T) ColValuer[T] {
+	return func(c Col) frag.Fragment {
+		return frag.Query("? LIKE ?", c, "%"+s)
+	}
+}
+
+func Match[T ~string](s T) ColValuer[T] {
+	return func(c Col) frag.Fragment {
+		return frag.Query("? LIKE ?", c, s)
 	}
 }
 

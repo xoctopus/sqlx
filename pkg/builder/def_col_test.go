@@ -98,6 +98,9 @@ func TestColumns(t *testing.T) {
 			Expect(t, c3.AsCond(builder.Like[string]("1")), BeFragment("f_name LIKE ?", "%1%"))
 			Expect(t, c3.AsCond(builder.LLike[string]("1")), BeFragment("f_name LIKE ?", "%1"))
 			Expect(t, c3.AsCond(builder.RLike[string]("1")), BeFragment("f_name LIKE ?", "1%"))
+			Expect(t, c3.AsCond(builder.MatchSuffix[string]("1")), BeFragment("f_name LIKE ?", "%1"))
+			Expect(t, c3.AsCond(builder.MatchPrefix[string]("1")), BeFragment("f_name LIKE ?", "1%"))
+			Expect(t, c3.AsCond(builder.Match[string]("%1%2%")), BeFragment("f_name LIKE ?", "%1%2%"))
 			Expect(t, c3.AsCond(builder.NotLike[string]("1")), BeFragment("f_name NOT LIKE ?", "%1%"))
 		})
 		t.Run("Between", func(t *testing.T) {
