@@ -2,10 +2,18 @@
 package testdata
 
 import (
+	"context"
+	"database/sql/driver"
 	"reflect"
+
+	"github.com/xoctopus/x/codex"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
+	"github.com/xoctopus/sqlx/pkg/errors"
+	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/helper"
+	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
@@ -143,4 +151,392 @@ func (m Org) UniqueIndexes() map[string][]string {
 			"DeletedAt",
 		},
 	}
+}
+
+// Create inserts Org to database
+func (m *Org) Create(ctx context.Context) error {
+	m.MarkCreatedAt()
+	cols, values := helper.CVsForInsertion(m)
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Insert().Into(
+			TOrg,
+			builder.Comment("Org.Create"),
+		).Values(cols, values...),
+	)
+	return err
+}
+
+// List fetch Org datalist with condition and additions
+func (m *Org) List(ctx context.Context, cond builder.SqlCondition, adds builder.Additions, expects ...builder.Col) ([]Org, error) {
+	cols := frag.Fragment(nil)
+	if len(expects) > 0 {
+		cols = builder.ColsOf(expects...)
+	}
+	conds := []frag.Fragment{cond}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	adds = append(
+		adds,
+		builder.Where(builder.And(conds...)),
+		builder.Comment("Org.List"),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(cols).From(TOrg, adds...),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	res := new([]Org)
+	if err = helper.Scan(ctx, rows, res); err != nil {
+		return nil, err
+	}
+	return *res, nil
+}
+
+// FetchByID fetch Org by Org.ID
+func (m *Org) FetchByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.ID.AsCond(builder.Eq(m.ID)),
+	}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("Org.FetchByID"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// FetchByOrgIDAndDeletedAt fetch Org by Org.OrgID and Org.DeletedAt
+func (m *Org) FetchByOrgIDAndDeletedAt(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("Org.FetchByOrgIDAndDeletedAt"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// FetchByOrgIDAndManagerAndDeletedAt fetch Org by Org.OrgID and Org.Manager and Org.DeletedAt
+func (m *Org) FetchByOrgIDAndManagerAndDeletedAt(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("Org.FetchByOrgIDAndManagerAndDeletedAt"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// UpdateByID update Org by Org.ID
+func (m *Org) UpdateByID(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TOrg.ID.AsCond(builder.Eq(m.ID)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.UpdateByID"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByID update Org by Org.ID and retrieve record
+func (m *Org) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByID(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByID(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// UpdateByOrgIDAndDeletedAt update Org by Org.OrgID and Org.DeletedAt
+func (m *Org) UpdateByOrgIDAndDeletedAt(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.UpdateByOrgIDAndDeletedAt"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByOrgIDAndDeletedAt update Org by Org.OrgID and Org.DeletedAt and retrieve record
+func (m *Org) UpdateAndFetchByOrgIDAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByOrgIDAndDeletedAt(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByOrgIDAndDeletedAt(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// UpdateByOrgIDAndManagerAndDeletedAt update Org by Org.OrgID and Org.Manager and Org.DeletedAt
+func (m *Org) UpdateByOrgIDAndManagerAndDeletedAt(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.UpdateByOrgIDAndManagerAndDeletedAt"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByOrgIDAndManagerAndDeletedAt update Org by Org.OrgID and Org.Manager and Org.DeletedAt and retrieve record
+func (m *Org) UpdateAndFetchByOrgIDAndManagerAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByOrgIDAndManagerAndDeletedAt(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByOrgIDAndManagerAndDeletedAt(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// DeleteByID delete Org recode by Org.ID
+func (m *Org) DeleteByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.ID.AsCond(builder.Eq(m.ID)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("Org.DeleteByID"),
+		),
+	)
+	return err
+}
+
+// DeleteByOrgIDAndDeletedAt delete Org recode by Org.OrgID and Org.DeletedAt
+func (m *Org) DeleteByOrgIDAndDeletedAt(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("Org.DeleteByOrgIDAndDeletedAt"),
+		),
+	)
+	return err
+}
+
+// DeleteByOrgIDAndManagerAndDeletedAt delete Org recode by Org.OrgID and Org.Manager and Org.DeletedAt
+func (m *Org) DeleteByOrgIDAndManagerAndDeletedAt(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TOrg,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("Org.DeleteByOrgIDAndManagerAndDeletedAt"),
+		),
+	)
+	return err
+}
+
+// MarkDeletionByID marks Org as deleted
+func (m *Org) MarkDeletionByID(ctx context.Context) error {
+	m.MarkDeletedAt()
+	deletion, modifications, v := m.SoftDeletion()
+	cols := []builder.Col{TOrg.C(deletion)}
+	for _, f := range modifications {
+		cols = append(cols, TOrg.C(f))
+	}
+	conds := []frag.Fragment{
+		TOrg.ID.AsCond(builder.Eq(m.ID)),
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, cols...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.MarkDeletionByID"),
+			),
+	)
+	return err
+}
+
+// MarkDeletionByOrgIDAndDeletedAt marks Org as deleted
+func (m *Org) MarkDeletionByOrgIDAndDeletedAt(ctx context.Context) error {
+	m.MarkDeletedAt()
+	deletion, modifications, v := m.SoftDeletion()
+	cols := []builder.Col{TOrg.C(deletion)}
+	for _, f := range modifications {
+		cols = append(cols, TOrg.C(f))
+	}
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, cols...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.MarkDeletionByOrgIDAndDeletedAt"),
+			),
+	)
+	return err
+}
+
+// MarkDeletionByOrgIDAndManagerAndDeletedAt marks Org as deleted
+func (m *Org) MarkDeletionByOrgIDAndManagerAndDeletedAt(ctx context.Context) error {
+	m.MarkDeletedAt()
+	deletion, modifications, v := m.SoftDeletion()
+	cols := []builder.Col{TOrg.C(deletion)}
+	for _, f := range modifications {
+		cols = append(cols, TOrg.C(f))
+	}
+	conds := []frag.Fragment{
+		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
+		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
+		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrg).
+			Set(TOrg.AssignmentFor(m, cols...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("Org.MarkDeletionByOrgIDAndManagerAndDeletedAt"),
+			),
+	)
+	return err
 }

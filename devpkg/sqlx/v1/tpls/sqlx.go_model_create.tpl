@@ -1,6 +1,6 @@
 @def T
 @def context.Context
-@def helper.ColumnsAndValuesForInsertion
+@def helper.CVsForInsertion
 @def session.MustFor
 @def builder.Insert
 @def builder.Comment
@@ -9,7 +9,7 @@
 func (m *#T#) Create(ctx #context.Context#) error {
 	#CreationMarker#
 
-	cols, values := #helper.ColumnsAndValuesForInsertion#(m)
+	cols, values := #helper.CVsForInsertion#(m)
 	_, err := #session.MustFor#(ctx, m).Adaptor().Exec(
 		ctx,
 		#builder.Insert#().Into(

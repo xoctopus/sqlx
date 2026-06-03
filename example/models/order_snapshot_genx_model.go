@@ -2,10 +2,17 @@
 package models
 
 import (
+	"context"
 	"reflect"
+
+	"github.com/xoctopus/x/codex"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
+	"github.com/xoctopus/sqlx/pkg/errors"
+	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/helper"
+	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
@@ -139,4 +146,205 @@ func (m OrderSnapshot) UniqueIndexes() map[string][]string {
 			"OrderID",
 		},
 	}
+}
+
+// Create inserts OrderSnapshot to database
+func (m *OrderSnapshot) Create(ctx context.Context) error {
+	m.MarkCreatedAt()
+	cols, values := helper.CVsForInsertion(m)
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Insert().Into(
+			TOrderSnapshot,
+			builder.Comment("OrderSnapshot.Create"),
+		).Values(cols, values...),
+	)
+	return err
+}
+
+// List fetch OrderSnapshot datalist with condition and additions
+func (m *OrderSnapshot) List(ctx context.Context, cond builder.SqlCondition, adds builder.Additions, expects ...builder.Col) ([]OrderSnapshot, error) {
+	cols := frag.Fragment(nil)
+	if len(expects) > 0 {
+		cols = builder.ColsOf(expects...)
+	}
+	conds := []frag.Fragment{cond}
+	adds = append(
+		adds,
+		builder.Where(builder.And(conds...)),
+		builder.Comment("OrderSnapshot.List"),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(cols).From(TOrderSnapshot, adds...),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	res := new([]OrderSnapshot)
+	if err = helper.Scan(ctx, rows, res); err != nil {
+		return nil, err
+	}
+	return *res, nil
+}
+
+// FetchByID fetch OrderSnapshot by OrderSnapshot.ID
+func (m *OrderSnapshot) FetchByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TOrderSnapshot,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("OrderSnapshot.FetchByID"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// FetchByOrderID fetch OrderSnapshot by OrderSnapshot.OrderID
+func (m *OrderSnapshot) FetchByOrderID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TOrderSnapshot,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("OrderSnapshot.FetchByOrderID"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// UpdateByID update OrderSnapshot by OrderSnapshot.ID
+func (m *OrderSnapshot) UpdateByID(ctx context.Context, expects ...builder.Col) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrderSnapshot).
+			Set(TOrderSnapshot.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("OrderSnapshot.UpdateByID"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByID update OrderSnapshot by OrderSnapshot.ID and retrieve record
+func (m *OrderSnapshot) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByID(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByID(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// UpdateByOrderID update OrderSnapshot by OrderSnapshot.OrderID
+func (m *OrderSnapshot) UpdateByOrderID(ctx context.Context, expects ...builder.Col) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TOrderSnapshot).
+			Set(TOrderSnapshot.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("OrderSnapshot.UpdateByOrderID"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByOrderID update OrderSnapshot by OrderSnapshot.OrderID and retrieve record
+func (m *OrderSnapshot) UpdateAndFetchByOrderID(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByOrderID(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByOrderID(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// DeleteByID delete OrderSnapshot recode by OrderSnapshot.ID
+func (m *OrderSnapshot) DeleteByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TOrderSnapshot,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("OrderSnapshot.DeleteByID"),
+		),
+	)
+	return err
+}
+
+// DeleteByOrderID delete OrderSnapshot recode by OrderSnapshot.OrderID
+func (m *OrderSnapshot) DeleteByOrderID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TOrderSnapshot,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("OrderSnapshot.DeleteByOrderID"),
+		),
+	)
+	return err
 }

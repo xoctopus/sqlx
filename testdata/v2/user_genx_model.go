@@ -2,10 +2,17 @@
 package v2
 
 import (
+	"context"
 	"reflect"
+
+	"github.com/xoctopus/x/codex"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
+	"github.com/xoctopus/sqlx/pkg/errors"
+	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/helper"
+	"github.com/xoctopus/sqlx/pkg/session"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 	"github.com/xoctopus/sqlx/testdata"
 )
@@ -147,4 +154,288 @@ func (m User) UniqueIndexes() map[string][]string {
 			"RealName",
 		},
 	}
+}
+
+// Create inserts User to database
+func (m *User) Create(ctx context.Context) error {
+	m.MarkCreatedAt()
+	cols, values := helper.CVsForInsertion(m)
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Insert().Into(
+			TUser,
+			builder.Comment("User.Create"),
+		).Values(cols, values...),
+	)
+	return err
+}
+
+// List fetch User datalist with condition and additions
+func (m *User) List(ctx context.Context, cond builder.SqlCondition, adds builder.Additions, expects ...builder.Col) ([]User, error) {
+	cols := frag.Fragment(nil)
+	if len(expects) > 0 {
+		cols = builder.ColsOf(expects...)
+	}
+	conds := []frag.Fragment{cond}
+	adds = append(
+		adds,
+		builder.Where(builder.And(conds...)),
+		builder.Comment("User.List"),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(cols).From(TUser, adds...),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	res := new([]User)
+	if err = helper.Scan(ctx, rows, res); err != nil {
+		return nil, err
+	}
+	return *res, nil
+}
+
+// FetchByID fetch User by User.ID
+func (m *User) FetchByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.ID.AsCond(builder.Eq(m.ID)),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("User.FetchByID"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// FetchByUserID fetch User by User.UserID
+func (m *User) FetchByUserID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.UserID.AsCond(builder.Eq(m.UserID)),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("User.FetchByUserID"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// FetchByRealName fetch User by User.RealName
+func (m *User) FetchByRealName(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.RealName.AsCond(builder.Eq(m.RealName)),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(nil).From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Limit(1),
+			builder.Comment("User.FetchByRealName"),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	return helper.Scan(ctx, rows, m)
+}
+
+// UpdateByID update User by User.ID
+func (m *User) UpdateByID(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TUser.ID.AsCond(builder.Eq(m.ID)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TUser).
+			Set(TUser.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("User.UpdateByID"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByID update User by User.ID and retrieve record
+func (m *User) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByID(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByID(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// UpdateByUserID update User by User.UserID
+func (m *User) UpdateByUserID(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TUser.UserID.AsCond(builder.Eq(m.UserID)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TUser).
+			Set(TUser.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("User.UpdateByUserID"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByUserID update User by User.UserID and retrieve record
+func (m *User) UpdateAndFetchByUserID(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByUserID(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByUserID(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// UpdateByRealName update User by User.RealName
+func (m *User) UpdateByRealName(ctx context.Context, expects ...builder.Col) error {
+	m.MarkModifiedAt()
+	conds := []frag.Fragment{
+		TUser.RealName.AsCond(builder.Eq(m.RealName)),
+	}
+	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Update(TUser).
+			Set(TUser.AssignmentFor(m, expects...)).
+			Where(
+				builder.And(conds...),
+				builder.Comment("User.UpdateByRealName"),
+			),
+	)
+	if err != nil {
+		return err
+	}
+	effected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if effected == 0 {
+		return codex.New(errors.NOTFOUND)
+	}
+	return nil
+}
+
+// UpdateAndFetchByRealName update User by User.RealName and retrieve record
+func (m *User) UpdateAndFetchByRealName(ctx context.Context, targets ...builder.Col) error {
+	return session.MustFor(ctx, m).Adaptor().Tx(
+		ctx,
+		func(ctx context.Context) error {
+			if err := m.UpdateByRealName(ctx, targets...); err != nil {
+				return err
+			}
+			if err := m.FetchByRealName(ctx); err != nil {
+				return err
+			}
+			return nil
+		},
+	)
+}
+
+// DeleteByID delete User recode by User.ID
+func (m *User) DeleteByID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.ID.AsCond(builder.Eq(m.ID)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("User.DeleteByID"),
+		),
+	)
+	return err
+}
+
+// DeleteByUserID delete User recode by User.UserID
+func (m *User) DeleteByUserID(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.UserID.AsCond(builder.Eq(m.UserID)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("User.DeleteByUserID"),
+		),
+	)
+	return err
+}
+
+// DeleteByRealName delete User recode by User.RealName
+func (m *User) DeleteByRealName(ctx context.Context) error {
+	conds := []frag.Fragment{
+		TUser.RealName.AsCond(builder.Eq(m.RealName)),
+	}
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Delete().From(
+			TUser,
+			builder.Where(builder.And(conds...)),
+			builder.Comment("User.DeleteByRealName"),
+		),
+	)
+	return err
 }

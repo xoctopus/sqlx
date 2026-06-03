@@ -2,10 +2,14 @@
 package testdata
 
 import (
+	"context"
 	"reflect"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
+	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/helper"
+	"github.com/xoctopus/sqlx/pkg/session"
 )
 
 var TNoIndexDef *tNoIndexDef
@@ -87,4 +91,44 @@ func (m NoIndexDef) Indexes() map[string][]string {
 // UniqueIndexes returns unique index list of NoIndexDef
 func (m NoIndexDef) UniqueIndexes() map[string][]string {
 	return map[string][]string{}
+}
+
+// Create inserts NoIndexDef to database
+func (m *NoIndexDef) Create(ctx context.Context) error {
+	cols, values := helper.CVsForInsertion(m)
+	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+		ctx,
+		builder.Insert().Into(
+			TNoIndexDef,
+			builder.Comment("NoIndexDef.Create"),
+		).Values(cols, values...),
+	)
+	return err
+}
+
+// List fetch NoIndexDef datalist with condition and additions
+func (m *NoIndexDef) List(ctx context.Context, cond builder.SqlCondition, adds builder.Additions, expects ...builder.Col) ([]NoIndexDef, error) {
+	cols := frag.Fragment(nil)
+	if len(expects) > 0 {
+		cols = builder.ColsOf(expects...)
+	}
+	conds := []frag.Fragment{cond}
+	adds = append(
+		adds,
+		builder.Where(builder.And(conds...)),
+		builder.Comment("NoIndexDef.List"),
+	)
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(cols).From(TNoIndexDef, adds...),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	res := new([]NoIndexDef)
+	if err = helper.Scan(ctx, rows, res); err != nil {
+		return nil, err
+	}
+	return *res, nil
 }
