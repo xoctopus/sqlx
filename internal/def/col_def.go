@@ -25,7 +25,11 @@ func ParseColDef(t typx.Type, tag reflect.StructTag) *ColumnDef {
 		Tag:  tag,
 	}
 
-	flag := reflectx.ParseTag(tag).Get("db")
+	flag := reflectx.ParseTag(
+		tag,
+		reflectx.WithOptionSplitter('='),
+		reflectx.WithExpectFlags("db"),
+	).Get("db")
 	if flag == nil {
 		return d
 	}

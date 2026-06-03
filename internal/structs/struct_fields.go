@@ -77,7 +77,11 @@ func (w *walker) Walk(t typx.Type) iter.Seq[*Field] {
 			}
 
 			loc := append(w.flocs, i)
-			flag := reflectx.ParseTag(f.Tag()).Get("db")
+			flag := reflectx.ParseTag(
+				f.Tag(),
+				reflectx.WithOptionSplitter('='),
+				reflectx.WithExpectFlags("db"),
+			).Get("db")
 			name := f.Name()
 			if flag != nil {
 				if flag.Name() == "-" {

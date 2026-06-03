@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.7...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc1...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.8-rc1"></a>
+## [v0.2.8-rc1](https://github.com/xoctopus/sqlx/compare/v0.2.7...v0.2.8-rc1)
+
+> 2026-06-03
+
+### Fix
+
+* strict order ex
 
 
 <a name="v0.2.7"></a>
