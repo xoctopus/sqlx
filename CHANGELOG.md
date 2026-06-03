@@ -1,6 +1,22 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.5...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.7...HEAD)
+
+> 0001-01-01
+
+
+<a name="v0.2.7"></a>
+## [v0.2.7](https://github.com/xoctopus/sqlx/compare/v0.2.6...v0.2.7)
+
+> 2026-04-24
+
+### Feat
+
+* **builder:** add MatchPrefix, MatchSuffix, Match to avoid ambiguity
+
+
+<a name="v0.2.6"></a>
+## [v0.2.6](https://github.com/xoctopus/sqlx/compare/v0.2.5...v0.2.6)
 
 > 2026-03-17
 
@@ -8,6 +24,10 @@
 
 * go fix for mordernization
 * **deps:** bump genx to v0.2.1
+
+### Doc
+
+* update CHANGELOG
 
 
 <a name="v0.2.5"></a>

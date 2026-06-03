@@ -68,10 +68,13 @@ func (o *order) Frag(ctx context.Context) frag.Iter {
 				return
 			}
 		}
+		if len(o.ex) == 0 {
+			return
+		}
 		for _, x := range o.ex {
 			if !frag.IsNil(x) {
 				for q, args := range x.Frag(ctx) {
-					if !yield(q, args) {
+					if !yield(" "+q, args) {
 						return
 					}
 				}
@@ -110,13 +113,13 @@ func (o *orders) Frag(ctx context.Context) frag.Iter {
 // NullsFirst mysql/sqlite unsupported
 // Alternative: ORDER BY `col` IS NULL
 func NullsFirst() frag.Fragment {
-	return frag.Lit(" NULLS FIRST")
+	return frag.Lit("NULLS FIRST")
 }
 
 // NullsLast mysql/sqlite unsupported
 // Alternative: ORDER BY `col` IS NOT NULL
 func NullsLast() frag.Fragment {
-	return frag.Lit(" NULLS LAST")
+	return frag.Lit("NULLS LAST")
 }
 
 // DistinctOn mysql/sqlite unsupported
