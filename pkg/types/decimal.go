@@ -14,3 +14,11 @@ type Decimal struct {
 func (d *Decimal) DBType(driver string) string {
 	return "decimal"
 }
+
+func (Decimal) OpenAPISchemaType() []string {
+	return []string{"number"}
+}
+
+func (Decimal) OpenAPISchemaFormat() string {
+	return "double"
+}
