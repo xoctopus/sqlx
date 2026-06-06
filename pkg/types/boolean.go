@@ -4,6 +4,13 @@ import (
 	"fmt"
 )
 
+func Boolean(b bool) Bool {
+	if b {
+		return TRUE
+	}
+	return FALSE
+}
+
 // Bool a ternary boolean state UNKNOWN, TRUE or FALSE
 type Bool int
 
@@ -13,15 +20,12 @@ const (
 	FALSE      // false
 )
 
-func Boolean(b bool) Bool {
-	if b {
-		return TRUE
-	}
-	return FALSE
-}
-
 func (v Bool) Bool() bool {
 	return v == TRUE
+}
+
+func (Bool) OpenAPISchemaType() []string {
+	return []string{"boolean"}
 }
 
 func (v Bool) MarshalJSON() ([]byte, error) {
