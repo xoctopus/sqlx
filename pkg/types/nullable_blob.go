@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Blob nullable binary
 type Blob []byte
 
 func (v *Blob) Set(x []byte) {

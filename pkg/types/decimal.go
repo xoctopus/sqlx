@@ -6,6 +6,7 @@ func AsDecimal(v decimal.Decimal) Decimal {
 	return Decimal{}
 }
 
+// Decimal decimal number
 type Decimal struct {
 	decimal.Decimal
 }

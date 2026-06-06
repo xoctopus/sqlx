@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Bool a ternary boolean state UNKNOWN, TRUE or FALSE
 type Bool int
 
 const (

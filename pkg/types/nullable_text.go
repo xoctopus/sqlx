@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Text nullable text
 type Text string
 
 func (v *Text) Set(str string) {

@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc2...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc3...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.8-rc3"></a>
+## [v0.2.8-rc3](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc2...v0.2.8-rc3)
+
+> 2026-06-03
+
+### Feat
+
+* generate basic curd for model
 
 
 <a name="v0.2.8-rc2"></a>
