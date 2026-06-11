@@ -199,6 +199,33 @@ func (m *Org) List(ctx context.Context, cond builder.SqlCondition, adds builder.
 	return *res, nil
 }
 
+// Count record count of Org match condition
+func (m *Org) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("Org.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TOrg, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch Org by Org.ID
 func (m *Org) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{

@@ -44,3 +44,43 @@ func (m *#T#) List(ctx #context.Context#, cond #builder.SqlCondition#, adds #bui
 	}
 	return *res, nil
 }
+
+@def T
+@def context.Context
+@def builder.SqlCondition
+@def frag.Fragment
+@def SoftDeletionCondition
+@def builder.Where
+@def builder.And
+@def builder.Comment
+@def ListComment
+@def session.MustFor
+@def builder.Select
+@def builder.Count
+@def helper.Scan
+--Count
+// Count record count of #T# match condition
+func (m *#T#) Count(ctx #context.Context#, cond #builder.SqlCondition#) (int64, error) {
+	conds := []#frag.Fragment#{cond}
+	#SoftDeletionCondition#
+
+	adds := #builder.Additions#{
+		#builder.Where#(#builder.And#(conds...)),
+		#builder.Comment#(#CountComment#),
+	}
+
+	rows, err := #session.MustFor#(ctx, m).Adaptor().Query(
+		ctx,
+		#builder.Select#(#builder.Count#()).From(T#T#, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	count := int64(0)
+	if err = #helper.Scan#(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

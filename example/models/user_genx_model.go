@@ -200,6 +200,33 @@ func (m *User) List(ctx context.Context, cond builder.SqlCondition, adds builder
 	return *res, nil
 }
 
+// Count record count of User match condition
+func (m *User) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("User.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TUser, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch User by User.ID
 func (m *User) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{

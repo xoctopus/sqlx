@@ -189,6 +189,28 @@ func (m *OrderSnapshot) List(ctx context.Context, cond builder.SqlCondition, add
 	return *res, nil
 }
 
+// Count record count of OrderSnapshot match condition
+func (m *OrderSnapshot) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("OrderSnapshot.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TOrderSnapshot, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch OrderSnapshot by OrderSnapshot.ID
 func (m *OrderSnapshot) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{

@@ -204,6 +204,28 @@ func (m *Shipment) List(ctx context.Context, cond builder.SqlCondition, adds bui
 	return *res, nil
 }
 
+// Count record count of Shipment match condition
+func (m *Shipment) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("Shipment.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TShipment, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch Shipment by Shipment.ID
 func (m *Shipment) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{

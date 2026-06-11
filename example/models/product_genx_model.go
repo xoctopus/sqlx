@@ -207,6 +207,33 @@ func (m *Product) List(ctx context.Context, cond builder.SqlCondition, adds buil
 	return *res, nil
 }
 
+// Count record count of Product match condition
+func (m *Product) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	deletion, _, v := m.SoftDeletion()
+	conds = append(
+		conds,
+		builder.CC[driver.Value](TProduct.C(deletion)).AsCond(builder.Eq(v)),
+	)
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("Product.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TProduct, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch Product by Product.ID
 func (m *Product) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{

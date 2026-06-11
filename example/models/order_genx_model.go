@@ -201,6 +201,28 @@ func (m *Order) List(ctx context.Context, cond builder.SqlCondition, adds builde
 	return *res, nil
 }
 
+// Count record count of Order match condition
+func (m *Order) Count(ctx context.Context, cond builder.SqlCondition) (int64, error) {
+	conds := []frag.Fragment{cond}
+	adds := builder.Additions{
+		builder.Where(builder.And(conds...)),
+		builder.Comment("Order.Count"),
+	}
+	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+		ctx,
+		builder.Select(builder.Count()).From(TOrder, adds...),
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := int64(0)
+	if err = helper.Scan(ctx, rows, &count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // FetchByID fetch Order by Order.ID
 func (m *Order) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{
