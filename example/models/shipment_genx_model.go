@@ -166,7 +166,7 @@ func (m Shipment) UniqueIndexes() map[string][]string {
 func (m *Shipment) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Insert().Into(
 			TShipment,
@@ -188,7 +188,7 @@ func (m *Shipment) List(ctx context.Context, cond builder.SqlCondition, adds bui
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Shipment.List"),
 	)
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TShipment).Adaptor().Query(
 		ctx,
 		builder.Select(cols).From(TShipment, adds...),
 	)
@@ -210,7 +210,7 @@ func (m *Shipment) Count(ctx context.Context, cond builder.SqlCondition) (int64,
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Shipment.Count"),
 	}
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TShipment).Adaptor().Query(
 		ctx,
 		builder.Select(builder.Count()).From(TShipment, adds...),
 	)
@@ -230,7 +230,7 @@ func (m *Shipment) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.ID.AsCond(builder.Eq(m.ID)),
 	}
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TShipment).Adaptor().Query(
 		ctx,
 		builder.Select(nil).From(
 			TShipment,
@@ -251,7 +251,7 @@ func (m *Shipment) FetchByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TShipment).Adaptor().Query(
 		ctx,
 		builder.Select(nil).From(
 			TShipment,
@@ -272,7 +272,7 @@ func (m *Shipment) FetchByTrackingNo(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.TrackingNo.AsCond(builder.Eq(m.TrackingNo)),
 	}
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TShipment).Adaptor().Query(
 		ctx,
 		builder.Select(nil).From(
 			TShipment,
@@ -294,7 +294,7 @@ func (m *Shipment) UpdateByID(ctx context.Context, expects ...builder.Col) error
 	conds := []frag.Fragment{
 		TShipment.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+	res, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Update(TShipment).
 			Set(TShipment.AssignmentFor(m, expects...)).
@@ -318,7 +318,7 @@ func (m *Shipment) UpdateByID(ctx context.Context, expects ...builder.Col) error
 
 // UpdateAndFetchByID update Shipment by Shipment.ID and retrieve record
 func (m *Shipment) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, m).Adaptor().Tx(
+	return session.MustFor(ctx, TShipment).Adaptor().Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -338,7 +338,7 @@ func (m *Shipment) UpdateByOrderID(ctx context.Context, expects ...builder.Col) 
 	conds := []frag.Fragment{
 		TShipment.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+	res, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Update(TShipment).
 			Set(TShipment.AssignmentFor(m, expects...)).
@@ -362,7 +362,7 @@ func (m *Shipment) UpdateByOrderID(ctx context.Context, expects ...builder.Col) 
 
 // UpdateAndFetchByOrderID update Shipment by Shipment.OrderID and retrieve record
 func (m *Shipment) UpdateAndFetchByOrderID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, m).Adaptor().Tx(
+	return session.MustFor(ctx, TShipment).Adaptor().Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByOrderID(ctx, targets...); err != nil {
@@ -382,7 +382,7 @@ func (m *Shipment) UpdateByTrackingNo(ctx context.Context, expects ...builder.Co
 	conds := []frag.Fragment{
 		TShipment.TrackingNo.AsCond(builder.Eq(m.TrackingNo)),
 	}
-	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+	res, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Update(TShipment).
 			Set(TShipment.AssignmentFor(m, expects...)).
@@ -406,7 +406,7 @@ func (m *Shipment) UpdateByTrackingNo(ctx context.Context, expects ...builder.Co
 
 // UpdateAndFetchByTrackingNo update Shipment by Shipment.TrackingNo and retrieve record
 func (m *Shipment) UpdateAndFetchByTrackingNo(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, m).Adaptor().Tx(
+	return session.MustFor(ctx, TShipment).Adaptor().Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByTrackingNo(ctx, targets...); err != nil {
@@ -425,7 +425,7 @@ func (m *Shipment) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Delete().From(
 			TShipment,
@@ -441,7 +441,7 @@ func (m *Shipment) DeleteByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Delete().From(
 			TShipment,
@@ -457,7 +457,7 @@ func (m *Shipment) DeleteByTrackingNo(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TShipment.TrackingNo.AsCond(builder.Eq(m.TrackingNo)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TShipment).Adaptor().Exec(
 		ctx,
 		builder.Delete().From(
 			TShipment,

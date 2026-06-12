@@ -20,7 +20,7 @@ func (m *#T#) UpdateBy#UniqueSuffix#(ctx #context.Context#, expects...#builder.C
 		#UniqueConds#
 	}
 
-	res, err := #session.MustFor#(ctx, m).Adaptor().Exec(
+	res, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
 		ctx,
 		#builder.Update#(T#T#).
 			Set(T#T#.AssignmentFor(m, expects...)).
@@ -46,7 +46,7 @@ func (m *#T#) UpdateBy#UniqueSuffix#(ctx #context.Context#, expects...#builder.C
 --UpdateAndFetchByUnique
 // UpdateAndFetchBy#UniqueSuffix# update #T# by #UniqueFields# and retrieve record
 func (m *#T#) UpdateAndFetchBy#UniqueSuffix#(ctx #context.Context#, targets ...#builder.Col#) error {
-	return #session.MustFor#(ctx, m).Adaptor().Tx(
+	return #session.MustFor#(ctx, T#T#).Adaptor().Tx(
 		ctx,
 		func(ctx #context.Context#) error {
 			if err := m.UpdateBy#UniqueSuffix#(ctx, targets...); err != nil {

@@ -19,7 +19,7 @@ func (m *#T#) FetchBy#UniqueSuffix#(ctx #context.Context#) error {
 	}
 	#SoftDeletionCondition#
 
-	rows, err := #session.MustFor#(ctx, m).Adaptor().Query(
+	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
 		ctx,
 		#builder.Select#(nil).From(
 			T#T#,

@@ -27,7 +27,7 @@ func (m *#T#) MarkDeletionBy#UniqueSuffix#(ctx #context.Context#) error {
 		#builder.CC#[#driver.Value#](T#T#.C(deletion)).AsCond(#builder.Neq#(v)),
 	}
 
-	_, err := #session.MustFor#(ctx, m).Adaptor().Exec(
+	_, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
 		ctx,
 		#builder.Update#(T#T#).
 			Set(T#T#.AssignmentFor(m, cols...)).

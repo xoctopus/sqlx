@@ -10,7 +10,7 @@ func (m *#T#) Create(ctx #context.Context#) error {
 	#CreationMarker#
 
 	cols, values := #helper.CVsForInsertion#(m)
-	_, err := #session.MustFor#(ctx, m).Adaptor().Exec(
+	_, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
 		ctx,
 		#builder.Insert#().Into(
 			T#T#,

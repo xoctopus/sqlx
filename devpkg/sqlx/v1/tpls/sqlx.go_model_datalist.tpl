@@ -29,7 +29,7 @@ func (m *#T#) List(ctx #context.Context#, cond #builder.SqlCondition#, adds #bui
 		#builder.Comment#(#ListComment#),
 	)
 
-	rows, err := #session.MustFor#(ctx, m).Adaptor().Query(
+	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
 		ctx,
 		#builder.Select#(cols).From(T#T#, adds...),
 	)
@@ -69,7 +69,7 @@ func (m *#T#) Count(ctx #context.Context#, cond #builder.SqlCondition#) (int64, 
 		#builder.Comment#(#CountComment#),
 	}
 
-	rows, err := #session.MustFor#(ctx, m).Adaptor().Query(
+	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
 		ctx,
 		#builder.Select#(#builder.Count#()).From(T#T#, adds...),
 	)

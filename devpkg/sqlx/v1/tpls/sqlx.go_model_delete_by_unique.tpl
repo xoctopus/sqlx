@@ -17,7 +17,7 @@ func (m *#T#) DeleteBy#UniqueSuffix#(ctx #context.Context#) error {
 		#UniqueConds#
 	}
 
-	_, err := #session.MustFor#(ctx, m).Adaptor().Exec(
+	_, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
 		ctx,
 		#builder.Delete#().From(
 			T#T#,

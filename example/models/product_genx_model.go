@@ -164,7 +164,7 @@ func (m Product) UniqueIndexes() map[string][]string {
 func (m *Product) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Insert().Into(
 			TProduct,
@@ -191,7 +191,7 @@ func (m *Product) List(ctx context.Context, cond builder.SqlCondition, adds buil
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Product.List"),
 	)
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TProduct).Adaptor().Query(
 		ctx,
 		builder.Select(cols).From(TProduct, adds...),
 	)
@@ -218,7 +218,7 @@ func (m *Product) Count(ctx context.Context, cond builder.SqlCondition) (int64, 
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Product.Count"),
 	}
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TProduct).Adaptor().Query(
 		ctx,
 		builder.Select(builder.Count()).From(TProduct, adds...),
 	)
@@ -243,7 +243,7 @@ func (m *Product) FetchByID(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TProduct.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TProduct).Adaptor().Query(
 		ctx,
 		builder.Select(nil).From(
 			TProduct,
@@ -269,7 +269,7 @@ func (m *Product) FetchByProductID(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TProduct.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, m).Adaptor().Query(
+	rows, err := session.MustFor(ctx, TProduct).Adaptor().Query(
 		ctx,
 		builder.Select(nil).From(
 			TProduct,
@@ -291,7 +291,7 @@ func (m *Product) UpdateByID(ctx context.Context, expects ...builder.Col) error 
 	conds := []frag.Fragment{
 		TProduct.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+	res, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Update(TProduct).
 			Set(TProduct.AssignmentFor(m, expects...)).
@@ -315,7 +315,7 @@ func (m *Product) UpdateByID(ctx context.Context, expects ...builder.Col) error 
 
 // UpdateAndFetchByID update Product by Product.ID and retrieve record
 func (m *Product) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, m).Adaptor().Tx(
+	return session.MustFor(ctx, TProduct).Adaptor().Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -335,7 +335,7 @@ func (m *Product) UpdateByProductID(ctx context.Context, expects ...builder.Col)
 	conds := []frag.Fragment{
 		TProduct.ProductID.AsCond(builder.Eq(m.ProductID)),
 	}
-	res, err := session.MustFor(ctx, m).Adaptor().Exec(
+	res, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Update(TProduct).
 			Set(TProduct.AssignmentFor(m, expects...)).
@@ -359,7 +359,7 @@ func (m *Product) UpdateByProductID(ctx context.Context, expects ...builder.Col)
 
 // UpdateAndFetchByProductID update Product by Product.ProductID and retrieve record
 func (m *Product) UpdateAndFetchByProductID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, m).Adaptor().Tx(
+	return session.MustFor(ctx, TProduct).Adaptor().Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByProductID(ctx, targets...); err != nil {
@@ -378,7 +378,7 @@ func (m *Product) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TProduct.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Delete().From(
 			TProduct,
@@ -394,7 +394,7 @@ func (m *Product) DeleteByProductID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TProduct.ProductID.AsCond(builder.Eq(m.ProductID)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Delete().From(
 			TProduct,
@@ -417,7 +417,7 @@ func (m *Product) MarkDeletionByID(ctx context.Context) error {
 		TProduct.ID.AsCond(builder.Eq(m.ID)),
 		builder.CC[driver.Value](TProduct.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Update(TProduct).
 			Set(TProduct.AssignmentFor(m, cols...)).
@@ -441,7 +441,7 @@ func (m *Product) MarkDeletionByProductID(ctx context.Context) error {
 		TProduct.ProductID.AsCond(builder.Eq(m.ProductID)),
 		builder.CC[driver.Value](TProduct.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, m).Adaptor().Exec(
+	_, err := session.MustFor(ctx, TProduct).Adaptor().Exec(
 		ctx,
 		builder.Update(TProduct).
 			Set(TProduct.AssignmentFor(m, cols...)).
