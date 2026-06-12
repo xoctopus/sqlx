@@ -103,7 +103,7 @@ func (t *tShipment) AssignmentFor(m *Shipment, expects ...builder.Col) builder.A
 }
 
 // WithSchema with schema for tShipment
-func (t *tShipment) WithSchema(s string) *tShipment {
+func (t *tShipment) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

@@ -106,7 +106,7 @@ func (t *tOrder) AssignmentFor(m *Order, expects ...builder.Col) builder.Assignm
 }
 
 // WithSchema with schema for tOrder
-func (t *tOrder) WithSchema(s string) *tOrder {
+func (t *tOrder) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

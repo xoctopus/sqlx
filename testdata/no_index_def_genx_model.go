@@ -55,7 +55,7 @@ func (t *tNoIndexDef) AssignmentFor(m *NoIndexDef, expects ...builder.Col) build
 }
 
 // WithSchema with schema for tNoIndexDef
-func (t *tNoIndexDef) WithSchema(s string) *tNoIndexDef {
+func (t *tNoIndexDef) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

@@ -114,7 +114,7 @@ func (t *tUser) AssignmentFor(m *User, expects ...builder.Col) builder.Assignmen
 }
 
 // WithSchema with schema for tUser
-func (t *tUser) WithSchema(s string) *tUser {
+func (t *tUser) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

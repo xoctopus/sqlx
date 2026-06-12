@@ -107,7 +107,7 @@ func (t *tProduct) AssignmentFor(m *Product, expects ...builder.Col) builder.Ass
 }
 
 // WithSchema with schema for tProduct
-func (t *tProduct) WithSchema(s string) *tProduct {
+func (t *tProduct) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

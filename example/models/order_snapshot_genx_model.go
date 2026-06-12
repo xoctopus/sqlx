@@ -97,7 +97,7 @@ func (t *tOrderSnapshot) AssignmentFor(m *OrderSnapshot, expects ...builder.Col)
 }
 
 // WithSchema with schema for tOrderSnapshot
-func (t *tOrderSnapshot) WithSchema(s string) *tOrderSnapshot {
+func (t *tOrderSnapshot) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

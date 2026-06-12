@@ -95,7 +95,7 @@ func (t *tOrg) AssignmentFor(m *Org, expects ...builder.Col) builder.Assignment 
 }
 
 // WithSchema with schema for tOrg
-func (t *tOrg) WithSchema(s string) *tOrg {
+func (t *tOrg) WithSchema(s string) builder.Table {
 	t.schema = s
 	return t
 }

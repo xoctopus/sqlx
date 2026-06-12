@@ -77,9 +77,10 @@ func (t *t#T#) AssignmentFor(m *#T#, expects ...#builder.Col#) #builder.Assignme
 }
 
 @def T
+@def builder.Table
 --WithSchema
 // WithSchema with schema for t#T#
-func (t *t#T#) WithSchema(s string) *t#T# {
+func (t *t#T#) WithSchema(s string) #builder.Table# {
 	t.schema = s
 	return t
 }

@@ -104,6 +104,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.Arg(ctx, "modeled.M", m.ModeledM(ctx)),
 			s.Arg(ctx, "Register", m.Register()),
 			s.ArgExposeUnsafe(ctx, "reflect", "ValueOf"),
+			s.ArgExposeUnsafe(ctx, _builder, "Table").WithName("builder.Table"),
 			s.ArgExposeUnsafe(ctx, _builder, "Model").WithName("builder.Model"),
 			s.ArgExposeUnsafe(ctx, _builder, "Col").WithName("builder.Col"),
 			s.ArgExposeUnsafe(ctx, _builder, "ColsOf").WithName("builder.ColsOf"),
