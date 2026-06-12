@@ -46,17 +46,14 @@ type (
 	WithTableName interface {
 		WithTableName(name string) Table
 	}
+	HasTableName interface {
+		TableName() string
+	}
 	WithSchema interface {
 		WithSchema(schema string) Table
 	}
 	HasSchema interface {
 		Schema() string
-	}
-	WithDatabase interface {
-		WithDatabase(database string) Table
-	}
-	HasDatabase interface {
-		Database() string
 	}
 )
 
@@ -111,15 +108,15 @@ func TFrom(m any) Table {
 }
 
 type table struct {
-	// database identifies a unique endpoint
-	database string
 	// schema identifies a unique schema under endpoint
 	schema string
-
+	// name table name
 	name string
+	// desc table description
 	desc []string
-
+	// ks indexes
 	ks Keys
+	// cs columns
 	cs Cols
 }
 
@@ -140,36 +137,23 @@ func (t *table) TableName() string {
 }
 
 func (t *table) WithTableName(name string) Table {
-	tt := &table{
-		name:     name,
-		database: t.database,
-		desc:     t.desc,
-	}
+	tt := *t
+	tt.name = name
 
-	tt.cs = t.cs.Of(tt)
-	tt.ks = t.ks.Of(tt)
+	tt.cs = t.cs.Of(&tt)
+	tt.ks = t.ks.Of(&tt)
 
-	return tt
+	return &tt
 }
 
 func (t *table) WithSchema(schema string) Table {
-	t_ := *t
-	t_.schema = schema
-	return &t_
+	tt := *t
+	tt.schema = schema
+	return &tt
 }
 
 func (t *table) Schema() string {
 	return t.schema
-}
-
-func (t *table) WithDatabase(database string) Table {
-	t_ := *t
-	t_.database = database
-	return &t_
-}
-
-func (t *table) Database() string {
-	return t.database
 }
 
 func (t *table) String() string {

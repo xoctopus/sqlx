@@ -37,8 +37,8 @@ type i#T# struct {
 // t#T# includes modeled table, indexes and column list.
 type t#T# struct {
 	#modeled.Table#
-	I       i#T#
-	session string
+	I      i#T#
+	schema string
 
 	#ModeledColDefList#
 }
@@ -77,19 +77,18 @@ func (t *t#T#) AssignmentFor(m *#T#, expects ...#builder.Col#) #builder.Assignme
 }
 
 @def T
---WithSession
-// WithSession with session for t#T#
-func (t *t#T#) WithSession(s string) *t#T# {
-	t2 := *t
-	t2.session = s
-	return &t2
+--WithSchema
+// WithSchema with schema for t#T#
+func (t *t#T#) WithSchema(s string) *t#T# {
+	t.schema = s
+	return t
 }
 
 @def T
---Session
-// Session returns session of t#T#
-func (t t#T#) Session() string {
-	return t.session
+--Schema
+// Schema returns schema of t#T#
+func (t t#T#) Schema() string {
+	return t.schema
 }
 
 @def T

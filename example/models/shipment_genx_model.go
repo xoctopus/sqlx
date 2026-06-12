@@ -59,8 +59,8 @@ type iShipment struct {
 // tShipment includes modeled table, indexes and column list.
 type tShipment struct {
 	modeled.Table[Shipment]
-	I       iShipment
-	session string
+	I      iShipment
+	schema string
 
 	ID modeled.TCol[Shipment, uint64]
 	// @rel Order.OrderID
@@ -102,16 +102,15 @@ func (t *tShipment) AssignmentFor(m *Shipment, expects ...builder.Col) builder.A
 	return builder.ColumnsAndValues(cols, vals...)
 }
 
-// WithSession with session for tShipment
-func (t *tShipment) WithSession(s string) *tShipment {
-	t2 := *t
-	t2.session = s
-	return &t2
+// WithSchema with schema for tShipment
+func (t *tShipment) WithSchema(s string) *tShipment {
+	t.schema = s
+	return t
 }
 
-// Session returns session of tShipment
-func (t tShipment) Session() string {
-	return t.session
+// Schema returns schema of tShipment
+func (t tShipment) Schema() string {
+	return t.schema
 }
 
 // TableName returns database table name of Shipment

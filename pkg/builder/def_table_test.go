@@ -107,9 +107,8 @@ func TestTable(t *testing.T) {
 	})
 
 	t.Run("Namespaces", func(t *testing.T) {
-		tab := builder.T("t").(builder.WithSchema).WithSchema("schema").(builder.WithDatabase).WithDatabase("database")
+		tab := builder.T("t").(builder.WithSchema).WithSchema("schema")
 		Expect(t, tab.(builder.HasSchema).Schema(), Equal("schema"))
-		Expect(t, tab.(builder.HasDatabase).Database(), Equal("database"))
 	})
 }
 

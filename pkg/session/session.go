@@ -2,7 +2,6 @@ package session
 
 import (
 	"context"
-	"sync/atomic"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
@@ -17,10 +16,7 @@ import (
 //	a particular SQLite database file.
 type Session interface {
 	// Schema logically isolation
-	// Schema() string
-
-	// Name returns session name. this is global unique identifier for Session
-	Name() string
+	Schema() string
 	// T picks table from session
 	T(any) builder.Table
 	// Tx exec query
@@ -29,10 +25,9 @@ type Session interface {
 	Adaptor(...AdaptorOptionApplier) adaptor.Adaptor
 }
 
-func New(a adaptor.Adaptor, name string) Session {
+func New(a adaptor.Adaptor, schema string) Session {
 	return &session{
 		schema: a.Schema(),
-		name:   name,
 		a:      a,
 	}
 }
@@ -40,19 +35,15 @@ func New(a adaptor.Adaptor, name string) Session {
 func NewReadonly(rw adaptor.Adaptor, ro adaptor.Adaptor, name string) Session {
 	return &session{
 		schema: ro.Schema(),
-		name:   name,
 		a:      rw,
 		ro:     ro,
 	}
 }
 
 type session struct {
-	name     string
-	database string
-
-	schema  string
-	curr    string
-	escaped atomic.Bool
+	schema string
+	// curr    string
+	// escaped atomic.Bool
 
 	a  adaptor.Adaptor
 	ro adaptor.Adaptor
@@ -60,10 +51,6 @@ type session struct {
 
 func (s *session) Schema() string {
 	return s.schema
-}
-
-func (s *session) Name() string {
-	return s.name
 }
 
 func (s *session) T(m any) builder.Table {

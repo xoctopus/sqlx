@@ -7,13 +7,17 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 )
 
-var catalogs = syncx.NewXmap[string, string]()
+var catalogs = syncx.NewXmap[string, struct{}]()
 
-func Register(session string, cats ...builder.Catalog) {
+func Register(cats ...builder.Catalog) {
 	for _, cat := range cats {
 		for t := range cat.Tables() {
-			k := session + "." + t.TableName()
-			loaded, ok := catalogs.LoadOrStore(k, session)
+			k := t.TableName()
+			if x, ok := t.(builder.HasSchema); ok {
+				k = x.Schema() + "." + k
+			}
+
+			loaded, ok := catalogs.LoadOrStore(k, struct{}{})
 			must.BeTrueF(!ok, "model %s already registered to %s", loaded)
 		}
 	}

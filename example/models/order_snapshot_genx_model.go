@@ -53,8 +53,8 @@ type iOrderSnapshot struct {
 // tOrderSnapshot includes modeled table, indexes and column list.
 type tOrderSnapshot struct {
 	modeled.Table[OrderSnapshot]
-	I       iOrderSnapshot
-	session string
+	I      iOrderSnapshot
+	schema string
 
 	ID modeled.TCol[OrderSnapshot, uint64]
 	// @rel Order.OrderID
@@ -96,16 +96,15 @@ func (t *tOrderSnapshot) AssignmentFor(m *OrderSnapshot, expects ...builder.Col)
 	return builder.ColumnsAndValues(cols, vals...)
 }
 
-// WithSession with session for tOrderSnapshot
-func (t *tOrderSnapshot) WithSession(s string) *tOrderSnapshot {
-	t2 := *t
-	t2.session = s
-	return &t2
+// WithSchema with schema for tOrderSnapshot
+func (t *tOrderSnapshot) WithSchema(s string) *tOrderSnapshot {
+	t.schema = s
+	return t
 }
 
-// Session returns session of tOrderSnapshot
-func (t tOrderSnapshot) Session() string {
-	return t.session
+// Schema returns schema of tOrderSnapshot
+func (t tOrderSnapshot) Schema() string {
+	return t.schema
 }
 
 // TableName returns database table name of OrderSnapshot

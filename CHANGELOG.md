@@ -1,8 +1,48 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc3...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.8"></a>
+## [v0.2.8](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc6...v0.2.8)
+
+> 2026-06-12
+
+### Feat
+
+* **devpkg:** gen Count method
+
+
+<a name="v0.2.8-rc6"></a>
+## [v0.2.8-rc6](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc5...v0.2.8-rc6)
+
+> 2026-06-07
+
+### Feat
+
+* decimal type with OpenAPISchemaType and OpenAPISchemaFormat
+
+
+<a name="v0.2.8-rc5"></a>
+## [v0.2.8-rc5](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc4...v0.2.8-rc5)
+
+> 2026-06-07
+
+### Feat
+
+* boolean type with OpenAPISchemaType
+
+
+<a name="v0.2.8-rc4"></a>
+## [v0.2.8-rc4](https://github.com/xoctopus/sqlx/compare/v0.2.8-rc3...v0.2.8-rc4)
+
+> 2026-06-07
+
+### Doc
+
+* generate doc for sql types
 
 
 <a name="v0.2.8-rc3"></a>

@@ -26,8 +26,8 @@ type mycli struct {
 	dialect
 	adaptor.DB
 
-	database string
-	dsn      *url.URL
+	schema string
+	dsn    *url.URL
 }
 
 func (d *mycli) Dialect() adaptor.Dialect {
@@ -39,7 +39,7 @@ func (d *mycli) DriverName() string {
 }
 
 func (d *mycli) Schema() string {
-	return d.database
+	return d.schema
 }
 
 func (d *mycli) Connector() driver.DriverContext {
@@ -99,13 +99,13 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 			}
 			return err
 		}),
-		database: database,
-		dsn:      dsn,
+		schema: database,
+		dsn:    dsn,
 	}, nil
 }
 
 func (d *mycli) Catalog(ctx context.Context) (builder.Catalog, error) {
-	return ScanCatalog(ctx, d, d.database)
+	return ScanCatalog(ctx, d, d.schema)
 }
 
 func (d *mycli) CreateDatabase(ctx context.Context, dsn url.URL, database string) error {

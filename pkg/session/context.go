@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"strings"
 
 	"github.com/xoctopus/x/contextx"
 	"github.com/xoctopus/x/misc/must"
@@ -11,26 +12,24 @@ import (
 
 // For retrieves Session by session name or table
 func For(ctx context.Context, m any) (Session, bool) {
-	k := ""
-	if x, ok := m.(builder.HasSession); ok {
-		k = x.Session()
-	}
-	if len(k) == 0 {
-		k, _ = KeyFrom(ctx)
-	}
-	if len(k) == 0 {
-		return nil, false
+	schema := ""
+	if x, ok := m.(builder.HasSchema); ok {
+		schema = x.Schema()
 	}
 
 	switch x := m.(type) {
 	case interface{ Unwrap() builder.Model }:
-		return From(ctx, k+"."+x.Unwrap().TableName())
+		return From(ctx, schema, x.Unwrap().TableName())
 	case interface{ Unwrap() builder.Table }:
-		return From(ctx, k+"."+x.Unwrap().TableName())
+		return From(ctx, schema, x.Unwrap().TableName())
 	case interface{ TableName() string }:
-		return From(ctx, k+"."+x.TableName())
+		return From(ctx, schema, x.TableName())
 	case string:
-		return From(ctx, k+"."+x)
+		if before, after, ok := strings.Cut(x, "."); ok {
+			schema = before
+			x = after
+		}
+		return From(ctx, schema, x)
 	default:
 		return nil, false
 	}
@@ -42,38 +41,45 @@ func MustFor(ctx context.Context, m any) Session {
 	return s
 }
 
-type (
-	tSessionKey struct{}
-	tSession    struct{ name string }
-)
+type tSession struct {
+	schema string
+	name   string
+}
 
-var (
-	KeyFrom  = contextx.From[tSessionKey, string]
-	KeyMust  = contextx.Must[tSessionKey, string]
-	KeyWith  = contextx.With[tSessionKey, string]
-	KeyCarry = contextx.Carry[tSessionKey, string]
-)
+type SchemaModel interface {
+	builder.HasSchema
+	builder.HasTableName
+}
 
 // From retrieve Session from ctx by Session.Name
-func From(ctx context.Context, name string) (Session, bool) {
-	s, ok := ctx.Value(tSession{name}).(Session)
+func From(ctx context.Context, schema, name string) (Session, bool) {
+	s, ok := ctx.Value(tSession{schema, name}).(Session)
 	return s, ok
 }
 
-func Must(ctx context.Context, name string) Session {
-	s, ok := From(ctx, name)
+func FromM(ctx context.Context, m SchemaModel) (Session, bool) {
+	return From(ctx, m.Schema(), m.TableName())
+}
+
+func Must(ctx context.Context, schema, name string) Session {
+	s, ok := From(ctx, schema, name)
 	must.BeTrueF(ok, "missing session for: %s", name)
 	return s
 }
 
+func MustM(ctx context.Context, m SchemaModel) Session {
+	return Must(ctx, m.Schema(), m.TableName())
+}
+
 // With injects Session
-func With(ctx context.Context, session Session) context.Context {
-	return context.WithValue(ctx, tSession{name: session.Name()}, session)
+func With(ctx context.Context, m builder.Model, s Session) context.Context {
+	v := tSession{schema: s.Schema(), name: m.TableName()}
+	return context.WithValue(ctx, v, s)
 }
 
 // Carry returns context carrier
-func Carry(session Session) contextx.Carrier {
+func Carry(m builder.Model, s Session) contextx.Carrier {
 	return func(ctx context.Context) context.Context {
-		return With(ctx, session)
+		return With(ctx, m, s)
 	}
 }

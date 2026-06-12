@@ -36,14 +36,5 @@ type (
 	WithDatatypeDesc interface {
 		DBType(driver string) string
 	}
-
-	WithSession[T Model] interface {
-		WithSession(string) T
-	}
-
-	HasSession interface {
-		Session() string
-	}
-
 	Model = internal.Model
 )
