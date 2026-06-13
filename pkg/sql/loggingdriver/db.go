@@ -35,7 +35,7 @@ func (c *connector) OpenConnector(dsn string) (driver.Connector, error) {
 	q := u.Query()
 	name := c.name
 	if q.Get("_ro") == "true" {
-		name += "_ro"
+		name += "::ro"
 		q.Del("_ro")
 		u.RawQuery = q.Encode()
 	}

@@ -7,16 +7,10 @@ import (
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
-// Session is a logical isolation unit and operational handle for database
-// adapters.
-// eg:
-//
-//	a specific MySQL database
-//	a specific search_path in same PostgreSQL database
-//	a particular SQLite database file.
+// Session defines logic session interface
 type Session interface {
-	// Schema logically isolation
-	Schema() string
+	// Name logic session name
+	Name() string
 	// T picks table from session
 	T(any) builder.Table
 	// Tx exec query
@@ -25,32 +19,30 @@ type Session interface {
 	Adaptor(...AdaptorOptionApplier) adaptor.Adaptor
 }
 
-func New(a adaptor.Adaptor, schema string) Session {
+func New(a adaptor.Adaptor, name string) Session {
 	return &session{
-		schema: a.Schema(),
-		a:      a,
+		name: name,
+		a:    a,
 	}
 }
 
 func NewReadonly(rw adaptor.Adaptor, ro adaptor.Adaptor, name string) Session {
 	return &session{
-		schema: ro.Schema(),
-		a:      rw,
-		ro:     ro,
+		name: name,
+		a:    rw,
+		ro:   ro,
 	}
 }
 
 type session struct {
-	schema string
-	// curr    string
-	// escaped atomic.Bool
+	name string
 
 	a  adaptor.Adaptor
 	ro adaptor.Adaptor
 }
 
-func (s *session) Schema() string {
-	return s.schema
+func (s *session) Name() string {
+	return s.name
 }
 
 func (s *session) T(m any) builder.Table {

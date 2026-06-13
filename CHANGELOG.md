@@ -1,8 +1,38 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.8...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc3...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.9-rc3"></a>
+## [v0.2.9-rc3](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc2...v0.2.9-rc3)
+
+> 2026-06-13
+
+### Feat
+
+* generate WithSchema Schema
+
+
+<a name="v0.2.9-rc2"></a>
+## [v0.2.9-rc2](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc1...v0.2.9-rc2)
+
+> 2026-06-13
+
+### Fix
+
+* **devpkg:** session from modeled
+
+
+<a name="v0.2.9-rc1"></a>
+## [v0.2.9-rc1](https://github.com/xoctopus/sqlx/compare/v0.2.8...v0.2.9-rc1)
+
+> 2026-06-13
+
+### Feat
+
+* **devpkg:** gen WithSchema Schema
 
 
 <a name="v0.2.8"></a>
