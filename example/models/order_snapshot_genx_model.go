@@ -18,7 +18,7 @@ import (
 )
 
 var TOrderSnapshot *tOrderSnapshot
-var gOrderSnapshotTags = map[string]string{
+var TagsOrderSnapshot = map[string]string{
 	"f_id":         "f_id",
 	"order_id":     "order_id",
 	"product_id":   "product_id",
@@ -94,7 +94,7 @@ func (t *tOrderSnapshot) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tOrderSnapshot) TagFor(name string) (string, bool) {
-	v, ok := gOrderSnapshotTags[name]
+	v, ok := TagsOrderSnapshot[name]
 	return v, ok
 }
 

@@ -7,7 +7,7 @@
 --Init
 var T#T# *t#T#
 
-var g#T#Tags = map[string]string{
+var Tags#T# = map[string]string{
 	#TagMapping#
 }
 
@@ -58,7 +58,7 @@ func (t *t#T#) New() #builder.Model# {
 
 // TagFor returns column tag mapping by name
 func (t *t#T#) TagFor(name string) (string, bool) {
-	v, ok := g#T#Tags[name]
+	v, ok := Tags#T#[name]
 	return v, ok
 }
 

@@ -18,7 +18,7 @@ import (
 )
 
 var TUser *tUser
-var gUserTags = map[string]string{
+var TagsUser = map[string]string{
 	"f_id":         "f_id",
 	"f_user_id":    "f_user_id",
 	"f_org_id":     "f_org_id",
@@ -106,7 +106,7 @@ func (t *tUser) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tUser) TagFor(name string) (string, bool) {
-	v, ok := gUserTags[name]
+	v, ok := TagsUser[name]
 	return v, ok
 }
 

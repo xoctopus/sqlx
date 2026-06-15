@@ -20,7 +20,7 @@ import (
 )
 
 var TProduct *tProduct
-var gProductTags = map[string]string{
+var TagsProduct = map[string]string{
 	"f_id":         "f_id",
 	"product_id":   "product_id",
 	"sku":          "sku",
@@ -108,7 +108,7 @@ func (t *tProduct) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tProduct) TagFor(name string) (string, bool) {
-	v, ok := gProductTags[name]
+	v, ok := TagsProduct[name]
 	return v, ok
 }
 

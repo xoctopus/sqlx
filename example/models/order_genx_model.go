@@ -19,7 +19,7 @@ import (
 )
 
 var TOrder *tOrder
-var gOrderTags = map[string]string{
+var TagsOrder = map[string]string{
 	"f_id":         "f_id",
 	"user_id":      "user_id",
 	"order_id":     "order_id",
@@ -109,7 +109,7 @@ func (t *tOrder) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tOrder) TagFor(name string) (string, bool) {
-	v, ok := gOrderTags[name]
+	v, ok := TagsOrder[name]
 	return v, ok
 }
 

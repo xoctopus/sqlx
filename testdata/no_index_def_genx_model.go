@@ -13,7 +13,7 @@ import (
 )
 
 var TNoIndexDef *tNoIndexDef
-var gNoIndexDefTags = map[string]string{}
+var TagsNoIndexDef = map[string]string{}
 
 func init() {
 	m := modeled.M[NoIndexDef]()
@@ -41,7 +41,7 @@ func (t *tNoIndexDef) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tNoIndexDef) TagFor(name string) (string, bool) {
-	v, ok := gNoIndexDefTags[name]
+	v, ok := TagsNoIndexDef[name]
 	return v, ok
 }
 

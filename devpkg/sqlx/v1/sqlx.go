@@ -154,10 +154,14 @@ func (m *Model) TagMapping() s.Snippet {
 					keys[column] = struct{}{}
 				}
 				if f.NameTag != nil {
-					if name := f.NameTag.Name(); len(name) > 0 && name != "-" {
-						if _, ok := keys[name]; !ok {
-							ss = append(ss, s.BlockF("%q: %q,", name, column))
-							keys[column] = struct{}{}
+					for _, k := range []string{"json", "name"} {
+						if flag := f.NameTag.Get(k); flag != nil {
+							if name := flag.Name(); len(name) > 0 && name != "-" {
+								if _, ok := keys[name]; !ok {
+									ss = append(ss, s.BlockF("%q: %q,", name, column))
+									keys[column] = struct{}{}
+								}
+							}
 						}
 					}
 				}

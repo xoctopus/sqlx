@@ -18,7 +18,7 @@ import (
 )
 
 var TOrg *tOrg
-var gOrgTags = map[string]string{
+var TagsOrg = map[string]string{
 	"f_id":         "f_id",
 	"f_org_id":     "f_org_id",
 	"f_name":       "f_name",
@@ -92,7 +92,7 @@ func (t *tOrg) New() builder.Model {
 
 // TagFor returns column tag mapping by name
 func (t *tOrg) TagFor(name string) (string, bool) {
-	v, ok := gOrgTags[name]
+	v, ok := TagsOrg[name]
 	return v, ok
 }
 

@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.0...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc1...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.3.1-rc1"></a>
+## [v0.3.1-rc1](https://github.com/xoctopus/sqlx/compare/v0.3.0...v0.3.1-rc1)
+
+> 2026-06-15
+
+### Feat
+
+* **devpkg:** gen tag mapping for models
 
 
 <a name="v0.3.0"></a>
