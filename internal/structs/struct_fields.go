@@ -120,6 +120,11 @@ func (w *walker) Walk(t typx.Type) iter.Seq[*Field] {
 				Field:      f,
 				Flag:       flag,
 				ColumnDef:  *def.ParseColDef(f.Type(), f.Tag()),
+				NameTag: reflectx.ParseTag(
+					f.Tag(),
+					reflectx.WithOptionSplitter(':'),
+					reflectx.WithExpectFlags("json", "name"),
+				).Get("json"),
 			}
 			p.Loc = make([]int, len(loc))
 			copy(p.Loc, loc)
@@ -139,6 +144,7 @@ type Field struct {
 	Type       typx.Type
 	Field      typx.StructField
 	Flag       *reflectx.Flag
+	NameTag    *reflectx.Flag
 	Loc        []int
 	ColumnDef  def.ColumnDef
 	// ModelLoc  []int

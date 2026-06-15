@@ -13,6 +13,7 @@ import (
 )
 
 var TNoIndexDef *tNoIndexDef
+var gNoIndexDefTags = map[string]string{}
 
 func init() {
 	m := modeled.M[NoIndexDef]()
@@ -36,6 +37,12 @@ type tNoIndexDef struct {
 // New creates a new NoIndexDef
 func (t *tNoIndexDef) New() builder.Model {
 	return &NoIndexDef{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tNoIndexDef) TagFor(name string) (string, bool) {
+	v, ok := gNoIndexDefTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

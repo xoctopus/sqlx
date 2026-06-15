@@ -19,6 +19,24 @@ import (
 )
 
 var TOrder *tOrder
+var gOrderTags = map[string]string{
+	"f_id":         "f_id",
+	"user_id":      "user_id",
+	"order_id":     "order_id",
+	"order_no":     "order_no",
+	"orderNO":      "order_no",
+	"amount":       "amount",
+	"currency":     "currency",
+	"paid_at":      "paid_at",
+	"paidAt":       "paid_at",
+	"canceled_at":  "canceled_at",
+	"canceledAt":   "canceled_at",
+	"status":       "status",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+	"f_updated_at": "f_updated_at",
+	"updatedAt":    "f_updated_at",
+}
 
 func init() {
 	m := modeled.M[Order]()
@@ -87,6 +105,12 @@ type tOrder struct {
 // New creates a new Order
 func (t *tOrder) New() builder.Model {
 	return &Order{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tOrder) TagFor(name string) (string, bool) {
+	v, ok := gOrderTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

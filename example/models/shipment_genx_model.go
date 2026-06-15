@@ -18,6 +18,19 @@ import (
 )
 
 var TShipment *tShipment
+var gShipmentTags = map[string]string{
+	"f_id":         "f_id",
+	"order_id":     "order_id",
+	"carrier":      "carrier",
+	"tracking_no":  "tracking_no",
+	"status":       "status",
+	"shipped_at":   "shipped_at",
+	"delivered_at": "delivered_at",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+	"f_updated_at": "f_updated_at",
+	"updatedAt":    "f_updated_at",
+}
 
 func init() {
 	m := modeled.M[Shipment]()
@@ -84,6 +97,12 @@ type tShipment struct {
 // New creates a new Shipment
 func (t *tShipment) New() builder.Model {
 	return &Shipment{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tShipment) TagFor(name string) (string, bool) {
+	v, ok := gShipmentTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

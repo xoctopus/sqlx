@@ -143,6 +143,30 @@ func (m *Model) IndexList(unique bool) s.Snippet {
 	return s.Snippet(&s.Placeholder{})
 }
 
+func (m *Model) TagMapping() s.Snippet {
+	ss := make([]s.Snippet, 0, len(m.fields)*2)
+	keys := make(map[string]struct{})
+	for _, f := range m.fields {
+		if f.Flag != nil {
+			if column := f.Flag.Name(); len(column) > 0 && column != "-" {
+				if _, ok := keys[column]; !ok {
+					ss = append(ss, s.BlockF("%q: %q,", column, column))
+					keys[column] = struct{}{}
+				}
+				if f.NameTag != nil {
+					if name := f.NameTag.Name(); len(name) > 0 && name != "-" {
+						if _, ok := keys[name]; !ok {
+							ss = append(ss, s.BlockF("%q: %q,", name, column))
+							keys[column] = struct{}{}
+						}
+					}
+				}
+			}
+		}
+	}
+	return s.Snippets(s.NewLine(1), ss...)
+}
+
 func (m *Model) ModeledKeyDefList(ctx context.Context) s.Snippet {
 	keyTyp := s.Expose(ctx, _modeled, "Key", m.ident)
 

@@ -103,6 +103,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.Arg(ctx, "modeled.Table", m.ModeledTable(ctx)),
 			s.Arg(ctx, "modeled.M", m.ModeledM(ctx)),
 			s.Arg(ctx, "Register", m.Register()),
+			s.Arg(ctx, "TagMapping", m.TagMapping()),
 			s.ArgExposeUnsafe(ctx, "reflect", "ValueOf"),
 			s.ArgExposeUnsafe(ctx, _builder, "Table").WithName("builder.Table"),
 			s.ArgExposeUnsafe(ctx, _builder, "Model").WithName("builder.Model"),

@@ -18,6 +18,18 @@ import (
 )
 
 var TOrg *tOrg
+var gOrgTags = map[string]string{
+	"f_id":         "f_id",
+	"f_org_id":     "f_org_id",
+	"f_name":       "f_name",
+	"f_belongs":    "f_belongs",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+	"f_updated_at": "f_updated_at",
+	"updatedAt":    "f_updated_at",
+	"f_deleted_at": "f_deleted_at",
+	"deletedAt":    "f_deleted_at",
+}
 
 func init() {
 	m := modeled.M[Org]()
@@ -76,6 +88,12 @@ type tOrg struct {
 // New creates a new Org
 func (t *tOrg) New() builder.Model {
 	return &Org{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tOrg) TagFor(name string) (string, bool) {
+	v, ok := gOrgTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

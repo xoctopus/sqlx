@@ -20,6 +20,22 @@ import (
 )
 
 var TProduct *tProduct
+var gProductTags = map[string]string{
+	"f_id":         "f_id",
+	"product_id":   "product_id",
+	"sku":          "sku",
+	"name":         "name",
+	"description":  "description",
+	"price":        "price",
+	"currency":     "currency",
+	"status":       "status",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+	"f_updated_at": "f_updated_at",
+	"updatedAt":    "f_updated_at",
+	"f_deleted_at": "f_deleted_at",
+	"deletedAt":    "f_deleted_at",
+}
 
 func init() {
 	m := modeled.M[Product]()
@@ -88,6 +104,12 @@ type tProduct struct {
 // New creates a new Product
 func (t *tProduct) New() builder.Model {
 	return &Product{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tProduct) TagFor(name string) (string, bool) {
+	v, ok := gProductTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.9...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.0...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.3.0"></a>
+## [v0.3.0](https://github.com/xoctopus/sqlx/compare/v0.2.9...v0.3.0)
+
+> 2026-06-15
+
+### Chore
+
+* code formating
 
 
 <a name="v0.2.9"></a>

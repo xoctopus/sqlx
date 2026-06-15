@@ -19,6 +19,25 @@ import (
 )
 
 var TUser *tUser
+var gUserTags = map[string]string{
+	"f_id":         "f_id",
+	"f_user_id":    "f_user_id",
+	"f_org_id":     "f_org_id",
+	"f_name":       "f_name",
+	"f_is_member":  "f_is_member",
+	"f_real_name":  "f_real_name",
+	"f_username":   "f_username",
+	"f_nick_name":  "f_nick_name",
+	"f_age":        "f_age",
+	"f_gender":     "f_gender",
+	"f_asset":      "f_asset",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+	"f_updated_at": "f_updated_at",
+	"updatedAt":    "f_updated_at",
+	"f_deleted_at": "f_deleted_at",
+	"deletedAt":    "f_deleted_at",
+}
 
 func init() {
 	m := modeled.M[User]()
@@ -95,6 +114,12 @@ type tUser struct {
 // New creates a new User
 func (t *tUser) New() builder.Model {
 	return &User{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tUser) TagFor(name string) (string, bool) {
+	v, ok := gUserTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

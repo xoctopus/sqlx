@@ -18,6 +18,18 @@ import (
 )
 
 var TOrderSnapshot *tOrderSnapshot
+var gOrderSnapshotTags = map[string]string{
+	"f_id":         "f_id",
+	"order_id":     "order_id",
+	"product_id":   "product_id",
+	"product_sku":  "product_sku",
+	"product_name": "product_name",
+	"price":        "price",
+	"quantity":     "quantity",
+	"subtotal":     "subtotal",
+	"f_created_at": "f_created_at",
+	"createdAt":    "f_created_at",
+}
 
 func init() {
 	m := modeled.M[OrderSnapshot]()
@@ -78,6 +90,12 @@ type tOrderSnapshot struct {
 // New creates a new OrderSnapshot
 func (t *tOrderSnapshot) New() builder.Model {
 	return &OrderSnapshot{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *tOrderSnapshot) TagFor(name string) (string, bool) {
+	v, ok := gOrderSnapshotTags[name]
+	return v, ok
 }
 
 // AssignmentFor returns assignment by m with expects columns

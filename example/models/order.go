@@ -34,15 +34,15 @@ type RelOrder struct {
 
 type OrderData struct {
 	// OrderNo 订单编号
-	OrderNo string `db:"order_no,width=64"`
+	OrderNo string `db:"order_no,width=64" json:"orderNO"`
 	// Amount 订单金额
-	Amount types.Decimal `db:"amount,width=22,precision=4"`
+	Amount types.Decimal `db:"amount,width=22,precision=4" json:"amount"`
 	// Currency 结算币种
-	Currency enums.Currency `db:"currency"`
+	Currency enums.Currency `db:"currency" json:"currency"`
 	// PaidAt 订单支付时间
-	PaidAt sqltime.Timestamp `db:"paid_at,default=0"`
+	PaidAt sqltime.Timestamp `db:"paid_at,default=0" json:"paidAt"`
 	// CanceledAt 订单取消时间
-	CanceledAt sqltime.Timestamp `db:"canceled_at,default=0"`
+	CanceledAt sqltime.Timestamp `db:"canceled_at,default=0" json:"canceledAt"`
 	// Status 订单状态
-	Status enums.OrderStatus `db:"status"`
+	Status enums.OrderStatus `db:"status" json:"status"`
 }

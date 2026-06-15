@@ -3,8 +3,13 @@
 @def ModeledColInitList
 @def modeled.M
 @def Register
+@def TagMapping
 --Init
 var T#T# *t#T#
+
+var g#T#Tags = map[string]string{
+	#TagMapping#
+}
 
 func init() {
 	m := #modeled.M#()
@@ -49,6 +54,12 @@ type t#T# struct {
 // New creates a new #T#
 func (t *t#T#) New() #builder.Model# {
 	return &#T#{}
+}
+
+// TagFor returns column tag mapping by name
+func (t *t#T#) TagFor(name string) (string, bool) {
+	v, ok := g#T#Tags[name]
+	return v, ok
 }
 
 @def T
