@@ -159,7 +159,7 @@ func (m User) UniqueIndexes() map[string][]string {
 func (m *User) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Insert().Into(
 			TUser,
@@ -181,7 +181,7 @@ func (m *User) List(ctx context.Context, cond builder.SqlCondition, adds builder
 		builder.Where(builder.And(conds...)),
 		builder.Comment("User.List"),
 	)
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(cols).From(TUser, adds...),
 	)
@@ -203,7 +203,7 @@ func (m *User) Count(ctx context.Context, cond builder.SqlCondition) (int64, err
 		builder.Where(builder.And(conds...)),
 		builder.Comment("User.Count"),
 	}
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(builder.Count()).From(TUser, adds...),
 	)
@@ -223,7 +223,7 @@ func (m *User) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 	}
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -244,7 +244,7 @@ func (m *User) FetchByUserID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.UserID.AsCond(builder.Eq(m.UserID)),
 	}
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -265,7 +265,7 @@ func (m *User) FetchByRealName(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.RealName.AsCond(builder.Eq(m.RealName)),
 	}
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -287,7 +287,7 @@ func (m *User) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 	conds := []frag.Fragment{
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -311,7 +311,7 @@ func (m *User) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 
 // UpdateAndFetchByID update User by User.ID and retrieve record
 func (m *User) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -331,7 +331,7 @@ func (m *User) UpdateByUserID(ctx context.Context, expects ...builder.Col) error
 	conds := []frag.Fragment{
 		TUser.UserID.AsCond(builder.Eq(m.UserID)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -355,7 +355,7 @@ func (m *User) UpdateByUserID(ctx context.Context, expects ...builder.Col) error
 
 // UpdateAndFetchByUserID update User by User.UserID and retrieve record
 func (m *User) UpdateAndFetchByUserID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByUserID(ctx, targets...); err != nil {
@@ -375,7 +375,7 @@ func (m *User) UpdateByRealName(ctx context.Context, expects ...builder.Col) err
 	conds := []frag.Fragment{
 		TUser.RealName.AsCond(builder.Eq(m.RealName)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -399,7 +399,7 @@ func (m *User) UpdateByRealName(ctx context.Context, expects ...builder.Col) err
 
 // UpdateAndFetchByRealName update User by User.RealName and retrieve record
 func (m *User) UpdateAndFetchByRealName(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByRealName(ctx, targets...); err != nil {
@@ -418,7 +418,7 @@ func (m *User) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,
@@ -434,7 +434,7 @@ func (m *User) DeleteByUserID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.UserID.AsCond(builder.Eq(m.UserID)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,
@@ -450,7 +450,7 @@ func (m *User) DeleteByRealName(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.RealName.AsCond(builder.Eq(m.RealName)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,

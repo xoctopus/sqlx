@@ -163,7 +163,7 @@ func (m Order) UniqueIndexes() map[string][]string {
 func (m *Order) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, TOrder).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrder).Exec(
 		ctx,
 		builder.Insert().Into(
 			TOrder,
@@ -185,7 +185,7 @@ func (m *Order) List(ctx context.Context, cond builder.SqlCondition, adds builde
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Order.List"),
 	)
-	rows, err := session.MustFor(ctx, TOrder).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrder).Query(
 		ctx,
 		builder.Select(cols).From(TOrder, adds...),
 	)
@@ -207,7 +207,7 @@ func (m *Order) Count(ctx context.Context, cond builder.SqlCondition) (int64, er
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Order.Count"),
 	}
-	rows, err := session.MustFor(ctx, TOrder).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrder).Query(
 		ctx,
 		builder.Select(builder.Count()).From(TOrder, adds...),
 	)
@@ -227,7 +227,7 @@ func (m *Order) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrder.ID.AsCond(builder.Eq(m.ID)),
 	}
-	rows, err := session.MustFor(ctx, TOrder).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrder).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrder,
@@ -248,7 +248,7 @@ func (m *Order) FetchByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrder.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	rows, err := session.MustFor(ctx, TOrder).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrder).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrder,
@@ -270,7 +270,7 @@ func (m *Order) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 	conds := []frag.Fragment{
 		TOrder.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, TOrder).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrder).Exec(
 		ctx,
 		builder.Update(TOrder).
 			Set(TOrder.AssignmentFor(m, expects...)).
@@ -294,7 +294,7 @@ func (m *Order) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 
 // UpdateAndFetchByID update Order by Order.ID and retrieve record
 func (m *Order) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrder).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrder).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -314,7 +314,7 @@ func (m *Order) UpdateByOrderID(ctx context.Context, expects ...builder.Col) err
 	conds := []frag.Fragment{
 		TOrder.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	res, err := session.MustFor(ctx, TOrder).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrder).Exec(
 		ctx,
 		builder.Update(TOrder).
 			Set(TOrder.AssignmentFor(m, expects...)).
@@ -338,7 +338,7 @@ func (m *Order) UpdateByOrderID(ctx context.Context, expects ...builder.Col) err
 
 // UpdateAndFetchByOrderID update Order by Order.OrderID and retrieve record
 func (m *Order) UpdateAndFetchByOrderID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrder).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrder).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByOrderID(ctx, targets...); err != nil {
@@ -357,7 +357,7 @@ func (m *Order) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrder.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, TOrder).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrder).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrder,
@@ -373,7 +373,7 @@ func (m *Order) DeleteByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrder.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	_, err := session.MustFor(ctx, TOrder).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrder).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrder,

@@ -5,7 +5,7 @@
 @def UniqueFields
 @def DeleteComment
 @def frag.Fragment
-@def session.MustFor
+@def session.MustExecutorFor
 @def builder.Delete
 @def builder.Where
 @def builder.Comment
@@ -17,7 +17,7 @@ func (m *#T#) DeleteBy#UniqueSuffix#(ctx #context.Context#) error {
 		#UniqueConds#
 	}
 
-	_, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
+	_, err := #session.MustExecutorFor#(ctx, T#T#).Exec(
 		ctx,
 		#builder.Delete#().From(
 			T#T#,

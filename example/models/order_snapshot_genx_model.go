@@ -151,7 +151,7 @@ func (m OrderSnapshot) UniqueIndexes() map[string][]string {
 func (m *OrderSnapshot) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrderSnapshot).Exec(
 		ctx,
 		builder.Insert().Into(
 			TOrderSnapshot,
@@ -173,7 +173,7 @@ func (m *OrderSnapshot) List(ctx context.Context, cond builder.SqlCondition, add
 		builder.Where(builder.And(conds...)),
 		builder.Comment("OrderSnapshot.List"),
 	)
-	rows, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrderSnapshot).Query(
 		ctx,
 		builder.Select(cols).From(TOrderSnapshot, adds...),
 	)
@@ -195,7 +195,7 @@ func (m *OrderSnapshot) Count(ctx context.Context, cond builder.SqlCondition) (i
 		builder.Where(builder.And(conds...)),
 		builder.Comment("OrderSnapshot.Count"),
 	}
-	rows, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrderSnapshot).Query(
 		ctx,
 		builder.Select(builder.Count()).From(TOrderSnapshot, adds...),
 	)
@@ -215,7 +215,7 @@ func (m *OrderSnapshot) FetchByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
 	}
-	rows, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrderSnapshot).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrderSnapshot,
@@ -236,7 +236,7 @@ func (m *OrderSnapshot) FetchByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	rows, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrderSnapshot).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrderSnapshot,
@@ -257,7 +257,7 @@ func (m *OrderSnapshot) UpdateByID(ctx context.Context, expects ...builder.Col) 
 	conds := []frag.Fragment{
 		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrderSnapshot).Exec(
 		ctx,
 		builder.Update(TOrderSnapshot).
 			Set(TOrderSnapshot.AssignmentFor(m, expects...)).
@@ -281,7 +281,7 @@ func (m *OrderSnapshot) UpdateByID(ctx context.Context, expects ...builder.Col) 
 
 // UpdateAndFetchByID update OrderSnapshot by OrderSnapshot.ID and retrieve record
 func (m *OrderSnapshot) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrderSnapshot).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrderSnapshot).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -300,7 +300,7 @@ func (m *OrderSnapshot) UpdateByOrderID(ctx context.Context, expects ...builder.
 	conds := []frag.Fragment{
 		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	res, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrderSnapshot).Exec(
 		ctx,
 		builder.Update(TOrderSnapshot).
 			Set(TOrderSnapshot.AssignmentFor(m, expects...)).
@@ -324,7 +324,7 @@ func (m *OrderSnapshot) UpdateByOrderID(ctx context.Context, expects ...builder.
 
 // UpdateAndFetchByOrderID update OrderSnapshot by OrderSnapshot.OrderID and retrieve record
 func (m *OrderSnapshot) UpdateAndFetchByOrderID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrderSnapshot).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrderSnapshot).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByOrderID(ctx, targets...); err != nil {
@@ -343,7 +343,7 @@ func (m *OrderSnapshot) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrderSnapshot.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrderSnapshot).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrderSnapshot,
@@ -359,7 +359,7 @@ func (m *OrderSnapshot) DeleteByOrderID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrderSnapshot.OrderID.AsCond(builder.Eq(m.OrderID)),
 	}
-	_, err := session.MustFor(ctx, TOrderSnapshot).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrderSnapshot).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrderSnapshot,

@@ -2,7 +2,7 @@
 @def context.Context
 @def UniqueSuffix
 @def UniqueConds
-@def session.MustFor
+@def session.MustExecutorFor
 @def MarkDeletionComment
 @def frag.Fragment
 @def builder.Update
@@ -27,7 +27,7 @@ func (m *#T#) MarkDeletionBy#UniqueSuffix#(ctx #context.Context#) error {
 		#builder.CC#[#driver.Value#](T#T#.C(deletion)).AsCond(#builder.Neq#(v)),
 	}
 
-	_, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
+	_, err := #session.MustExecutorFor#(ctx, T#T#).Exec(
 		ctx,
 		#builder.Update#(T#T#).
 			Set(T#T#.AssignmentFor(m, cols...)).

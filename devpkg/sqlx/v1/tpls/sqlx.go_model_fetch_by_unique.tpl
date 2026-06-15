@@ -5,7 +5,7 @@
 @def UniqueFields
 @def FetchComment
 @def frag.Fragment
-@def session.MustFor
+@def session.MustExecutorFor
 @def builder.Select
 @def builder.Where
 @def builder.Limit
@@ -19,7 +19,7 @@ func (m *#T#) FetchBy#UniqueSuffix#(ctx #context.Context#) error {
 	}
 	#SoftDeletionCondition#
 
-	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
+	rows, err := #session.MustExecutorFor#(ctx, T#T#).Query(
 		ctx,
 		#builder.Select#(nil).From(
 			T#T#,

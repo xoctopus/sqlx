@@ -156,7 +156,7 @@ func (m Org) UniqueIndexes() map[string][]string {
 func (m *Org) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Insert().Into(
 			TOrg,
@@ -183,7 +183,7 @@ func (m *Org) List(ctx context.Context, cond builder.SqlCondition, adds builder.
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Org.List"),
 	)
-	rows, err := session.MustFor(ctx, TOrg).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrg).Query(
 		ctx,
 		builder.Select(cols).From(TOrg, adds...),
 	)
@@ -210,7 +210,7 @@ func (m *Org) Count(ctx context.Context, cond builder.SqlCondition) (int64, erro
 		builder.Where(builder.And(conds...)),
 		builder.Comment("Org.Count"),
 	}
-	rows, err := session.MustFor(ctx, TOrg).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrg).Query(
 		ctx,
 		builder.Select(builder.Count()).From(TOrg, adds...),
 	)
@@ -235,7 +235,7 @@ func (m *Org) FetchByID(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TOrg).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrg).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrg,
@@ -262,7 +262,7 @@ func (m *Org) FetchByOrgIDAndDeletedAt(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TOrg).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrg).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrg,
@@ -290,7 +290,7 @@ func (m *Org) FetchByOrgIDAndManagerAndDeletedAt(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TOrg).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TOrg).Query(
 		ctx,
 		builder.Select(nil).From(
 			TOrg,
@@ -312,7 +312,7 @@ func (m *Org) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 	conds := []frag.Fragment{
 		TOrg.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, expects...)).
@@ -336,7 +336,7 @@ func (m *Org) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 
 // UpdateAndFetchByID update Org by Org.ID and retrieve record
 func (m *Org) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrg).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrg).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -357,7 +357,7 @@ func (m *Org) UpdateByOrgIDAndDeletedAt(ctx context.Context, expects ...builder.
 		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	res, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, expects...)).
@@ -381,7 +381,7 @@ func (m *Org) UpdateByOrgIDAndDeletedAt(ctx context.Context, expects ...builder.
 
 // UpdateAndFetchByOrgIDAndDeletedAt update Org by Org.OrgID and Org.DeletedAt and retrieve record
 func (m *Org) UpdateAndFetchByOrgIDAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrg).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrg).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByOrgIDAndDeletedAt(ctx, targets...); err != nil {
@@ -403,7 +403,7 @@ func (m *Org) UpdateByOrgIDAndManagerAndDeletedAt(ctx context.Context, expects .
 		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	res, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, expects...)).
@@ -427,7 +427,7 @@ func (m *Org) UpdateByOrgIDAndManagerAndDeletedAt(ctx context.Context, expects .
 
 // UpdateAndFetchByOrgIDAndManagerAndDeletedAt update Org by Org.OrgID and Org.Manager and Org.DeletedAt and retrieve record
 func (m *Org) UpdateAndFetchByOrgIDAndManagerAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TOrg).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TOrg).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByOrgIDAndManagerAndDeletedAt(ctx, targets...); err != nil {
@@ -446,7 +446,7 @@ func (m *Org) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TOrg.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrg,
@@ -463,7 +463,7 @@ func (m *Org) DeleteByOrgIDAndDeletedAt(ctx context.Context) error {
 		TOrg.OrgID.AsCond(builder.Eq(m.OrgID)),
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrg,
@@ -481,7 +481,7 @@ func (m *Org) DeleteByOrgIDAndManagerAndDeletedAt(ctx context.Context) error {
 		TOrg.Manager.AsCond(builder.Eq(m.Manager)),
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Delete().From(
 			TOrg,
@@ -504,7 +504,7 @@ func (m *Org) MarkDeletionByID(ctx context.Context) error {
 		TOrg.ID.AsCond(builder.Eq(m.ID)),
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, cols...)).
@@ -529,7 +529,7 @@ func (m *Org) MarkDeletionByOrgIDAndDeletedAt(ctx context.Context) error {
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, cols...)).
@@ -555,7 +555,7 @@ func (m *Org) MarkDeletionByOrgIDAndManagerAndDeletedAt(ctx context.Context) err
 		TOrg.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 		builder.CC[driver.Value](TOrg.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TOrg).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TOrg).Exec(
 		ctx,
 		builder.Update(TOrg).
 			Set(TOrg.AssignmentFor(m, cols...)).

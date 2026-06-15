@@ -174,7 +174,7 @@ func (m User) UniqueIndexes() map[string][]string {
 func (m *User) Create(ctx context.Context) error {
 	m.MarkCreatedAt()
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Insert().Into(
 			TUser,
@@ -201,7 +201,7 @@ func (m *User) List(ctx context.Context, cond builder.SqlCondition, adds builder
 		builder.Where(builder.And(conds...)),
 		builder.Comment("User.List"),
 	)
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(cols).From(TUser, adds...),
 	)
@@ -228,7 +228,7 @@ func (m *User) Count(ctx context.Context, cond builder.SqlCondition) (int64, err
 		builder.Where(builder.And(conds...)),
 		builder.Comment("User.Count"),
 	}
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(builder.Count()).From(TUser, adds...),
 	)
@@ -253,7 +253,7 @@ func (m *User) FetchByID(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -280,7 +280,7 @@ func (m *User) FetchByUserIDAndDeletedAt(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -307,7 +307,7 @@ func (m *User) FetchByNameAndDeletedAt(ctx context.Context) error {
 		conds,
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Eq(v)),
 	)
-	rows, err := session.MustFor(ctx, TUser).Adaptor().Query(
+	rows, err := session.MustExecutorFor(ctx, TUser).Query(
 		ctx,
 		builder.Select(nil).From(
 			TUser,
@@ -329,7 +329,7 @@ func (m *User) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 	conds := []frag.Fragment{
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -353,7 +353,7 @@ func (m *User) UpdateByID(ctx context.Context, expects ...builder.Col) error {
 
 // UpdateAndFetchByID update User by User.ID and retrieve record
 func (m *User) UpdateAndFetchByID(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByID(ctx, targets...); err != nil {
@@ -374,7 +374,7 @@ func (m *User) UpdateByUserIDAndDeletedAt(ctx context.Context, expects ...builde
 		TUser.UserID.AsCond(builder.Eq(m.UserID)),
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -398,7 +398,7 @@ func (m *User) UpdateByUserIDAndDeletedAt(ctx context.Context, expects ...builde
 
 // UpdateAndFetchByUserIDAndDeletedAt update User by User.UserID and User.DeletedAt and retrieve record
 func (m *User) UpdateAndFetchByUserIDAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByUserIDAndDeletedAt(ctx, targets...); err != nil {
@@ -419,7 +419,7 @@ func (m *User) UpdateByNameAndDeletedAt(ctx context.Context, expects ...builder.
 		TUser.Name.AsCond(builder.Eq(m.Name)),
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	res, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	res, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, expects...)).
@@ -443,7 +443,7 @@ func (m *User) UpdateByNameAndDeletedAt(ctx context.Context, expects ...builder.
 
 // UpdateAndFetchByNameAndDeletedAt update User by User.Name and User.DeletedAt and retrieve record
 func (m *User) UpdateAndFetchByNameAndDeletedAt(ctx context.Context, targets ...builder.Col) error {
-	return session.MustFor(ctx, TUser).Adaptor().Tx(
+	return session.MustExecutorFor(ctx, TUser).Tx(
 		ctx,
 		func(ctx context.Context) error {
 			if err := m.UpdateByNameAndDeletedAt(ctx, targets...); err != nil {
@@ -462,7 +462,7 @@ func (m *User) DeleteByID(ctx context.Context) error {
 	conds := []frag.Fragment{
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,
@@ -479,7 +479,7 @@ func (m *User) DeleteByUserIDAndDeletedAt(ctx context.Context) error {
 		TUser.UserID.AsCond(builder.Eq(m.UserID)),
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,
@@ -496,7 +496,7 @@ func (m *User) DeleteByNameAndDeletedAt(ctx context.Context) error {
 		TUser.Name.AsCond(builder.Eq(m.Name)),
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Delete().From(
 			TUser,
@@ -519,7 +519,7 @@ func (m *User) MarkDeletionByID(ctx context.Context) error {
 		TUser.ID.AsCond(builder.Eq(m.ID)),
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, cols...)).
@@ -544,7 +544,7 @@ func (m *User) MarkDeletionByUserIDAndDeletedAt(ctx context.Context) error {
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, cols...)).
@@ -569,7 +569,7 @@ func (m *User) MarkDeletionByNameAndDeletedAt(ctx context.Context) error {
 		TUser.DeletedAt.AsCond(builder.Eq(m.DeletedAt)),
 		builder.CC[driver.Value](TUser.C(deletion)).AsCond(builder.Neq(v)),
 	}
-	_, err := session.MustFor(ctx, TUser).Adaptor().Exec(
+	_, err := session.MustExecutorFor(ctx, TUser).Exec(
 		ctx,
 		builder.Update(TUser).
 			Set(TUser.AssignmentFor(m, cols...)).
