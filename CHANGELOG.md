@@ -1,8 +1,28 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc3...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.2.9...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.2.9"></a>
+## [v0.2.9](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc4...v0.2.9)
+
+> 2026-06-15
+
+### Feat
+
+* session.ExecutorFor for tx context
+
+
+<a name="v0.2.9-rc4"></a>
+## [v0.2.9-rc4](https://github.com/xoctopus/sqlx/compare/v0.2.9-rc3...v0.2.9-rc4)
+
+> 2026-06-13
+
+### Feat
+
+* optimize session
 
 
 <a name="v0.2.9-rc3"></a>

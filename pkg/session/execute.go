@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/x/misc/must"
+
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 func InTx(ctx context.Context) bool {
