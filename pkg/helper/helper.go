@@ -46,16 +46,19 @@ func Scan(ctx context.Context, rows *sql.Rows, dst any) error {
 	return scanner.Scan(ctx, rows, dst)
 }
 
-func QueryAndScan(ctx context.Context, a adaptor.Adaptor, f frag.Fragment, dst any) error {
-	rows, err := a.Query(ctx, f)
+func QueryAndScan(ctx context.Context, e adaptor.ExecutorX, f frag.Fragment, dst any) error {
+	rows, err := e.Query(ctx, f)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = rows.Close() }()
+
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	if dst == nil {
+		return nil
+	}
 
 	return scanner.Scan(ctx, rows, dst)
-}
-
-func AssignmentsOf() builder.Assignments {
-	return nil
 }
