@@ -140,7 +140,7 @@ func TestColumns(t *testing.T) {
 				builder.WithToggles(bgc, builder.TOGGLE__MULTI_TABLE),
 				f,
 			)
-			Expect(t, q, Equal("(f_id,f_name) VALUES (t2.f_id,t2.f_name)"))
+			Expect(t, q, Equal("f_id = t2.f_id, f_name = t2.f_name"))
 			Expect(t, len(args), Equal(0))
 
 			Expect[Fragment](t, c1.AssignBy(builder.Value(1)), BeFragment("f_id = ?", 1))

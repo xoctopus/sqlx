@@ -70,7 +70,8 @@ func (s *StmtInsert) Frag(ctx context.Context) frag.Iter {
 			return
 		}
 
-		for q, args := range s.assignments.Frag(WithToggles(ctx, TOGGLE__ASSIGNMENTS)) {
+		// must use tuple mode
+		for q, args := range s.assignments.Frag(WithToggles(ctx, TOGGLE__TUPLE_ASSIGNMENTS)) {
 			if !yield(q, args) {
 				return
 			}

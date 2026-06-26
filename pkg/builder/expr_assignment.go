@@ -21,11 +21,27 @@ func ColumnsAndValues(cols frag.Fragment, values ...any) Assignment {
 		count = x.Len()
 	}
 
-	return &assignment{
+	a := &assignment{
 		cols:   cols,
 		count:  count,
 		values: values,
 	}
+
+	if count > 0 {
+		a.flatten = make([]frag.Fragment, 0, count)
+		if x, ok := cols.(ColIter); ok {
+			for f := range x.Cols() {
+				a.flatten = append(a.flatten, f)
+			}
+		}
+		// must.BeTrueF(
+		// 	len(a.flatten) == a.count && len(values)%a.count == 0,
+		// 	"unmatched count of columns and values columns:%d values:%d",
+		// 	len(a.flatten), len(values),
+		// )
+	}
+
+	return a
 }
 
 type Assignment interface {
@@ -35,9 +51,10 @@ type Assignment interface {
 }
 
 type assignment struct {
-	cols   frag.Fragment
-	count  int
-	values []any
+	cols    frag.Fragment
+	flatten []frag.Fragment
+	count   int
+	values  []any
 }
 
 func (a *assignment) asAssignment() {}
@@ -47,11 +64,12 @@ func (a *assignment) IsNil() bool {
 }
 
 func (a *assignment) Frag(ctx context.Context) frag.Iter {
-	usev := HasToggle(ctx, TOGGLE__ASSIGNMENTS)
+	toggled := HasToggle(ctx, TOGGLE__TUPLE_ASSIGNMENTS)
 
 	return func(yield func(string, []any) bool) {
-		if usev || len(a.values) > 1 {
-			// (f_a,f_b...)
+		// tuple mode (f_a,f_b...) VALUES
+		if toggled {
+
 			for q, args := range frag.Block(a.cols).Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
 				if !yield(q, args) {
 					return
@@ -92,22 +110,46 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 			}
 			return
 		}
-		for q, args := range a.cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
-			if !yield(q, args) {
-				return
+
+		if a.count <= 1 {
+			for q, args := range a.cols.Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
+				if !yield(q, args) {
+					return
+				}
 			}
+
+			value := a.values[0]
+			if stmt, ok := value.(SelectStatement); ok {
+				value = frag.Block(stmt)
+			}
+
+			for q, args := range frag.Query(" = ?", value).Frag(ctx) {
+				if !yield(q, args) {
+					return
+				}
+			}
+			return
 		}
 
-		value := a.values[0]
-		if stmt, ok := value.(SelectStatement); ok {
-			value = frag.Block(stmt)
+		if len(a.values) == a.count {
+			var flatten Assignments
+			for i := 0; i < a.count; i++ {
+				flatten = append(flatten, &assignment{
+					cols:   a.flatten[i],
+					count:  1,
+					values: []any{a.values[i]},
+				})
+			}
+
+			for q, args := range flatten.Frag(ctx) {
+				if !yield(q, args) {
+					return
+				}
+			}
+			return
 		}
 
-		for q, args := range frag.Query(" = ?", value).Frag(ctx) {
-			if !yield(q, args) {
-				return
-			}
-		}
+		// TODO invalid or unmatch
 	}
 }
 

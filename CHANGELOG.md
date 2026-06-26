@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc2...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc3...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.3.1-rc3"></a>
+## [v0.3.1-rc3](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc2...v0.3.1-rc3)
+
+> 2026-06-25
+
+### Feat
+
+* **session:** QueryAndScan with ExecutorX
 
 
 <a name="v0.3.1-rc2"></a>

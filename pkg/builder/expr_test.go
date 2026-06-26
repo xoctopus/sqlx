@@ -690,6 +690,20 @@ func TestAssignment(t *testing.T) {
 	testx.Expect(t, (Assignments{nil, nil}).IsNil(), testx.BeTrue())
 }
 
+func ExampleAssignment() {
+	f := ColumnsAndValues(Columns("a", "b"), 1, 2, 3, 4, 5, 6)
+	Print(WithToggles(context.Background(), TOGGLE__TUPLE_ASSIGNMENTS), f)
+
+	f = ColumnsAndValues(Columns("a", "b"), 1, 2)
+	Print(context.Background(), f)
+
+	// Output:
+	// (a,b) VALUES (?,?),(?,?),(?,?)
+	// [1 2 3 4 5 6]
+	// a = ?, b = ?
+	// [1 2]
+}
+
 func TestConditions(t *testing.T) {
 	testx.Expect[Fragment](t, AsCond(nil), BeFragment(""))
 	testx.Expect[Fragment](
