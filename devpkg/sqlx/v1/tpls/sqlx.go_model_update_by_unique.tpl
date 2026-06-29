@@ -5,7 +5,7 @@
 @def UniqueFields
 @def UpdateComment
 @def frag.Fragment
-@def session.MustExecutorFor
+@def session.MustFor
 @def builder.Update
 @def builder.Comment
 @def builder.Col
@@ -20,7 +20,7 @@ func (m *#T#) UpdateBy#UniqueSuffix#(ctx #context.Context#, expects...#builder.C
 		#UniqueConds#
 	}
 
-	res, err := #session.MustExecutorFor#(ctx, T#T#).Exec(
+	res, err := #session.MustFor#(ctx, T#T#).Adaptor().Exec(
 		ctx,
 		#builder.Update#(T#T#).
 			Set(T#T#.AssignmentFor(m, expects...)).
@@ -46,7 +46,7 @@ func (m *#T#) UpdateBy#UniqueSuffix#(ctx #context.Context#, expects...#builder.C
 --UpdateAndFetchByUnique
 // UpdateAndFetchBy#UniqueSuffix# update #T# by #UniqueFields# and retrieve record
 func (m *#T#) UpdateAndFetchBy#UniqueSuffix#(ctx #context.Context#, targets ...#builder.Col#) error {
-	return #session.MustExecutorFor#(ctx, T#T#).Tx(
+	return #session.MustFor#(ctx, T#T#).Adaptor().Tx(
 		ctx,
 		func(ctx #context.Context#) error {
 			if err := m.UpdateBy#UniqueSuffix#(ctx, targets...); err != nil {

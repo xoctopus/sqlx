@@ -104,7 +104,7 @@ func (m NoIndexDef) UniqueIndexes() map[string][]string {
 // Create inserts NoIndexDef to database
 func (m *NoIndexDef) Create(ctx context.Context) error {
 	cols, values := helper.CVsForInsertion(m)
-	_, err := session.MustExecutorFor(ctx, TNoIndexDef).Exec(
+	_, err := session.MustFor(ctx, TNoIndexDef).Adaptor().Exec(
 		ctx,
 		builder.Insert().Into(
 			TNoIndexDef,
@@ -126,7 +126,7 @@ func (m *NoIndexDef) List(ctx context.Context, cond builder.SqlCondition, adds b
 		builder.Where(builder.And(conds...)),
 		builder.Comment("NoIndexDef.List"),
 	)
-	rows, err := session.MustExecutorFor(ctx, TNoIndexDef).Query(
+	rows, err := session.MustFor(ctx, TNoIndexDef).Adaptor().Query(
 		ctx,
 		builder.Select(cols).From(TNoIndexDef, adds...),
 	)
@@ -148,7 +148,7 @@ func (m *NoIndexDef) Count(ctx context.Context, cond builder.SqlCondition) (int6
 		builder.Where(builder.And(conds...)),
 		builder.Comment("NoIndexDef.Count"),
 	}
-	rows, err := session.MustExecutorFor(ctx, TNoIndexDef).Query(
+	rows, err := session.MustFor(ctx, TNoIndexDef).Adaptor().Query(
 		ctx,
 		builder.Select(builder.Count()).From(TNoIndexDef, adds...),
 	)

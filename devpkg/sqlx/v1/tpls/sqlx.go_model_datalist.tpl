@@ -10,7 +10,7 @@
 @def builder.And
 @def builder.Comment
 @def ListComment
-@def session.MustExecutorFor
+@def session.MustFor
 @def builder.Select
 @def helper.Scan
 --List
@@ -29,7 +29,7 @@ func (m *#T#) List(ctx #context.Context#, cond #builder.SqlCondition#, adds #bui
 		#builder.Comment#(#ListComment#),
 	)
 
-	rows, err := #session.MustExecutorFor#(ctx, T#T#).Query(
+	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
 		ctx,
 		#builder.Select#(cols).From(T#T#, adds...),
 	)
@@ -54,7 +54,7 @@ func (m *#T#) List(ctx #context.Context#, cond #builder.SqlCondition#, adds #bui
 @def builder.And
 @def builder.Comment
 @def ListComment
-@def session.MustExecutorFor
+@def session.MustFor
 @def builder.Select
 @def builder.Count
 @def helper.Scan
@@ -69,7 +69,7 @@ func (m *#T#) Count(ctx #context.Context#, cond #builder.SqlCondition#) (int64, 
 		#builder.Comment#(#CountComment#),
 	}
 
-	rows, err := #session.MustExecutorFor#(ctx, T#T#).Query(
+	rows, err := #session.MustFor#(ctx, T#T#).Adaptor().Query(
 		ctx,
 		#builder.Select#(#builder.Count#()).From(T#T#, adds...),
 	)

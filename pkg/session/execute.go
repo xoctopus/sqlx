@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/xoctopus/x/misc/must"
-
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
@@ -15,20 +13,4 @@ func InTx(ctx context.Context) bool {
 		return true
 	}
 	return false
-}
-
-func ExecutorFor(ctx context.Context, m any) (adaptor.ExecutorX, bool) {
-	if executor := adaptor.ExecutorXFrom(ctx); executor != nil {
-		return executor, true
-	}
-	if s, ok := For(ctx, m); ok {
-		return s.Adaptor(), true
-	}
-	return nil, false
-}
-
-func MustExecutorFor(ctx context.Context, m any) adaptor.ExecutorX {
-	e, ok := ExecutorFor(ctx, m)
-	must.BeTrueF(ok, "missing executor for %T", m)
-	return e
 }

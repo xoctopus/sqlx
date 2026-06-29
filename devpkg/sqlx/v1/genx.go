@@ -120,7 +120,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.Arg(ctx, "CreateComment", m.CommentOf("Create")),
 			s.ArgExposeUnsafe(ctx, "context", "Context"),
 			s.ArgExposeUnsafe(ctx, _helper, "CVsForInsertion").WithName("helper.CVsForInsertion"),
-			s.ArgExposeUnsafe(ctx, _session, "MustExecutorFor").WithName("session.MustExecutorFor"),
+			s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
 			s.ArgExposeUnsafe(ctx, _builder, "Comment").WithName("builder.Comment"),
 			s.ArgExposeUnsafe(ctx, _builder, "Insert").WithName("builder.Insert"),
 		),
@@ -142,7 +142,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.ArgExposeUnsafe(ctx, _builder, "Where").WithName("builder.Where"),
 			s.ArgExposeUnsafe(ctx, _frag, "Fragment").WithName("frag.Fragment"),
 			s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
-			s.ArgExposeUnsafe(ctx, _session, "MustExecutorFor").WithName("session.MustExecutorFor"),
+			s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
 		),
 	}
 
@@ -171,7 +171,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 				s.ArgExposeUnsafe(ctx, _builder, "CC").WithName("builder.CC"),
 				s.ArgExposeUnsafe(ctx, _builder, "Eq").WithName("builder.Eq"),
 				s.ArgExposeUnsafe(ctx, _builder, "Neq").WithName("builder.Neq"),
-				s.ArgExposeUnsafe(ctx, _session, "MustExecutorFor").WithName("session.MustExecutorFor"),
+				s.ArgExposeUnsafe(ctx, _session, "MustFor").WithName("session.MustFor"),
 				s.ArgExposeUnsafe(ctx, _helper, "Scan").WithName("helper.Scan"),
 			}
 

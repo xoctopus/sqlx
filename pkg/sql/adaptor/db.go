@@ -121,6 +121,6 @@ func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) 
 		}
 	}()
 
-	err = f(WithExecutorX(WithExecutor(ctx, tx), d))
+	err = f(WithExecutor(ctx, tx))
 	return err
 }

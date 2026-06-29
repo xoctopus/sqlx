@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc3...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc4...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.3.1-rc4"></a>
+## [v0.3.1-rc4](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc3...v0.3.1-rc4)
+
+> 2026-06-26
+
+### Feat
+
+* **builder:** tuple mode for insertion and non-tuple mode for updation
 
 
 <a name="v0.3.1-rc3"></a>
