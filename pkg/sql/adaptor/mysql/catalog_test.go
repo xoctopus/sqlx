@@ -14,7 +14,7 @@ import (
 func TestScanCatalog_Hack(t *testing.T) {
 	hack.Check(t)
 
-	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/test")
+	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/test?interpolateParams=true")
 
 	catalog, err := d.Catalog(hack.Context(t))
 

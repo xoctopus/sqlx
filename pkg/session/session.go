@@ -2,8 +2,10 @@ package session
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
+	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
@@ -13,10 +15,12 @@ type Session interface {
 	Name() string
 	// T picks table from session
 	T(any) builder.Table
-	// Tx exec query
-	Tx(context.Context, func(context.Context) error) error
 	// Adaptor returns session adaptor
 	Adaptor(...AdaptorOptionApplier) adaptor.Adaptor
+
+	Tx(context.Context, func(context.Context) error) error
+	Exec(context.Context, frag.Fragment) (sql.Result, error)
+	Query(context.Context, frag.Fragment) (*sql.Rows, error)
 }
 
 func New(a adaptor.Adaptor, name string) Session {
@@ -58,6 +62,14 @@ func (s *session) T(m any) builder.Table {
 
 func (s *session) Tx(ctx context.Context, exec func(context.Context) error) error {
 	return s.a.Tx(ctx, exec)
+}
+
+func (s *session) Exec(ctx context.Context, f frag.Fragment) (sql.Result, error) {
+	return s.a.Exec(ctx, f)
+}
+
+func (s *session) Query(ctx context.Context, f frag.Fragment) (*sql.Rows, error) {
+	return s.a.Query(ctx, f)
 }
 
 func (s *session) Adaptor(appliers ...AdaptorOptionApplier) adaptor.Adaptor {
