@@ -16,7 +16,7 @@ import (
 )
 
 func TestDiff_mysql(t *testing.T) {
-	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/test?multiStatements=true")
+	d := hack.NewAdaptor(t, "mysql://root@localhost:13306/test?multiStatements=true&interpolateParams=true")
 	cbg := context.Background()
 
 	defer func() {

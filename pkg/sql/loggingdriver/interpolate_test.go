@@ -34,7 +34,7 @@ func TestInterpolate(t *testing.T) {
 		},
 		{
 			value:        []byte("\x00\n\r\x1a'\"\\ abc"),
-			interpolated: `E'\0\n\r\Z\'\"\\ abc'`,
+			interpolated: `'\0\n\r\Z\'\"\\ abc'`,
 		},
 		{
 			value:        []byte(nil),

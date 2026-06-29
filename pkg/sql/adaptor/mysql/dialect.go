@@ -409,3 +409,10 @@ func UnwrapError(err error) *mysql.MySQLError {
 	}
 	return nil
 }
+
+func ErrorLevel(err error) int {
+	if IsConflictError(err) {
+		return 0
+	}
+	return 1
+}

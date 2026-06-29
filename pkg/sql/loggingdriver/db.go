@@ -72,7 +72,7 @@ func (c *connector) Open(dsn string) (driver.Conn, error) {
 		Conn:         conn,
 		name:         c.name,
 		level:        c.ErrorLevel,
-		interpolator: c.ValueHolderReplacer,
+		interpolator: c.Interpolator,
 	}, nil
 }
 
@@ -102,10 +102,9 @@ func (c *connection) QueryContext(ctx context.Context, q string, args []driver.N
 	_, log := logx.Enter(ctx)
 	span := Cost()
 
-	if c.interpolator == nil {
-		c.interpolator = DefaultInterpolate
+	if c.interpolator != nil {
+		q, args = c.interpolator(q, args)
 	}
-	q, args = c.interpolator(q, args)
 
 	defer func() {
 		millis := span().Milliseconds()
@@ -132,10 +131,9 @@ func (c *connection) ExecContext(ctx context.Context, q string, args []driver.Na
 	_, log := logx.Enter(ctx)
 	span := Cost()
 
-	if c.interpolator == nil {
-		c.interpolator = DefaultInterpolate
+	if c.interpolator != nil {
+		q, args = c.interpolator(q, args)
 	}
-	q, args = c.interpolator(q, args)
 
 	defer func() {
 		millis := span().Milliseconds()

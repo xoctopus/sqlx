@@ -30,6 +30,15 @@ func Context(t testing.TB) context.Context {
 func NewAdaptor(t testing.TB, dsn string) adaptor.Adaptor {
 	Check(t)
 
+	// u, err := url.Parse(dsn)
+	// Expect(t, err, Succeed())
+	// q := u.Query()
+	// q.Set("multiStatements", "true")
+	// q.Set("interpolateParams", "true")
+	// u.RawQuery = q.Encode()
+
+	// dsn = u.String()
+
 	_, err := url.Parse(dsn)
 	Expect(t, err, Succeed())
 

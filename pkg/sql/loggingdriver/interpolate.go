@@ -37,15 +37,17 @@ func OrderedInterpolator(q string, args []driver.NamedValue) (string, []driver.N
 type Interpolator func(string, []driver.NamedValue) (string, []driver.NamedValue)
 
 func NewPrinter(q string, args []driver.NamedValue) fmt.Stringer {
-	return &ExprPrinter{q: q, args: args}
+	return &printer{q: q, args: args}
 }
 
-type ExprPrinter struct {
-	q    string
-	args []driver.NamedValue
+type printer struct {
+	q     string
+	args  []driver.NamedValue
+	loc   *time.Location
+	bytea bool
 }
 
-func (p *ExprPrinter) String() string {
+func (p *printer) String() string {
 	s, err := Interpolate(p.q, p.args, time.Local)
 	if err != nil {
 		return "invalid: " + err.Error()
@@ -85,8 +87,7 @@ func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string
 				if v == nil {
 					buf.WriteString("NULL")
 				} else {
-					// TODO mysql do not support E'' as bytes value
-					buf.WriteString("E'")
+					buf.WriteByte('\'')
 					escape(buf, v)
 					buf.WriteByte('\'')
 				}

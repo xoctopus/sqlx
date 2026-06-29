@@ -2,7 +2,11 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc4...HEAD)
 
-> 0001-01-01
+> 2026-06-29
+
+### Feat
+
+* **session:** remove ExecutorX tx check in each Query and Exec
 
 
 <a name="v0.3.1-rc4"></a>

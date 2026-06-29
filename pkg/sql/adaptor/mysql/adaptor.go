@@ -12,7 +12,7 @@ import (
 	"github.com/xoctopus/x/misc/must"
 
 	"github.com/xoctopus/sqlx/pkg/builder"
-	"github.com/xoctopus/sqlx/pkg/errors"
+	sqlerr "github.com/xoctopus/sqlx/pkg/errors"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
@@ -43,15 +43,22 @@ func (d *mycli) Schema() string {
 }
 
 func (d *mycli) Connector() driver.DriverContext {
-	return loggingdriver.Wrap(
-		mysql.MySQLDriver{},
-		d.DriverName(),
+	options := []loggingdriver.DriverOptionApplier{
 		loggingdriver.WithDsnParser(ParseDSN),
-		loggingdriver.WithInterpolator(loggingdriver.DefaultInterpolate),
-	)
+		loggingdriver.WithErrorLeveler(ErrorLevel),
+	}
+
+	if v := d.dsn.Query().Get("interpolateParams"); len(v) == 0 || v == "false" {
+		options = append(
+			options,
+			loggingdriver.WithInterpolator(loggingdriver.DefaultInterpolate),
+		)
+	}
+
+	return loggingdriver.Wrap(mysql.MySQLDriver{}, d.DriverName(), options...)
 }
 
-// Open return
+// Open returns mysql adaptor.Adaptor
 // dsn: mysql://[user[:password]@][addr]/database[?param1=value1&paramN=valueN]
 func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
 	must.BeTrueF(
@@ -59,18 +66,9 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
 	)
 	database := adaptor.DatabaseNameFromDSN(dsn)
+	d.dsn = dsn
 
-	// option := &Option{}
-	// if err := textx.UnmarshalURL(dsn.Query(), option); err != nil {
-	// 	return nil, fmt.Errorf("failed to parse url query: %v", err)
-	// }
-	// query, err := textx.MarshalURL(option)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to marshal url query: %v", err)
-	// }
-	// dsn.RawQuery = query.Encode()
-
-	conn, err := d.Connector().OpenConnector(dsn.String())
+	conn, err := d.Connector().OpenConnector(d.dsn.String())
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +93,7 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 	return &mycli{
 		DB: adaptor.Wrap(db, func(err error) error {
 			if d.IsConflictError(err) {
-				return codex.Errorf(errors.CONFLICT, "%v", err)
+				return codex.Errorf(sqlerr.CONFLICT, "%v", err)
 			}
 			return err
 		}),
