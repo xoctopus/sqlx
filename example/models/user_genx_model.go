@@ -73,22 +73,21 @@ type tUser struct {
 	I      iUser
 	schema string
 
-	ID modeled.TCol[User, uint64]
-	// @rel User.UserID
+	ID     modeled.TCol[User, uint64]
 	UserID modeled.TCol[User, UserID]
-	// Username 用户名
+	// 用户名
 	Username modeled.TCol[User, string]
-	// Email 邮箱
+	// 邮箱
 	Email modeled.TCol[User, string]
-	// Phone 电话
+	// 电话
 	Phone modeled.TCol[User, string]
-	// Status 用户状态
+	// 用户状态
 	Status modeled.TCol[User, enums.UserStatus]
-	// CreatedAt 创建日期时间(秒)
+	// 创建日期时间(秒)
 	CreatedAt modeled.TCol[User, sqltime.Datetime]
-	// UpdatedAt 更新日期时间(秒)
+	// 更新日期时间(秒)
 	UpdatedAt modeled.TCol[User, sqltime.Datetime]
-	// DeletedAt 删除日期时间(秒)
+	// 删除日期时间(秒)
 	DeletedAt modeled.TCol[User, sqltime.Datetime]
 }
 
@@ -140,7 +139,7 @@ func (m User) TableName() string {
 // TableDesc returns descriptions of User
 func (m User) TableDesc() []string {
 	return []string{
-		"User 用户",
+		"用户",
 	}
 }
 
@@ -171,6 +170,15 @@ func (m User) UniqueIndexes() map[string][]string {
 	return map[string][]string{
 		"ui_user_id": {
 			"UserID",
+		},
+	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m User) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"UserID": {
+			"User.UserID",
 		},
 	}
 }

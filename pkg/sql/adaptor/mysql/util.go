@@ -156,7 +156,7 @@ func DefaultWithWidth(t string, unsigned bool) (string, bool) {
 	case "TINYTEXT", "TINYBLOB":
 		return t + "(255)", true
 	case "TEXT", "BLOB":
-		return t + "(65536)", true
+		return t + "(65535)", true
 	case "MEDIUMTEXT", "MEDIUMBLOB":
 		return t + "(16777215)", true
 	case "LONGTEXT", "LONGBLOB":

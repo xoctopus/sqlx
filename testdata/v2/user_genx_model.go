@@ -75,27 +75,27 @@ type tUser struct {
 	schema string
 
 	ID modeled.TCol[User, uint64]
-	// UserID 用户ID
+	// 用户ID
 	UserID modeled.TCol[User, testdata.UserID]
-	// OrgID 组织ID
+	// 组织ID
 	OrgID modeled.TCol[User, testdata.OrgID]
-	// Name deprecated to RealName
+	// deprecated to RealName
 	Name modeled.TCol[User, string]
-	// RealName 用户真实姓名 width changed from 127 to 255
+	// 用户真实姓名 width changed from 127 to 255
 	RealName modeled.TCol[User, string]
-	// Age 年龄 datatype changed from int to int8
+	// 年龄 datatype changed from int to int8
 	Age modeled.TCol[User, int8]
-	// Username deprecated
+	// deprecated
 	Username modeled.TCol[User, string]
-	// Nickname 用户昵称 deprecated has indexed before
+	// 用户昵称 deprecated has indexed before
 	Nickname modeled.TCol[User, string]
-	// Gender 性别 no change
+	// 性别 no change
 	Gender modeled.TCol[User, testdata.Gender]
-	// Desc 描述 new added
+	// 描述 new added
 	Desc modeled.TCol[User, string]
-	// CreatedAt 创建日期时间(秒)
+	// 创建日期时间(秒)
 	CreatedAt modeled.TCol[User, sqltime.Datetime]
-	// UpdatedAt 更新日期时间(秒)
+	// 更新日期时间(秒)
 	UpdatedAt modeled.TCol[User, sqltime.Datetime]
 }
 
@@ -147,7 +147,7 @@ func (m User) TableName() string {
 // TableDesc returns descriptions of User
 func (m User) TableDesc() []string {
 	return []string{
-		"User 用户表V2",
+		"用户表V2",
 	}
 }
 
@@ -177,6 +177,11 @@ func (m User) UniqueIndexes() map[string][]string {
 			"RealName",
 		},
 	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m User) ColumnRel() map[string][]string {
+	return map[string][]string{}
 }
 
 // Create inserts User to database

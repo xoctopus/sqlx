@@ -498,25 +498,39 @@ func ExampleInsert() {
 
 	// Output:
 	// -- insert
-	// INSERT INTO t_user (f_a,f_b) VALUES (?,?)
+	// INSERT INTO t_user (f_a,f_b)
+	// VALUES
+	// (?,?)
 	// [1 2]
 	// -- insert ignore and multi
-	// INSERT IGNORE INTO t_user (f_a,f_b) VALUES (?,?),(?,?),(?,?)
+	// INSERT IGNORE INTO t_user (f_a,f_b)
+	// VALUES
+	// (?,?),
+	// (?,?),
+	// (?,?)
 	// [1 2 1 2 1 2]
 	// -- insert from selection
 	// INSERT INTO t_user_migrated (f_a,f_b) SELECT f_a,f_b FROM t_user_previous WHERE f_status = ?
 	// [valid]
 	// -- insert on conflict do nothing
-	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO NOTHING
+	// INSERT INTO t_user (f_id,f_name)
+	// VALUES
+	// (?,?) ON CONFLICT (f_id) DO NOTHING
 	// [1 saito]
 	// -- insert on conflict do update
-	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
+	// INSERT INTO t_user (f_id,f_name)
+	// VALUES
+	// (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
 	// [1 saito saito]
 	// -- insert on duplicate key do update
-	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON DUPLICATE KEY UPDATE f_id = f_id
+	// INSERT INTO t_user (f_id,f_name)
+	// VALUES
+	// (?,?) ON DUPLICATE KEY UPDATE f_id = f_id
 	// [1 saito]
 	// -- with nil assignment
-	// INSERT INTO t_user (f_id,f_name) VALUES (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
+	// INSERT INTO t_user (f_id,f_name)
+	// VALUES
+	// (?,?) ON CONFLICT (f_id) DO UPDATE SET f_name = ?
 	// [1 saito saito]
 }
 
@@ -698,7 +712,11 @@ func ExampleAssignment() {
 	Print(context.Background(), f)
 
 	// Output:
-	// (a,b) VALUES (?,?),(?,?),(?,?)
+	// (a,b)
+	// VALUES
+	// (?,?),
+	// (?,?),
+	// (?,?)
 	// [1 2 3 4 5 6]
 	// a = ?, b = ?
 	// [1 2]

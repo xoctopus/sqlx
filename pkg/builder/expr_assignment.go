@@ -69,7 +69,6 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		// tuple mode (f_a,f_b...) VALUES
 		if toggled {
-
 			for q, args := range frag.Block(a.cols).Frag(TrimToggles(ctx, TOGGLE__MULTI_TABLE)) {
 				if !yield(q, args) {
 					return
@@ -91,14 +90,14 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 				}
 			}
 
-			if !yield(" VALUES ", nil) {
+			if !yield("\nVALUES", nil) {
 				return
 			}
 			frags := iterx.Map(
 				slices.Chunk(values, a.count),
 				func(values []any) frag.Fragment {
 					return frag.Query(
-						"("+strings.Repeat(",?", len(values))[1:]+")", // (?,?,...)
+						"\n("+strings.Repeat(",?", len(values))[1:]+")", // (?,?,...)
 						values...,
 					)
 				},

@@ -61,6 +61,7 @@ func scan(m any) Table {
 		if rel, ok := rels[c.fname]; ok {
 			c.def.Relation = rel
 		}
+
 		tab.cs.(ColsManager).AddCol(c.Of(tab))
 	}
 
@@ -68,7 +69,7 @@ func scan(m any) Table {
 		tab.desc = x.TableDesc()
 	}
 
-	if x, ok := m.(WithPrimaryKey); ok {
+	if x, ok := m.(WithPrimaryKey); ok && len(x.PrimaryKey()) > 0 {
 		tab.ks.(KeysManager).AddKey(
 			(&key{
 				kind:    def.KEY_KIND__PRIMARY,
@@ -80,25 +81,29 @@ func scan(m any) Table {
 
 	if x, ok := m.(WithUniqueIndexes); ok {
 		for idx, fields := range x.UniqueIndexes() {
-			name, method := def.ResolveIndexNameAndUsing(idx)
-			tab.ks.(KeysManager).AddKey((&key{
-				name:    name,
-				method:  method,
-				unique:  true,
-				options: def.ResolveKeyColumnOptionsFromStrings(fields...),
-			}).Of(tab))
+			if len(fields) > 0 {
+				name, method := def.ResolveIndexNameAndUsing(idx)
+				tab.ks.(KeysManager).AddKey((&key{
+					name:    name,
+					method:  method,
+					unique:  true,
+					options: def.ResolveKeyColumnOptionsFromStrings(fields...),
+				}).Of(tab))
+			}
 		}
 	}
 
 	if x, ok := m.(WithIndexes); ok {
 		for idx, fields := range x.Indexes() {
-			name, method := def.ResolveIndexNameAndUsing(idx)
-			tab.ks.(KeysManager).AddKey((&key{
-				name:    name,
-				method:  method,
-				unique:  false,
-				options: def.ResolveKeyColumnOptionsFromStrings(fields...),
-			}).Of(tab))
+			if len(fields) > 0 {
+				name, method := def.ResolveIndexNameAndUsing(idx)
+				tab.ks.(KeysManager).AddKey((&key{
+					name:    name,
+					method:  method,
+					unique:  false,
+					options: def.ResolveKeyColumnOptionsFromStrings(fields...),
+				}).Of(tab))
+			}
 		}
 	}
 	return tab

@@ -17,8 +17,9 @@ var attrs = []Attr{
 }
 
 func HasAttr(x string) (a Attr) {
-	for _, a = range attrs {
-		if strings.EqualFold(string(a), x) {
+	for _, v := range attrs {
+		if strings.EqualFold(string(v), x) {
+			a = v
 			break
 		}
 	}

@@ -78,26 +78,25 @@ type tProduct struct {
 	I      iProduct
 	schema string
 
-	ID modeled.TCol[Product, uint64]
-	// @rel Product.ProductID
+	ID        modeled.TCol[Product, uint64]
 	ProductID modeled.TCol[Product, ProductID]
-	// SKU 库存标签
+	// 库存标签
 	SKU modeled.TCol[Product, string]
-	// Name 产品名称
+	// 产品名称
 	Name modeled.TCol[Product, string]
-	// Description 产品描述
+	// 产品描述
 	Description modeled.TCol[Product, string]
-	// Price 单价
+	// 单价
 	Price modeled.TCol[Product, types.Decimal]
-	// Currency 货币
+	// 货币
 	Currency modeled.TCol[Product, enums.Currency]
-	// Status 产品销售状态
+	// 产品销售状态
 	Status modeled.TCol[Product, enums.ProductStatus]
-	// CreatedAt 创建时间 秒时间戳
+	// 创建时间 秒时间戳
 	CreatedAt modeled.TCol[Product, sqltime.Timestamp]
-	// UpdatedAt 更新时间 秒时间戳
+	// 更新时间 秒时间戳
 	UpdatedAt modeled.TCol[Product, sqltime.Timestamp]
-	// DeletedAt 删除时间 秒时间戳
+	// 删除时间 秒时间戳
 	DeletedAt modeled.TCol[Product, sqltime.Timestamp]
 }
 
@@ -149,7 +148,7 @@ func (m Product) TableName() string {
 // TableDesc returns descriptions of Product
 func (m Product) TableDesc() []string {
 	return []string{
-		"Product 商品",
+		"商品",
 	}
 }
 
@@ -180,6 +179,15 @@ func (m Product) UniqueIndexes() map[string][]string {
 	return map[string][]string{
 		"ui_product_id": {
 			"ProductID",
+		},
+	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m Product) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"ProductID": {
+			"Product.ProductID",
 		},
 	}
 }

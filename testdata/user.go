@@ -40,7 +40,7 @@ type UserData struct {
 	Age int `db:"f_age"`
 	// Gender 性别
 	Gender Gender `db:"f_gender"`
-	// Asset 资产 decimal(32,4)
+	// Asset 资产
 	Asset types.Decimal `db:"f_asset,width=32,precision=4"`
 }
 

@@ -52,6 +52,7 @@ type Dialect interface {
 	DropIndex(key builder.Key) frag.Fragment
 
 	DBType(builder.ColumnDef) frag.Fragment
+	ColDefine(dd *builder.ColumnDef)
 	IsUnknownDatabaseError(error) bool
 	IsConflictError(err error) bool
 }

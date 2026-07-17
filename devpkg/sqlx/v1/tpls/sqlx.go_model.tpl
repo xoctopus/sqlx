@@ -153,3 +153,12 @@ func (m #T#) UniqueIndexes() map[string][]string {
 	}
 }
 
+@def T
+@def ColumnRelList
+-- ColumnRel
+// ColumnRel presents soft foreign key of columns
+func (m #T#) ColumnRel() map[string][]string {
+	return map[string][]string{
+		#ColumnRelList#
+	}
+}

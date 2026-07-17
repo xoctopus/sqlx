@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql/driver"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -80,6 +81,17 @@ func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string
 		case '?':
 			arg := args[idx].Value
 			idx++
+
+			switch rv := reflect.ValueOf(arg); rv.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				arg = rv.Int()
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				arg = rv.Uint()
+			case reflect.Float32, reflect.Float64:
+				arg = rv.Float()
+			default:
+			}
+
 			switch v := arg.(type) {
 			case nil:
 				buf.WriteString("NULL")
@@ -97,6 +109,8 @@ func Interpolate(q string, args []driver.NamedValue, loc *time.Location) (string
 				buf.WriteByte('\'')
 			case int64:
 				buf.WriteString(strconv.FormatInt(v, 10))
+			case uint64:
+				buf.WriteString(strconv.FormatUint(v, 10))
 			case float64:
 				buf.WriteString(strconv.FormatFloat(v, 'g', -1, 64))
 			case bool:

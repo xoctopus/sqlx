@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/xoctopus/x/iterx"
+	"github.com/xoctopus/x/slicex"
 )
 
 // Alias generates a deterministic alias name for a given table and column.
@@ -30,14 +30,12 @@ func (as *aliases) hash(name string) string {
 		parts := strings.Split(name, "_")
 
 		return strings.Join(
-			iterx.Values(
-				iterx.MapSlice(parts, func(s string) string {
-					if len(s) >= 1 {
-						return strings.ToUpper(s[0:1])
-					}
-					return ""
-				}),
-			),
+			slicex.Mapping(parts, func(s string) string {
+				if len(s) >= 1 {
+					return strings.ToUpper(s[0:1])
+				}
+				return ""
+			}),
 			"",
 		) + "_" + hash[0:8]
 	}))

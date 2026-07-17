@@ -3,6 +3,7 @@ package frag
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"iter"
 	"slices"
 )
@@ -59,4 +60,9 @@ func Collect(ctx context.Context, f Fragment) (string, []any) {
 		}
 	}
 	return query.String(), args
+}
+
+func Stringify(f Fragment) string {
+	q, args := Collect(context.Background(), f)
+	return fmt.Sprintf("%s | %v", q, args)
 }

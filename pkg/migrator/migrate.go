@@ -11,6 +11,7 @@ import (
 	"github.com/xoctopus/sqlx/internal/diff"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
+	"github.com/xoctopus/sqlx/pkg/migrator/internal"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 )
@@ -45,6 +46,15 @@ func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (stri
 		}
 		fragments = append(fragments, d)
 	}
+
+	fragments = append(
+		fragments,
+		slices.Concat(
+			internal.GenerateTableDocuments(ctx, a, next),
+			internal.GenerateTableColumnDocuments(ctx, a, next),
+			internal.GenerateTableEnumerationDocument(ctx, a, next),
+		)...,
+	)
 
 	if len(fragments) == 0 {
 		return "", nil

@@ -22,6 +22,7 @@ func main() {
 			filepath.Join(cwd, "example", "enums"),
 			filepath.Join(cwd, "testdata"),
 			filepath.Join(cwd, "testdata", "v2"),
+			filepath.Join(cwd, "pkg", "migrator", "models"),
 		},
 	})
 

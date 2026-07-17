@@ -72,7 +72,7 @@ func TestInterpolate(t *testing.T) {
 		Expect(t, err, ErrorContains("too many arguments"))
 	})
 	t.Run("InvalidArgType", func(t *testing.T) {
-		_, err := Interpolate("?", []driver.NamedValue{{Value: 1}}, time.UTC)
+		_, err := Interpolate("?", []driver.NamedValue{{Value: []string{}}}, time.UTC)
 		Expect(t, err, ErrorContains("unsupported type"))
 	})
 	t.Run("DefaultInterpolate", func(t *testing.T) {

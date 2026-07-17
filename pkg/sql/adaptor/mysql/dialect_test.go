@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -17,10 +18,12 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	. "github.com/xoctopus/sqlx/pkg/frag/testutil"
+	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
 	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/types"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
+	"github.com/xoctopus/sqlx/testdata"
 )
 
 func TestDialect_Hack(t *testing.T) {
@@ -163,4 +166,56 @@ CREATE INDEX i_org_id ON demo (f_org_id) USING BTREE;`))
 
 	t.Run("ColumnName", func(t *testing.T) {
 	})
+}
+
+func CreateTable(t *testing.T, a adaptor.Adaptor, tab builder.Table) {
+	d := a.Dialect()
+
+	err := a.Tx(t.Context(), func(ctx context.Context) error {
+		for _, f := range d.CreateTableIfNotExists(tab) {
+			fmt.Println(frag.Stringify(f))
+			if _, err := a.Exec(ctx, f); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	Expect(t, err, Succeed())
+}
+
+func DropTable(t *testing.T, a adaptor.Adaptor, tab builder.Table) {
+	d := a.Dialect()
+
+	_, err := a.Exec(t.Context(), d.DropTable(tab))
+	Expect(t, err, Succeed())
+}
+
+func TestDialect_DBType(t *testing.T) {
+	hack.Check(t)
+	a := hack.NewAdaptor(t, "mysql://root@localhost:13306/test_db_type?interpolateParams=true")
+	d := a.Dialect()
+
+	tab1 := testdata.TTestTable
+
+	CreateTable(t, a, tab1)
+	defer DropTable(t, a, tab1)
+
+	catalog, err := a.Catalog(context.Background())
+	Expect(t, err, Succeed())
+	tab2 := catalog.T(tab1.TableName())
+
+	for c := range tab1.Table.Cols() {
+		column := c.Name()
+		// column define from code
+		def1 := tab1.C(column).(builder.ColDef).Def()
+		// column define from data source scanner
+		def2 := tab2.C(column).(builder.ColDef).Def()
+
+		s1 := frag.Stringify(d.DBType(def1))
+		s2 := frag.Stringify(d.DBType(def2))
+
+		Expect(t, s1, Equal(s2))
+		t.Log(c.Name(), s1)
+	}
 }

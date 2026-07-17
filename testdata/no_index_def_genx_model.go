@@ -81,9 +81,7 @@ func (m NoIndexDef) TableName() string {
 
 // TableDesc returns descriptions of NoIndexDef
 func (m NoIndexDef) TableDesc() []string {
-	return []string{
-		"NoIndexDef",
-	}
+	return []string{}
 }
 
 // PrimaryKey returns column list of NoIndexDef's primary key
@@ -98,6 +96,11 @@ func (m NoIndexDef) Indexes() map[string][]string {
 
 // UniqueIndexes returns unique index list of NoIndexDef
 func (m NoIndexDef) UniqueIndexes() map[string][]string {
+	return map[string][]string{}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m NoIndexDef) ColumnRel() map[string][]string {
 	return map[string][]string{}
 }
 

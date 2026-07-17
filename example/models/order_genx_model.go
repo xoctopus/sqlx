@@ -79,26 +79,24 @@ type tOrder struct {
 	I      iOrder
 	schema string
 
-	ID modeled.TCol[Order, uint64]
-	// @rel User.UserID
-	UserID modeled.TCol[Order, UserID]
-	// @rel Order.OrderID
+	ID      modeled.TCol[Order, uint64]
+	UserID  modeled.TCol[Order, UserID]
 	OrderID modeled.TCol[Order, OrderID]
-	// OrderNo 订单编号
+	// 订单编号
 	OrderNo modeled.TCol[Order, string]
-	// Amount 订单金额
+	// 订单金额
 	Amount modeled.TCol[Order, types.Decimal]
-	// Currency 结算币种
+	// 结算币种
 	Currency modeled.TCol[Order, enums.Currency]
-	// PaidAt 订单支付时间
+	// 订单支付时间
 	PaidAt modeled.TCol[Order, sqltime.Timestamp]
-	// CanceledAt 订单取消时间
+	// 订单取消时间
 	CanceledAt modeled.TCol[Order, sqltime.Timestamp]
-	// Status 订单状态
+	// 订单状态
 	Status modeled.TCol[Order, enums.OrderStatus]
-	// CreatedAt 创建时间 秒时间戳
+	// 创建时间 秒时间戳
 	CreatedAt modeled.TCol[Order, sqltime.Timestamp]
-	// UpdatedAt 更新时间 秒时间戳
+	// 更新时间 秒时间戳
 	UpdatedAt modeled.TCol[Order, sqltime.Timestamp]
 }
 
@@ -150,7 +148,7 @@ func (m Order) TableName() string {
 // TableDesc returns descriptions of Order
 func (m Order) TableDesc() []string {
 	return []string{
-		"Order 订单",
+		"订单",
 	}
 }
 
@@ -181,6 +179,18 @@ func (m Order) UniqueIndexes() map[string][]string {
 	return map[string][]string{
 		"ui_order_id": {
 			"OrderID",
+		},
+	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m Order) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"UserID": {
+			"User.UserID",
+		},
+		"OrderID": {
+			"Order.OrderID",
 		},
 	}
 }

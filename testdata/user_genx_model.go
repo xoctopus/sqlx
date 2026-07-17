@@ -83,31 +83,31 @@ type tUser struct {
 	schema string
 
 	ID modeled.TCol[User, uint64]
-	// UserID 用户ID
+	// 用户ID
 	UserID modeled.TCol[User, UserID]
-	// OrgID 组织ID
+	// 组织ID
 	OrgID modeled.TCol[User, OrgID]
-	// Name 用户姓名
+	// 用户姓名
 	Name modeled.TCol[User, string]
-	// IsMember 是否为会员
+	// 是否为会员
 	IsMember modeled.TCol[User, bool]
-	// RealName 真实姓名
+	// 真实姓名
 	RealName modeled.TCol[User, string]
-	// Username 用户姓名
+	// 用户姓名
 	Username modeled.TCol[User, string]
-	// Nickname 用户昵称
+	// 用户昵称
 	Nickname modeled.TCol[User, string]
-	// Age 年龄
+	// 年龄
 	Age modeled.TCol[User, int]
-	// Gender 性别
+	// 性别
 	Gender modeled.TCol[User, Gender]
-	// Asset 资产 decimal(32,4)
+	// 资产
 	Asset modeled.TCol[User, types.Decimal]
-	// CreatedAt 创建日期时间(秒)
+	// 创建日期时间(秒)
 	CreatedAt modeled.TCol[User, sqltime.Datetime]
-	// UpdatedAt 更新日期时间(秒)
+	// 更新日期时间(秒)
 	UpdatedAt modeled.TCol[User, sqltime.Datetime]
-	// DeletedAt 删除日期时间(秒)
+	// 删除日期时间(秒)
 	DeletedAt modeled.TCol[User, sqltime.Datetime]
 }
 
@@ -159,7 +159,7 @@ func (m User) TableName() string {
 // TableDesc returns descriptions of User
 func (m User) TableDesc() []string {
 	return []string{
-		"User 用户",
+		"用户",
 	}
 }
 
@@ -195,6 +195,11 @@ func (m User) UniqueIndexes() map[string][]string {
 			"DeletedAt",
 		},
 	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m User) ColumnRel() map[string][]string {
+	return map[string][]string{}
 }
 
 // Create inserts User to database

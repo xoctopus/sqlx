@@ -68,22 +68,20 @@ type tOrderSnapshot struct {
 	I      iOrderSnapshot
 	schema string
 
-	ID modeled.TCol[OrderSnapshot, uint64]
-	// @rel Order.OrderID
-	OrderID modeled.TCol[OrderSnapshot, OrderID]
-	// @rel Product.ProductID
+	ID        modeled.TCol[OrderSnapshot, uint64]
+	OrderID   modeled.TCol[OrderSnapshot, OrderID]
 	ProductID modeled.TCol[OrderSnapshot, ProductID]
-	// ProductSKU 产品SKU
+	// 产品SKU
 	ProductSKU modeled.TCol[OrderSnapshot, string]
-	// ProductName 产品名称 Product.Name
+	// 产品名称 Product.Name
 	ProductName modeled.TCol[OrderSnapshot, string]
-	// Price 产品单价 Product.Price
+	// 产品单价 Product.Price
 	Price modeled.TCol[OrderSnapshot, types.Decimal]
-	// Quantity 订单产品数量
+	// 订单产品数量
 	Quantity modeled.TCol[OrderSnapshot, int64]
-	// Subtotal 订单金额
+	// 订单金额
 	Subtotal modeled.TCol[OrderSnapshot, types.Decimal]
-	// CreatedAt 创建时间 秒时间戳
+	// 创建时间 秒时间戳
 	CreatedAt modeled.TCol[OrderSnapshot, sqltime.Timestamp]
 }
 
@@ -135,7 +133,7 @@ func (m OrderSnapshot) TableName() string {
 // TableDesc returns descriptions of OrderSnapshot
 func (m OrderSnapshot) TableDesc() []string {
 	return []string{
-		"OrderSnapshot 订单快照",
+		"订单快照",
 	}
 }
 
@@ -163,6 +161,18 @@ func (m OrderSnapshot) UniqueIndexes() map[string][]string {
 	return map[string][]string{
 		"ui_order_id": {
 			"OrderID",
+		},
+	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m OrderSnapshot) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"OrderID": {
+			"Order.OrderID",
+		},
+		"ProductID": {
+			"Product.ProductID",
 		},
 	}
 }

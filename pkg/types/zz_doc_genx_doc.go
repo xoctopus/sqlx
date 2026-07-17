@@ -40,8 +40,6 @@ func (v *Bool) DocOf(names ...string) ([]string, bool) {
 func (v *Decimal) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
-		case "Decimal":
-			return []string{}, true
 		}
 		return []string{}, false
 	}
@@ -58,6 +56,8 @@ func (v *JSONDBType) DocOf(names ...string) ([]string, bool) {
 func (v *JSONArray[T]) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
+		case "v":
+			return []string{}, true
 		}
 		return []string{}, false
 	}
@@ -67,6 +67,8 @@ func (v *JSONArray[T]) DocOf(names ...string) ([]string, bool) {
 func (v *JSONObject[T]) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
+		case "v":
+			return []string{}, true
 		}
 		return []string{}, false
 	}

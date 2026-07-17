@@ -36,5 +36,10 @@ type (
 	WithDatatypeDesc interface {
 		DBType(driver string) string
 	}
+
+	Newer interface {
+		New() Model
+	}
+
 	Model = internal.Model
 )

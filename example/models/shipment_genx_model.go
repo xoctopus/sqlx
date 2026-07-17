@@ -75,22 +75,21 @@ type tShipment struct {
 	I      iShipment
 	schema string
 
-	ID modeled.TCol[Shipment, uint64]
-	// @rel Order.OrderID
+	ID      modeled.TCol[Shipment, uint64]
 	OrderID modeled.TCol[Shipment, OrderID]
-	// Carrier 物流运营商
+	// 物流运营商
 	Carrier modeled.TCol[Shipment, string]
-	// TrackingNo 物流单号
+	// 物流单号
 	TrackingNo modeled.TCol[Shipment, string]
-	// Status 物流状态
+	// 物流状态
 	Status modeled.TCol[Shipment, enums.ShipmentStatus]
-	// ShippedAt 开始运输时间
+	// 开始运输时间
 	ShippedAt modeled.TCol[Shipment, sqltime.Timestamp]
-	// DeliveredAt 抵达时间
+	// 抵达时间
 	DeliveredAt modeled.TCol[Shipment, sqltime.Timestamp]
-	// CreatedAt 创建时间 秒时间戳
+	// 创建时间 秒时间戳
 	CreatedAt modeled.TCol[Shipment, sqltime.Timestamp]
-	// UpdatedAt 更新时间 秒时间戳
+	// 更新时间 秒时间戳
 	UpdatedAt modeled.TCol[Shipment, sqltime.Timestamp]
 }
 
@@ -142,7 +141,7 @@ func (m Shipment) TableName() string {
 // TableDesc returns descriptions of Shipment
 func (m Shipment) TableDesc() []string {
 	return []string{
-		"Shipment 物流",
+		"物流",
 	}
 }
 
@@ -179,6 +178,15 @@ func (m Shipment) UniqueIndexes() map[string][]string {
 		},
 		"ui_tracking_no": {
 			"TrackingNo",
+		},
+	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m Shipment) ColumnRel() map[string][]string {
+	return map[string][]string{
+		"OrderID": {
+			"Order.OrderID",
 		},
 	}
 }

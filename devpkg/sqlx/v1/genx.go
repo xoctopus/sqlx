@@ -96,6 +96,7 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 			s.Arg(ctx, "PrimaryColList", m.PrimaryColList()),
 			s.Arg(ctx, "IndexList", m.IndexList(false)),
 			s.Arg(ctx, "UniqueIndexList", m.IndexList(true)),
+			s.Arg(ctx, "ColumnRelList", m.ColumnRelList()),
 			s.Arg(ctx, "ModeledKeyDefList", m.ModeledKeyDefList(ctx)),
 			s.Arg(ctx, "ModeledColDefList", m.ModeledColDefList(ctx)),
 			s.Arg(ctx, "ModeledKeyInitList", m.ModeledKeyInitList(ctx)),

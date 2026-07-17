@@ -37,14 +37,39 @@ func ParseColDef(t typx.Type, tag reflect.StructTag) *ColumnDef {
 	return d
 }
 
+type ColumnDef2 struct {
+	Type     typx.Type
+	Tag      reflect.StructTag
+	DataType string
+
+	IsUnsigned       bool
+	NumericPrecision *uint64
+	NumericScale     *uint64
+
+	DatetimePrecision *uint64
+
+	TextLength *uint64
+
+	AutoInc      bool
+	Nullable     bool
+	DefaultValue *string
+	OnUpdate     *string
+
+	Comment  string
+	Desc     []string
+	Relation []string
+
+	Deprecated *DeprecatedActions
+}
+
 // ColumnDef describes source and database model
 type ColumnDef struct {
 	Type       typx.Type
 	Tag        reflect.StructTag
 	DataType   string
 	IsUnsigned *bool
-	Precision  *uint64
 	Width      *uint64
+	Precision  *uint64
 	Default    *string
 	OnUpdate   *string
 	Null       bool

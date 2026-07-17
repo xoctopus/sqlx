@@ -69,19 +69,19 @@ type tOrg struct {
 	schema string
 
 	ID modeled.TCol[Org, uint64]
-	// OrgID 组织ID
+	// 组织ID
 	OrgID modeled.TCol[Org, OrgID]
-	// Name 组织名称
+	// 组织名称
 	Name modeled.TCol[Org, string]
-	// Belonged 组织归属组织ID
+	// 组织归属组织ID
 	Belonged modeled.TCol[Org, UserID]
-	// Manager 组织管理者ID
+	// 组织管理者ID
 	Manager modeled.TCol[Org, UserID]
-	// CreatedAt 创建时间 秒时间戳
+	// 创建时间 秒时间戳
 	CreatedAt modeled.TCol[Org, sqltime.Timestamp]
-	// UpdatedAt 更新时间 秒时间戳
+	// 更新时间 秒时间戳
 	UpdatedAt modeled.TCol[Org, sqltime.Timestamp]
-	// DeletedAt 删除时间 秒时间戳
+	// 删除时间 秒时间戳
 	DeletedAt modeled.TCol[Org, sqltime.Timestamp]
 }
 
@@ -133,7 +133,7 @@ func (m Org) TableName() string {
 // TableDesc returns descriptions of Org
 func (m Org) TableDesc() []string {
 	return []string{
-		"Org 组织",
+		"组织",
 	}
 }
 
@@ -170,6 +170,11 @@ func (m Org) UniqueIndexes() map[string][]string {
 			"DeletedAt",
 		},
 	}
+}
+
+// ColumnRel presents soft foreign key of columns
+func (m Org) ColumnRel() map[string][]string {
+	return map[string][]string{}
 }
 
 // Create inserts Org to database

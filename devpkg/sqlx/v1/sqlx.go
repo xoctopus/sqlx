@@ -9,10 +9,12 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/xoctopus/genx/pkg/docx"
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
 	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
+	"github.com/xoctopus/x/slicex"
 	"github.com/xoctopus/x/stringsx"
 
 	"github.com/xoctopus/sqlx/internal/def"
@@ -29,6 +31,8 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	must.NotNilF(e, "expect %s lookup in package %s", x.Name(), g.Package().Path())
 	must.BeTrueF(types.Identical(e.Type(), t), "")
 
+	doc := docx.Parse(e.Doc())
+
 	m := &Model{
 		typ:    x,
 		ptr:    typx.NewTType(types.NewPointer(e.Type())),
@@ -37,6 +41,7 @@ func NewModel(g genx.Context, t types.Type) *Model {
 		attrs: map[Attr]string{
 			AttrTableName: "t_" + stringsx.LowerSnakeCase(x.Name()),
 		},
+		desc: doc.Descriptions(e.Name()),
 	}
 
 	if p := g.PackageByPath("github.com/xoctopus/sqlx/pkg/types"); p != nil {
@@ -59,43 +64,47 @@ func NewModel(g genx.Context, t types.Type) *Model {
 	for _, f := range m.fields {
 		fm[f.FieldName] = f
 		if f.ColumnDef.Comment == "" {
-			doc := g.Packages().DocOf(token.Pos(typx.PosOfStructField(f.Field)))
-			if doc != nil {
-				f.ColumnDef.Comment = strings.Join(doc.Desc(), " ")
+			e.GetFieldDocByName(f.FieldName)
+			d := docx.Parse(g.Packages().DocByPos(token.Pos(typx.PosOfStructField(f.Field))))
+			f.ColumnDef.Comment = d.Description(f.FieldName, " ")
+			if annotations, ok := d.AnnotationsByName("rel"); ok {
+				f.ColumnDef.Relation = slicex.Mapping(
+					annotations,
+					func(a docx.Annotation) string { return a.Text() },
+				)
 			}
 		}
 	}
 
-	for _, line := range e.Doc().Desc() {
-		if after, ok := strings.CutPrefix(line, "@def "); ok {
-			line = strings.TrimSpace(after)
-			k := def.ParseKeyDef(line)
-			must.BeTrueF(k != nil, "failed to parse %s @def: %s", m.typ.Name(), line)
-			for _, o := range k.Options {
-				_, exists := fm[o.Name]
-				must.BeTrueF(exists, "failed to parse %s field def not found: %s", m.typ.Name(), o.Name)
-			}
-			switch k.Kind {
-			case def.KEY_KIND__PRIMARY:
-				m.primary = k
-			case def.KEY_KIND__INDEX:
-				m.indexes = append(m.indexes, k)
-			case def.KEY_KIND__UNIQUE_INDEX:
-				m.uniques = append(m.uniques, k)
-			}
-			continue
-		}
-		if after, ok := strings.CutPrefix(line, "@attr "); ok {
-			line = strings.TrimSpace(after)
-			if parts := strings.SplitN(line, "=", 2); len(parts) == 2 {
-				if attr := HasAttr(parts[0]); attr != "" {
-					m.attrs[attr] = parts[1]
+	for key, annotations := range doc.Annotations() {
+		for _, anno := range annotations {
+			switch key {
+			case "def":
+				k := def.ParseKeyDef(anno.Text())
+				must.BeTrueF(k != nil, "failed to parse %s @def: %s", m.typ.Name(), anno.Text())
+				for _, o := range k.Options {
+					_, exists := fm[o.Name]
+					must.BeTrueF(exists, "failed to parse %s field def not found: %s", m.typ.Name(), o.Name)
+				}
+				switch k.Kind {
+				case def.KEY_KIND__PRIMARY:
+					m.primary = k
+				case def.KEY_KIND__INDEX:
+					m.indexes = append(m.indexes, k)
+				case def.KEY_KIND__UNIQUE_INDEX:
+					m.uniques = append(m.uniques, k)
+				}
+			case "attr":
+				// line = strings.TrimSpace(after)
+				if k, v, found := strings.Cut(anno.Text(), "="); found {
+					if attr := HasAttr(k); len(attr) > 0 {
+						m.attrs[attr] = v
+					}
 				}
 			}
-			continue
 		}
-		m.desc = append(m.desc, strings.TrimSpace(line))
 	}
+
 	return m
 }
 
@@ -141,6 +150,20 @@ func (m *Model) IndexList(unique bool) s.Snippet {
 		return s.Snippets(s.NewLine(1), ss...)
 	}
 	return s.Snippet(&s.Placeholder{})
+}
+
+func (m *Model) ColumnRelList() s.Snippet {
+	ss := make([]s.Snippet, 0)
+	for _, f := range m.fields {
+		if len(f.ColumnDef.Relation) > 0 {
+			ss = append(ss, s.BlockF("%q: {", f.FieldName))
+			for _, r := range f.ColumnDef.Relation {
+				ss = append(ss, s.BlockF("%q,", r))
+			}
+			ss = append(ss, s.BlockF("},"))
+		}
+	}
+	return s.Snippets(s.NewLine(1), ss...)
 }
 
 func (m *Model) TagMapping() s.Snippet {

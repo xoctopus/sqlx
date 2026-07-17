@@ -240,6 +240,14 @@ func (d dialect) DBType(def builder.ColumnDef) frag.Fragment {
 	return frag.Compose(" ", fragments...)
 }
 
+func (d dialect) ColDefine(dd *builder.ColumnDef) {
+	must.BeTrueF(
+		dd != nil && dd.Type != nil,
+		"invalid column define",
+	)
+	d.datatype(dd.Type, dd)
+}
+
 func (d dialect) datatype(typ typx.Type, dd *builder.ColumnDef) {
 	switch dd.DefineFrom {
 	case def.DefineFromCatalog, def.DefineFromUser:
@@ -306,7 +314,7 @@ func (d dialect) datatype(typ typx.Type, dd *builder.ColumnDef) {
 
 func (d dialect) modifiers(dd builder.ColumnDef) (modifiers []string) {
 	// DataType => datatype(width,precision) eg: VARCHAR(width); DATETIME(precision); DECIMAL(width,precision);
-	// here skip width determined types eg: BIGINT, TINYINT
+	// here skip width determined types eg: BIGINT, TINYINT, FLOAT, DOUBLE
 	// ref: https://dev.mysql.com/doc/refman/8.0/en/numeric-type-attributes.html
 	datatype := dd.DataType
 	s := ""
@@ -322,7 +330,15 @@ func (d dialect) modifiers(dd builder.ColumnDef) (modifiers []string) {
 		}
 	}
 	if len(s) > 0 {
-		datatype += "(" + s + ")"
+		kind := reflect.Invalid
+		if dd.Type != nil {
+			kind = dd.Type.Kind()
+		}
+		switch kind {
+		case reflect.Float32, reflect.Float64:
+		default:
+			datatype += "(" + s + ")"
+		}
 	}
 
 	unsigned := dd.IsUnsigned != nil && *dd.IsUnsigned
