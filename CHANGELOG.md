@@ -1,8 +1,24 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc6...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1...HEAD)
 
-> 0001-01-01
+> 2026-07-17
+
+### Chore
+
+* **deps:** bump lint actions
+* **deps:** bump codecov/codecov-action from 5 to 6
+* **deps:** bump dependencies
+
+
+<a name="v0.3.1"></a>
+## [v0.3.1](https://github.com/xoctopus/sqlx/compare/v0.3.1-rc6...v0.3.1)
+
+> 2026-07-17
+
+### Feat
+
+* enhance logging interpolation and introduce migrator models
 
 
 <a name="v0.3.1-rc6"></a>

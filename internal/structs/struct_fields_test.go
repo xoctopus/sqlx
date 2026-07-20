@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/xoctopus/typx/pkg/typx"
-	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/structs"
@@ -107,7 +106,7 @@ var V = &M{
 		F5: nil,
 	},
 	F6: nil,
-	F7: ptrx.Ptr(ptrx.Ptr("f7")),
+	F7: new(new("f7")),
 }
 
 func TestField_Value(t *testing.T) {

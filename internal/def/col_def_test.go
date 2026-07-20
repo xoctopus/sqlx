@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/xoctopus/typx/pkg/typx"
-	"github.com/xoctopus/x/ptrx"
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/def"
@@ -30,27 +29,27 @@ func TestParseColDef(t *testing.T) {
 		},
 		{
 			name: "Width",
-			def:  &def.ColumnDef{Width: ptrx.Ptr(uint64(10))},
+			def:  &def.ColumnDef{Width: new(uint64(10))},
 			tag:  reflect.StructTag(`db:",width=10"`),
 		},
 		{
 			name: "Precision",
-			def:  &def.ColumnDef{Precision: ptrx.Ptr(uint64(10))},
+			def:  &def.ColumnDef{Precision: new(uint64(10))},
 			tag:  reflect.StructTag(`db:",precision=10"`),
 		},
 		{
 			name: "Default",
-			def:  &def.ColumnDef{Default: ptrx.Ptr("'abc def'")},
+			def:  &def.ColumnDef{Default: new("'abc def'")},
 			tag:  reflect.StructTag(`db:",default='abc def'"`),
 		},
 		{
 			name: "DefaultEmpty",
-			def:  &def.ColumnDef{Default: ptrx.Ptr("''")},
+			def:  &def.ColumnDef{Default: new("''")},
 			tag:  reflect.StructTag(`db:",default=''"`),
 		},
 		{
 			name: "OnUpdate",
-			def:  &def.ColumnDef{OnUpdate: ptrx.Ptr("CURRENT_TIMESTAMP(3)")},
+			def:  &def.ColumnDef{OnUpdate: new("CURRENT_TIMESTAMP(3)")},
 			tag:  reflect.StructTag(`db:",onupdate=CURRENT_TIMESTAMP(3)"`),
 		},
 		{
