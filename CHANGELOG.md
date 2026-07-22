@@ -1,11 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.1...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.2...HEAD)
 
-> 2026-07-17
+> 0001-01-01
+
+
+<a name="v0.3.2"></a>
+## [v0.3.2](https://github.com/xoctopus/sqlx/compare/v0.3.1...v0.3.2)
+
+> 2026-07-20
 
 ### Chore
 
+* remove ptrx.Ptr dependency
 * **deps:** bump lint actions
 * **deps:** bump codecov/codecov-action from 5 to 6
 * **deps:** bump dependencies

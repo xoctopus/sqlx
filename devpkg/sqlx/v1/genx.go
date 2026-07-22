@@ -2,9 +2,11 @@ package sqlx
 
 import (
 	"bytes"
+	"cmp"
 	_ "embed"
 	"go/types"
 	"log"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -65,6 +67,14 @@ func (x *g) Identifier() string {
 	return "model"
 }
 
+func (x *g) Version() string {
+	v := ""
+	if i, ok := debug.ReadBuildInfo(); ok {
+		v = i.Main.Version
+	}
+	return cmp.Or(v, "devel")
+}
+
 func (x *g) Generate(c genx.Context, t types.Type) error {
 	cost := Span()
 
@@ -73,9 +83,9 @@ func (x *g) Generate(c genx.Context, t types.Type) error {
 		return nil
 	}
 
-	log.Printf("genx:model generating %s ...\n", m.typ.Name())
+	log.Printf("genx:%s %s", x.Identifier(), m.typ.String())
 	defer func() {
-		log.Printf("cost: %fs\n", cost().Seconds())
+		log.Printf("==> cost: %fs", cost().Seconds())
 	}()
 
 	ctx := c.Context()
