@@ -34,3 +34,4 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           files: ./cover.out
+          slug: xoctopus/sqlx
