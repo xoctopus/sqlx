@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.2...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.3...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.3.3"></a>
+## [v0.3.3](https://github.com/xoctopus/sqlx/compare/v0.3.2...v0.3.3)
+
+> 2026-07-23
+
+### Chore
+
+* generator version and exported
 
 
 <a name="v0.3.2"></a>

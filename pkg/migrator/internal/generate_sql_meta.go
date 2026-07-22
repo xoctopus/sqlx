@@ -17,6 +17,13 @@ import (
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
+func cut(s string, n int) string {
+	if len(s) > n {
+		return s[:n]
+	}
+	return s
+}
+
 func GenerateTableColumnDocuments(_ context.Context, a adaptor.Adaptor, cat builder.Catalog) []frag.Fragment {
 	t := builder.TFrom(&models.TableColumn{})
 	d := a.Dialect()
@@ -32,12 +39,12 @@ func GenerateTableColumnDocuments(_ context.Context, a adaptor.Adaptor, cat buil
 			def := builder.GetColDef(c)
 			d.ColDefine(&def)
 			tcs = append(tcs, &models.TableColumn{
-				Model:   tab.TableName(),
-				Col:     c.Name(),
-				ColType: def.Type.String(),
-				Field:   c.FieldName(),
-				Rel:     strings.Join(def.Relation, " "),
-				Comment: def.Comment,
+				Model:   cut(tab.TableName(), 64),
+				Col:     cut(c.Name(), 64),
+				ColType: cut(def.Type.String(), 1024),
+				Field:   cut(c.FieldName(), 64),
+				Rel:     cut(strings.Join(def.Relation, " "), 128),
+				Comment: cut(def.Comment, 1024),
 			})
 		}
 	}
@@ -58,17 +65,17 @@ func GenerateTableDocuments(_ context.Context, a adaptor.Adaptor, cat builder.Ca
 	tcs := make([]*models.Table, 0)
 	for tab := range cat.Tables() {
 		v := &models.Table{
-			Model:   tab.TableName(),
+			Model:   cut(tab.TableName(), 64),
 			TabType: "",
 			Comment: "",
 		}
 		if x, ok := tab.(builder.Newer); ok {
 			u := x.New()
 			typ := typx.Deref(typx.NewRType(reflect.TypeOf(u)))
-			v.TabType = typ.String()
+			v.TabType = cut(typ.String(), 1024)
 			if p, ok := u.(docx.Provider); ok {
 				doc, _ := p.DocOf()
-				v.Comment = strings.Join(doc, " ")
+				v.Comment = cut(strings.Join(doc, " "), 1024)
 			}
 		}
 		tcs = append(tcs, v)
@@ -96,13 +103,13 @@ func GenerateTableEnumerationDocument(_ context.Context, a adaptor.Adaptor, cat 
 				if x, ok := rv.Interface().(enumx.CanBeEnum); ok {
 					for _, e := range x.EnumValues() {
 						v := &models.Enumeration{
-							Model: tab.TableName(),
-							Col:   col.Name(),
-							Enum:  def.Type.String(),
-							Kind:  reflect.TypeOf(e).Kind().String(),
-							Key:   e.(interface{ String() string }).String(),
-							Value: fmt.Sprintf("%d", e),
-							Text:  e.(interface{ Text() string }).Text(),
+							Model:    cut(tab.TableName(), 64),
+							Col:      cut(col.Name(), 64),
+							EnumType: cut(def.Type.String(), 1024),
+							Kind:     cut(reflect.TypeOf(e).Kind().String(), 16),
+							Key:      cut(e.(interface{ String() string }).String(), 64),
+							Value:    cut(fmt.Sprintf("%d", e), 64),
+							Text:     cut(e.(interface{ Text() string }).Text(), 128),
 						}
 						tcs = append(tcs, v)
 					}
