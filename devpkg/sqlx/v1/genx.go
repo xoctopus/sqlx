@@ -2,14 +2,13 @@ package sqlx
 
 import (
 	"bytes"
-	"cmp"
 	_ "embed"
 	"go/types"
 	"log"
-	"runtime/debug"
 	"strings"
 	"time"
 
+	"github.com/xoctopus/genx/devpkg/helper"
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
 )
@@ -68,11 +67,7 @@ func (x *g) Identifier() string {
 }
 
 func (x *g) Version() string {
-	v := ""
-	if i, ok := debug.ReadBuildInfo(); ok {
-		v = i.Main.Version
-	}
-	return cmp.Or(v, "devel")
+	return helper.VersionFor("github.com/xoctopus/sqlx")
 }
 
 func (x *g) Generate(c genx.Context, t types.Type) error {
