@@ -5,7 +5,7 @@ go 1.26.5
 tool github.com/xoctopus/sqlx/example/cmd/devtool
 
 require (
-	github.com/xoctopus/genx v0.3.0
+	github.com/xoctopus/genx v0.3.1
 	github.com/xoctopus/logx v0.3.2
 	github.com/xoctopus/pkgx v0.4.3
 	github.com/xoctopus/typx v0.4.4

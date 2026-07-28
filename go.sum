@@ -42,8 +42,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
-github.com/xoctopus/genx v0.3.0 h1:lIiH9WY9hNVXPK5V/VlInBsfwHHDKqFqR5mnVQ+0Ldw=
-github.com/xoctopus/genx v0.3.0/go.mod h1:Hxh7ND4EmOjM7njIzxTvStPmhqBHA4/mTdnjYqY6XDE=
+github.com/xoctopus/genx v0.3.1 h1:JUx7xAfX2PzZaxryu3PL0InN7ZLAs2kBwcc0UQ0UUU4=
+github.com/xoctopus/genx v0.3.1/go.mod h1:Hxh7ND4EmOjM7njIzxTvStPmhqBHA4/mTdnjYqY6XDE=
 github.com/xoctopus/logx v0.3.2 h1:1zhnkxPuk5omAUTzSSBgnmVz3yLI3QYeE9DQzxDf4JU=
 github.com/xoctopus/logx v0.3.2/go.mod h1:AN40eCPofAaTaTm30KAcIvkA30bveSkR7R4uGYrghlA=
 github.com/xoctopus/pkgx v0.4.3 h1:JNmqpN37xEK0xxWz50JeikEdN66pdMmvpmQDErj1bKA=
