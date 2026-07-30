@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 )
 
 // InTx reports whether ctx carries an active *sql.Tx executor.

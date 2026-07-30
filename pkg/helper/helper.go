@@ -6,12 +6,12 @@ import (
 
 	"github.com/xoctopus/x/reflectx"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/internal/structs"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/builder/modeled"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
-	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
 
 // CVsForInsertion builds insert columns and flattened values from models.

@@ -2,7 +2,11 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.6...HEAD)
 
-> 0001-01-01
+> 2026-07-30
+
+### Chore
+
+* regen
 
 
 <a name="v0.3.6"></a>

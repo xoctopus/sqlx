@@ -9,10 +9,10 @@ import (
 	"github.com/xoctopus/x/flagx"
 	. "github.com/xoctopus/x/testx"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/migrator"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 type execResult struct{}

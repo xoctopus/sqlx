@@ -12,7 +12,9 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// DB executes SQL fragments against a database connection pool.
 type DB interface {
+	// D returns the underlying *sql.DB.
 	D() *sql.DB
 
 	Exec(context.Context, frag.Fragment) (sql.Result, error)
@@ -21,20 +23,25 @@ type DB interface {
 	Close() error
 }
 
+// Connector opens an Adaptor from a parsed DSN URL.
 type Connector interface {
 	Open(context.Context, *url.URL) (Adaptor, error)
 }
 
+// Adaptor is a driver-specific database access handle.
 type Adaptor interface {
 	DB
 
+	// DriverName returns the registered driver scheme (for example "mysql").
 	DriverName() string
+	// Schema returns the current database/schema name.
 	Schema() string
 
 	Dialect() Dialect
 	Catalog(context.Context) (builder.Catalog, error)
 }
 
+// Dialect renders dialect-specific DDL/DML fragments and classifies driver errors.
 type Dialect interface {
 	CreateSchema(string) frag.Fragment
 	SwitchSchema(string) frag.Fragment
@@ -59,6 +66,7 @@ type Dialect interface {
 
 var adaptors = syncx.NewXmap[string, Adaptor]()
 
+// Register stores an Adaptor under its DriverName and optional aliases.
 func Register(a Adaptor, aliases ...string) {
 	adaptors.Store(a.DriverName(), a)
 	for _, alias := range aliases {
@@ -66,6 +74,7 @@ func Register(a Adaptor, aliases ...string) {
 	}
 }
 
+// Open parses dsn and opens an Adaptor whose scheme matches a registered driver.
 func Open(ctx context.Context, dsn string) (Adaptor, error) {
 	u, err := url.Parse(dsn)
 	if err != nil {

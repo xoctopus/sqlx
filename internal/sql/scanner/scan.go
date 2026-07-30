@@ -11,10 +11,10 @@ import (
 	"github.com/xoctopus/x/codex"
 	"github.com/xoctopus/x/reflectx"
 
+	"github.com/xoctopus/sqlx/internal/sql/scanner/nullable"
 	"github.com/xoctopus/sqlx/internal/structs"
 	sqlerrs "github.com/xoctopus/sqlx/pkg/errors"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/sql/scanner/nullable"
 )
 
 func Scan(ctx context.Context, rows *sql.Rows, v any) (err error) {

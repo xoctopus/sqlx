@@ -11,8 +11,8 @@ import (
 	"github.com/xoctopus/x/misc/retry"
 	. "github.com/xoctopus/x/testx"
 
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
-	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	_ "github.com/xoctopus/sqlx/pkg/adaptors"
 )
 
 func Check(t testing.TB) {

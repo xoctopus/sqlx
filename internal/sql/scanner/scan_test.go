@@ -9,8 +9,8 @@ import (
 	"github.com/xoctopus/pkgx/pkg/pkgx"
 	. "github.com/xoctopus/x/testx"
 
+	"github.com/xoctopus/sqlx/internal/sql/scanner"
 	"github.com/xoctopus/sqlx/pkg/errors"
-	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 

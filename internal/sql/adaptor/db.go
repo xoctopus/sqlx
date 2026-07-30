@@ -10,6 +10,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Wrap adapts *sql.DB to DB. ew is reserved for error wrapping.
 func Wrap(d *sql.DB, ew func(error) error) DB {
 	_db := &db{
 		DB:  d,
@@ -30,6 +31,8 @@ func (d *db) D() *sql.DB {
 	return d.DB
 }
 
+// Exec runs f. Prefer ExecutorFrom(ctx) when present; otherwise use *sql.DB.
+// A nil fragment is a no-op.
 func (d *db) Exec(ctx context.Context, f frag.Fragment) (sql.Result, error) {
 	if frag.IsNil(f) {
 		return nil, nil
@@ -50,6 +53,8 @@ func (d *db) Exec(ctx context.Context, f frag.Fragment) (sql.Result, error) {
 	return result, nil
 }
 
+// Query runs f. Prefer ExecutorFrom(ctx) when present; otherwise use *sql.DB.
+// A nil fragment is a no-op.
 func (d *db) Query(ctx context.Context, f frag.Fragment) (*sql.Rows, error) {
 	if frag.IsNil(f) {
 		return nil, nil
@@ -70,6 +75,9 @@ func (d *db) Query(ctx context.Context, f frag.Fragment) (*sql.Rows, error) {
 	return result, nil
 }
 
+// Tx runs f inside a transaction.
+// If ctx already carries *sql.Tx, it is reused; otherwise a new transaction is begun.
+// Panics that are error values are converted to returned errors after rollback.
 func (d *db) Tx(ctx context.Context, f func(context.Context) error) (err error) {
 	var (
 		entry = false // if tx scope created

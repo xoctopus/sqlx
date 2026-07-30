@@ -49,9 +49,10 @@ func (c *connector) OpenConnector(dsn string) (driver.Connector, error) {
 	}
 
 	return &connector{
-		d:    c.d,
-		name: name,
-		dsn:  dsn,
+		d:       c.d,
+		name:    name,
+		dsn:     dsn,
+		options: c.options,
 	}, nil
 }
 

@@ -4,12 +4,10 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
+	_ "github.com/xoctopus/sqlx/pkg/adaptors"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
-	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
-	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/postgres"
-	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/sqlite"
 )
 
 // Session is a named database access handle.

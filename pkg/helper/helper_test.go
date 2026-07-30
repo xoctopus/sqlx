@@ -10,11 +10,11 @@ import (
 	. "github.com/xoctopus/x/testx"
 	"github.com/xoctopus/x/testx/bdd"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	sqlerrs "github.com/xoctopus/sqlx/pkg/errors"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 type M struct {

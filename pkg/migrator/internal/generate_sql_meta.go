@@ -10,11 +10,11 @@ import (
 	"github.com/xoctopus/x/docx"
 	"github.com/xoctopus/x/enumx"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/helper"
 	"github.com/xoctopus/sqlx/pkg/migrator/models"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 func cut(s string, n int) string {

@@ -7,8 +7,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	. "github.com/xoctopus/x/testx"
 
+	"github.com/xoctopus/sqlx/internal/sql/adaptor"
 	"github.com/xoctopus/sqlx/pkg/session"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
 )
 
 func TestInTx(t *testing.T) {

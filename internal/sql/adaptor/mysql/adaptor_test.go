@@ -6,8 +6,8 @@ import (
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/hack"
+	"github.com/xoctopus/sqlx/internal/sql/adaptor/mysql"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
 )
 
 func TestOpen_Hack(t *testing.T) {

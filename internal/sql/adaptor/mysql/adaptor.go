@@ -11,26 +11,26 @@ import (
 	"github.com/xoctopus/x/codex"
 	"github.com/xoctopus/x/misc/must"
 
+	adaptor2 "github.com/xoctopus/sqlx/internal/sql/adaptor"
+	loggingdriver2 "github.com/xoctopus/sqlx/internal/sql/loggingdriver"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	sqlerr "github.com/xoctopus/sqlx/pkg/errors"
 	"github.com/xoctopus/sqlx/pkg/frag"
-	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
-	"github.com/xoctopus/sqlx/pkg/sql/loggingdriver"
 )
 
 func init() {
-	adaptor.Register(&mycli{})
+	adaptor2.Register(&mycli{})
 }
 
 type mycli struct {
 	dialect
-	adaptor.DB
+	adaptor2.DB
 
 	schema string
 	dsn    *url.URL
 }
 
-func (d *mycli) Dialect() adaptor.Dialect {
+func (d *mycli) Dialect() adaptor2.Dialect {
 	return d.dialect
 }
 
@@ -43,29 +43,29 @@ func (d *mycli) Schema() string {
 }
 
 func (d *mycli) Connector() driver.DriverContext {
-	options := []loggingdriver.DriverOptionApplier{
-		loggingdriver.WithDsnParser(ParseDSN),
-		loggingdriver.WithErrorLeveler(ErrorLevel),
+	options := []loggingdriver2.DriverOptionApplier{
+		loggingdriver2.WithDsnParser(ParseDSN),
+		loggingdriver2.WithErrorLeveler(ErrorLevel),
 	}
 
 	if v := d.dsn.Query().Get("interpolateParams"); len(v) == 0 || v == "false" {
 		options = append(
 			options,
-			loggingdriver.WithInterpolator(loggingdriver.DefaultInterpolate),
+			loggingdriver2.WithInterpolator(loggingdriver2.DefaultInterpolate),
 		)
 	}
 
-	return loggingdriver.Wrap(mysql.MySQLDriver{}, d.DriverName(), options...)
+	return loggingdriver2.Wrap(mysql.MySQLDriver{}, d.DriverName(), options...)
 }
 
 // Open returns mysql adaptor.Adaptor
 // dsn: mysql://[user[:password]@][addr]/database[?param1=value1&paramN=valueN]
-func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
+func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor2.Adaptor, error) {
 	must.BeTrueF(
 		dsn.Scheme == d.DriverName(),
 		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
 	)
-	database := adaptor.DatabaseNameFromDSN(dsn)
+	database := adaptor2.DatabaseNameFromDSN(dsn)
 	d.dsn = dsn
 
 	conn, err := d.Connector().OpenConnector(d.dsn.String())
@@ -91,7 +91,7 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 	}
 
 	return &mycli{
-		DB: adaptor.Wrap(db, func(err error) error {
+		DB: adaptor2.Wrap(db, func(err error) error {
 			if d.IsConflictError(err) {
 				return codex.Errorf(sqlerr.CONFLICT, "%v", err)
 			}
