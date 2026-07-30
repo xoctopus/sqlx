@@ -2,7 +2,17 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.5...HEAD)
 
-> 2026-07-23
+> 2026-07-30
+
+### Build
+
+* add skill-install
+
+### Chore
+
+* **deps:** bump modernc.org/sqlite from 1.54.0 to 1.55.0 ([#44](https://github.com/xoctopus/sqlx/issues/44))
+* **deps:** bump github.com/xoctopus/typx from 0.4.4 to 0.4.5 ([#42](https://github.com/xoctopus/sqlx/issues/42))
+* **deps:** bump github.com/xoctopus/logx from 0.3.2 to 0.3.5 ([#41](https://github.com/xoctopus/sqlx/issues/41))
 
 ### Ci
 
@@ -11,6 +21,15 @@
 ### Doc
 
 * update CHANGELOG and README
+
+### Refact
+
+* **devpkg:** redefine generator directive and annotations
+
+### Test
+
+* **errors:** add unit test
+* **types:** add unit test
 
 
 <a name="v0.3.5"></a>

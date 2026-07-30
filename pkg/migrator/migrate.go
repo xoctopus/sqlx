@@ -56,10 +56,6 @@ func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (stri
 		)...,
 	)
 
-	if len(fragments) == 0 {
-		return "", nil
-	}
-
 	q, args := frag.Collect(ctx, frag.Compose("\n", fragments...))
 	named := make([]driver.NamedValue, len(args))
 	for i, arg := range args {
