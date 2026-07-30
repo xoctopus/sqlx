@@ -21,4 +21,7 @@ func TestDecimal(t *testing.T) {
 	dv, err := v.Value()
 	Expect(t, err, Succeed())
 	Expect(t, dv, Equal[driver.Value]("111111.11"))
+
+	Expect(t, v.OpenAPISchemaType(), Equal([]string{"number"}))
+	Expect(t, v.OpenAPISchemaFormat(), Equal("double"))
 }

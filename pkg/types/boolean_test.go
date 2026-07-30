@@ -35,4 +35,5 @@ func TestBoolean(t *testing.T) {
 	Expect(t, b.UnmarshalJSON([]byte("null")), Succeed())
 	Expect(t, int(b), Equal(0))
 	Expect(t, b.UnmarshalJSON([]byte("invalid")), Failed())
+	Expect(t, b.OpenAPISchemaType(), Equal([]string{"boolean"}))
 }

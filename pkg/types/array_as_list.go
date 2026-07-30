@@ -7,16 +7,61 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/xoctopus/x/misc/must"
 )
 
-type ArrayAsListElement interface {
+type TElement interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
 		~float32 | ~float64 |
 		~string
 }
 
-type ArrayAsList[T ArrayAsListElement] []T
+func parseElement[T TElement](s string) (T, error) {
+	v := new(T)
+	switch t := reflect.TypeFor[T](); t.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		i, err := strconv.ParseInt(s, 10, t.Bits())
+		if err != nil {
+			return *v, err
+		}
+		reflect.ValueOf(v).Elem().SetInt(i)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		i, err := strconv.ParseUint(s, 10, t.Bits())
+		if err != nil {
+			return *v, err
+		}
+		reflect.ValueOf(v).Elem().SetUint(i)
+	case reflect.Float32, reflect.Float64:
+		i, err := strconv.ParseFloat(s, t.Bits())
+		if err != nil {
+			return *v, err
+		}
+		reflect.ValueOf(v).Elem().SetFloat(i)
+	default:
+		must.BeTrueF(t.Kind() == reflect.String, "unknown element type: %s", t)
+		reflect.ValueOf(v).Elem().SetString(s)
+	}
+	return *v, nil
+}
+
+func ParseArrayAsList[T TElement](s string) (ArrayAsList[T], error) {
+	list := make(ArrayAsList[T], 0)
+	for part := range strings.SplitSeq(s, ",") {
+		if part = strings.TrimSpace(part); len(part) == 0 {
+			return nil, fmt.Errorf("empty content is not accepted")
+		}
+		v, err := parseElement[T](part)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, v)
+	}
+	return list, nil
+}
+
+type ArrayAsList[T TElement] []T
 
 var (
 	_ driver.Valuer = (*ArrayAsList[int])(nil)
@@ -36,26 +81,17 @@ func (aa ArrayAsList[T]) String() string {
 }
 
 func (aa *ArrayAsList[T]) Scan(v any) error {
-	var (
-		x    ArrayAsList[T]
-		err  error
-		kind = reflect.TypeFor[T]().Kind()
-	)
-
 	switch src := v.(type) {
+	case nil:
+		*aa = ArrayAsList[T]{}
+		return nil
 	case []byte:
-		x = make(ArrayAsList[T], 0)
-		err = x.AppendString(string(src))
+		return aa.UnmarshalText(src)
 	case string:
-		x = make(ArrayAsList[T], 0)
-		err = x.AppendString(src)
+		return aa.UnmarshalText([]byte(src))
 	default:
-		err = fmt.Errorf("cannot scan type %T into ArrayAsList[%s]", v, kind)
+		return fmt.Errorf("cannot scan type %T into ArrayAsList[%s]", v, reflect.TypeFor[T]())
 	}
-	if err == nil {
-		*aa = x
-	}
-	return err
 }
 
 func (aa ArrayAsList[T]) Elements() []string {
@@ -70,58 +106,35 @@ func (aa *ArrayAsList[T]) Append(values ...T) {
 	*aa = append(*aa, values...)
 }
 
-func (aa *ArrayAsList[T]) AppendString(values ...string) error {
-	typed := make([]T, 0, len(values))
-	for _, v := range values {
-		for part := range strings.SplitSeq(v, ",") {
-			tv := new(T)
-			switch reflect.TypeFor[T]().Kind() {
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				u, err := strconv.ParseInt(part, 10, 64)
-				if err != nil {
-					return fmt.Errorf("failed to convert %s to int: %w", part, err)
-				}
-				reflect.ValueOf(tv).Elem().SetInt(u)
-				typed = append(typed, *tv)
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				u, err := strconv.ParseUint(part, 10, 64)
-				if err != nil {
-					return fmt.Errorf("failed to convert %s to uint: %w", part, err)
-				}
-				reflect.ValueOf(tv).Elem().SetUint(u)
-				typed = append(typed, *tv)
-			case reflect.String:
-				reflect.ValueOf(tv).Elem().SetString(part)
-				typed = append(typed, *tv)
-			case reflect.Float32, reflect.Float64:
-				u, err := strconv.ParseFloat(part, 64)
-				if err != nil {
-					return fmt.Errorf("failed to convert %s to float: %w", part, err)
-				}
-				reflect.ValueOf(tv).Elem().SetFloat(u)
-				typed = append(typed, *tv)
-			default:
-				return fmt.Errorf("cannot append %s to ArrayAsList[%s]", v, reflect.TypeFor[T]().Kind())
-			}
-		}
-	}
-	aa.Append(typed...)
-	return nil
-}
-
-func (aa *ArrayAsList[T]) UnmarshalJSON(data []byte) error {
-	s, err := string(data), error(nil)
-	if len(data) > 0 && data[0] == '"' {
-		s, err = strconv.Unquote(s)
-		if err != nil {
-			return err
-		}
-	}
-	x := make(ArrayAsList[T], 0)
-	if err = x.AppendString(s); err != nil {
+func (aa *ArrayAsList[T]) UnmarshalText(data []byte) error {
+	x, err := ParseArrayAsList[T](string(data))
+	if err != nil {
 		return err
 	}
 	*aa = x
+	return nil
+}
+
+func (aa *ArrayAsList[T]) MarshalText() ([]byte, error) {
+	return []byte(aa.String()), nil
+}
+
+func (aa *ArrayAsList[T]) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	if len(s) == 0 || s == "null" {
+		*aa = make(ArrayAsList[T], 0)
+		return nil
+	}
+
+	s, err := strconv.Unquote(s)
+	if err != nil {
+		return err
+	}
+	l, err := ParseArrayAsList[T](s)
+	if err != nil {
+		return err
+	}
+	*aa = l
 	return nil
 }
 
