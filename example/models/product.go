@@ -7,13 +7,13 @@ import (
 
 // Product 商品
 // +genx:model
-// @attr TableName=t_product
-// @attr Register=Catalog
-// @def pk ID
-// @def u_idx ui_product_id  ProductID,DeletedAt
-// @def idx   i_product_name Name
-// @def idx   i_status       Status
-// @def idx   i_updated_at   UpdatedAt
+// @model TableName=t_product
+// @model Register=Catalog
+// @model pk=ID
+// @model uidx=ui_product_id;ProductID,DeletedAt
+// @model idx=i_product_name;Name
+// @model idx=i_status;Status
+// @model idx=i_updated_at;UpdatedAt
 type Product struct {
 	types.AutoIncID
 

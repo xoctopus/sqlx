@@ -2,20 +2,20 @@ package testdata
 
 // Gender
 // +genx:enum
-// @def storage=text
+// @enum storage=text
 type Gender int8
 
 const (
 	GENDER_UNKNOWN Gender = iota
-	// GENDER__MALE
-	// @attr name=男
-	// @attr text=男
-	// @attr short=M
-	GENDER__MALE // 男
-	// GENDER__FEMALE
-	// @attr name=女
-	// @attr text=女
-	// @attr short=F
-	// @ignore GENDER__FEMALE has no more description, use key as its Text
+	// GENDER__MALE 男
+	// @enum ext.name=男
+	// @enum ext.text=男
+	// @enum ext.short=M
+	GENDER__MALE
+	// GENDER__FEMALE 女
+	// @enum ext.name=女
+	// @enum ext.text=女
+	// @enum ext.short=F
+	// @enum x=y
 	GENDER__FEMALE
 )

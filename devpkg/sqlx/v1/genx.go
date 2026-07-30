@@ -28,6 +28,8 @@ var (
 	tplDeleteByUnique []byte
 	//go:embed tpls/sqlx.go_model_mark_delete_by_unique.tpl
 	tplSoftDeleteByUnique []byte
+
+	identifier = "model"
 )
 
 type uniqueAction struct {

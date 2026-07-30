@@ -8,15 +8,15 @@ import (
 
 // Shipment 物流
 // +genx:model
-// @attr TableName=t_shipment
-// @attr Register=Catalog
-// @def pk ID
-// @def u_idx ui_order_id    OrderID
-// @def u_idx ui_tracking_no TrackingNo
-// @def idx   i_carrier      Carrier
-// @def idx   i_status       Status
-// @def idx   i_shipped_at   ShippedAt
-// @def idx   i_delivered_at DeliveredAt
+// @model TableName=t_shipment
+// @model Register=Catalog
+// @model pk=ID
+// @model uidx=ui_order_id;OrderID
+// @model uidx=ui_tracking_no;TrackingNo
+// @model idx=i_carrier;Carrier
+// @model idx=i_status;Status
+// @model idx=i_shipped_at;ShippedAt
+// @model idx=i_delivered_at;DeliveredAt
 type Shipment struct {
 	types.AutoIncID
 

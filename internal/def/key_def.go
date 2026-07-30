@@ -5,48 +5,47 @@ import "strings"
 // ParseKeyDef parses key define
 // eg:
 //
-//	| Kind         | Name[,Using]       | Field[,Option]                |
-//	| :---         | :---               | :----                         |
-//	| idx          | idx_name,BTREE     | Name                          |
-//	| index        | idx_name,GIST      | Geo,gist_trgm_ops             |
-//	| unique_index | idx_name           | f_org_id,NULLS,FIRST;MemberID |
-//	| u_idx        | idx_name           | OrgID;f_member_id,NULLS,FIRST |
-//	| primary      |                    | ID                            |
-//	| pk           |                    | ID                            |
-func ParseKeyDef(def string) *KeyDefine {
-	parts := strings.Fields(def)
-	if len(parts) == 0 {
+//	| Kind | Name[,Using]       | Field[,Option]                |
+//	| :--- | :---               | :----                         |
+//	| idx  | idx_name,BTREE     | Name                          |
+//	| uidx | idx_name           | OrgID;f_member_id,NULLS,FIRST |
+//	| pk   |                    | ID                            |
+func ParseKeyDef(k, def string) *KeyDefine {
+	def = strings.TrimSpace(def)
+	if len(def) == 0 {
 		return nil
 	}
 
+	parts := strings.Split(def, ";")
+
 	d := &KeyDefine{}
-	switch parts[0] {
-	case "idx", "index":
-		if len(parts) != 3 {
+	switch k {
+	case "idx":
+		if len(parts) < 2 {
 			return nil
 		}
 		d.Kind = KEY_KIND__INDEX
-		d.Name, d.Using = ResolveIndexNameAndUsing(parts[1])
-	case "unique_index", "u_idx", "uidx", "ui":
-		if len(parts) != 3 {
+		d.Name, d.Using = ResolveIndexNameAndUsing(parts[0])
+		parts = parts[1:]
+	case "uidx":
+		if len(parts) < 2 {
 			return nil
 		}
 		d.Kind = KEY_KIND__UNIQUE_INDEX
-		d.Name, d.Using = ResolveIndexNameAndUsing(parts[1])
-	case "primary", "pk", "pkey":
-		if len(parts) != 2 {
-			return nil
-		}
+		d.Name, d.Using = ResolveIndexNameAndUsing(parts[0])
+		parts = parts[1:]
+	case "pk":
 		d.Kind = KEY_KIND__PRIMARY
 		d.Name = "primary"
 	default:
 		return nil
 	}
-	if d.Name == "" && d.Kind != KEY_KIND__PRIMARY {
+
+	if d.Name == "" {
 		return nil
 	}
 
-	d.Options = ResolveKeyColumnOptions(parts[len(parts)-1])
+	d.Options = ResolveKeyColumnOptionsFromStrings(parts...)
 	if len(d.Options) == 0 {
 		return nil
 	}
@@ -95,25 +94,23 @@ func (d *KeyDefine) OptionsStrings() []string {
 	return ss
 }
 
-func ResolveKeyColumnOptions(s string) (options []KeyColumnOption) {
-	for field := range strings.SplitSeq(s, ";") {
-		if parts := strings.Split(field, ","); len(parts) > 0 {
-			option := KeyColumnOption{
+func ResolveKeyColumnOptions(s string) KeyColumnOption {
+	if parts := strings.Split(s, ","); len(s) > 0 && len(parts) > 0 {
+		if len(parts) > 0 {
+			return KeyColumnOption{
 				Name:    parts[0],
 				Options: parts[1:],
 			}
-			if option.Name == "" {
-				continue
-			}
-			options = append(options, option)
 		}
 	}
-	return
+	return KeyColumnOption{}
 }
 
 func ResolveKeyColumnOptionsFromStrings(ss ...string) (options []KeyColumnOption) {
 	for _, s := range ss {
-		options = append(options, ResolveKeyColumnOptions(s)...)
+		if option := ResolveKeyColumnOptions(s); len(option.Name) > 0 {
+			options = append(options, option)
+		}
 	}
 	return
 }

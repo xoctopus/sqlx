@@ -59,9 +59,9 @@ func (v Gender) String() string {
 func (v Gender) Text() string {
 	switch v {
 	case GENDER__MALE:
-		return "MALE"
+		return "男"
 	case GENDER__FEMALE:
-		return "FEMALE"
+		return "女"
 	default:
 		return v.String()
 	}

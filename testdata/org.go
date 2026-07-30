@@ -4,11 +4,11 @@ import "github.com/xoctopus/sqlx/pkg/types"
 
 // Org 组织
 // +genx:model
-// @def pk ID
-// @def uidx ui_org_id      OrgID;DeletedAt
-// @def uidx ui_org_manager OrgID;Manager;DeletedAt
-// @def idx  i_name         Name;DeletedAt
-// @def idx  i_belonged     Belonged
+// @model pk=ID
+// @model uidx=ui_org_id;OrgID;DeletedAt
+// @model uidx=ui_org_manager;OrgID;Manager;DeletedAt
+// @model idx=i_name;Name;DeletedAt
+// @model idx=i_belonged;Belonged
 type Org struct {
 	types.AutoIncID
 

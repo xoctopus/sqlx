@@ -95,7 +95,13 @@ func WithKeyMethod(method string) KeyOption {
 
 func WithKeyColumnOptions(opts ...KeyColumnOption) KeyOption {
 	return func(k *key) {
-		k.options = opts
+		options := make([]KeyColumnOption, 0)
+		for _, o := range opts {
+			if len(o.Name) > 0 {
+				options = append(options, o)
+			}
+		}
+		k.options = options
 	}
 }
 

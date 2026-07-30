@@ -7,13 +7,13 @@ import (
 
 // User 用户
 // +genx:model
-// @attr TableName=t_user
-// @attr Register=Catalog
-// @def pk ID
-// @def u_idx ui_user_id   UserID
-// @def idx   ui_username  Username
-// @def idx   i_status     Status
-// @def idx   i_created_at CreatedAt
+// @model TableName=t_user
+// @model Register=Catalog
+// @model pk=ID
+// @model uidx=ui_user_id;UserID
+// @model idx=ui_username;Username
+// @model idx=i_status;Status
+// @model idx=i_created_at;CreatedAt
 type User struct {
 	types.AutoIncID
 

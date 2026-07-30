@@ -26,7 +26,7 @@ func TestKeys(t *testing.T) {
 			"ui_name",
 			builder.ColsOf(tab.C("f_name")),
 			builder.WithKeyMethod("BTREE"),
-			builder.WithKeyColumnOptions(def.ResolveKeyColumnOptions("Name,NULL,FIRST")...),
+			builder.WithKeyColumnOptions(def.ResolveKeyColumnOptions("Name,NULL,FIRST")),
 		),
 		builder.K(
 			"i_org",

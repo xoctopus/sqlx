@@ -4,7 +4,7 @@ import "github.com/xoctopus/sqlx/pkg/types"
 
 // TestTable 测试用
 // +genx:model
-// @attr TableName=t_test_table
+// @model TableName=t_test_table
 type TestTable struct {
 	Int8  int8  `db:"f_int8"`
 	Int16 int16 `db:"f_int16"`

@@ -9,11 +9,11 @@ import (
 
 // User 用户表V2
 // +genx:model
-// @attr TableName=t_user
-// @def pk ID
-// @def u_idx ui_user_id       UserID
-// @def u_idx ui_name          RealName
-// @def idx   i_gender         Gender
+// @model TableName=t_user
+// @model pk=ID
+// @model uidx=ui_user_id;UserID
+// @model uidx=ui_name;RealName
+// @model idx=i_gender;Gender
 type User struct {
 	types.AutoIncID
 

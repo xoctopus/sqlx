@@ -2,7 +2,15 @@
 <a name="HEAD"></a>
 ## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.5...HEAD)
 
-> 0001-01-01
+> 2026-07-23
+
+### Ci
+
+* update ci.yml
+
+### Doc
+
+* update CHANGELOG and README
 
 
 <a name="v0.3.5"></a>

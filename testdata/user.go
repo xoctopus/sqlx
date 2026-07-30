@@ -4,12 +4,12 @@ import "github.com/xoctopus/sqlx/pkg/types"
 
 // User 用户
 // +genx:model
-// @attr TableName=t_user
-// @def pk ID
-// @def u_idx ui_user_id       UserID;DeletedAt
-// @def u_idx ui_name          Name;DeletedAt
-// @def idx   i_nickname,BTREE Nickname;DeletedAt
-// @def idx   i_age            Age
+// @model TableName=t_user
+// @model pk=ID
+// @model uidx=ui_user_id;UserID;DeletedAt
+// @model uidx=ui_name;Name;DeletedAt
+// @model idx=i_nickname,BTREE;Nickname;DeletedAt
+// @model idx=i_age;Age
 type User struct {
 	types.AutoIncID
 

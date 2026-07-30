@@ -47,7 +47,9 @@ func (a *autoalias) IsNil() bool {
 func (a *autoalias) Frag(ctx context.Context) frag.Iter {
 	return func(yield func(string, []any) bool) {
 		for q, args := range frag.Compose(", ", a.columns...).Frag(WithToggles(ctx, TOGGLE__AUTO_ALIAS)) {
-			yield(q, args)
+			if !yield(q, args) {
+				return
+			}
 		}
 	}
 }

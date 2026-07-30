@@ -8,13 +8,13 @@ import (
 
 // Order 订单
 // +genx:model
-// @attr TableName=t_order
-// @attr Register=Catalog
-// @def pk ID
-// @def u_idx ui_order_id  OrderID
-// @def idx   i_status     Status
-// @def idx   i_created_at CreatedAt
-// @def idx   i_updated_at UpdatedAt
+// @model TableName=t_order
+// @model Register=Catalog
+// @model pk=ID
+// @model uidx=ui_order_id;OrderID
+// @model idx=i_status;Status
+// @model idx=i_created_at;CreatedAt
+// @model idx=i_updated_at;UpdatedAt
 type Order struct {
 	types.AutoIncID
 

@@ -42,8 +42,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
-github.com/xoctopus/genx v0.3.0 h1:lIiH9WY9hNVXPK5V/VlInBsfwHHDKqFqR5mnVQ+0Ldw=
-github.com/xoctopus/genx v0.3.0/go.mod h1:Hxh7ND4EmOjM7njIzxTvStPmhqBHA4/mTdnjYqY6XDE=
+github.com/xoctopus/genx v0.3.3 h1:0/QdcUcRA7B6kd/uJujegInFVkfgPSBuZSpVeapjHTE=
+github.com/xoctopus/genx v0.3.3/go.mod h1:WHm4LHMqCWZx/KxcylDzDB/e2ZPSFABlnprNQMno0e4=
 github.com/xoctopus/logx v0.3.2 h1:1zhnkxPuk5omAUTzSSBgnmVz3yLI3QYeE9DQzxDf4JU=
 github.com/xoctopus/logx v0.3.2/go.mod h1:AN40eCPofAaTaTm30KAcIvkA30bveSkR7R4uGYrghlA=
 github.com/xoctopus/pkgx v0.4.3 h1:JNmqpN37xEK0xxWz50JeikEdN66pdMmvpmQDErj1bKA=
@@ -52,8 +52,8 @@ github.com/xoctopus/pkgx/testdata v1.0.4 h1:lbybNEnGMbnS43BuowOy4PoDD/c+5qfw1gb5
 github.com/xoctopus/pkgx/testdata v1.0.4/go.mod h1:hM3Pd+eByHRAG1plTMLXVBFzEdYqG3h7B5sHvOu2+iU=
 github.com/xoctopus/typx v0.4.4 h1:5R+rd7Kjo70piy64Qpq+JBGrFFZl8+6WY5gXNYHs34U=
 github.com/xoctopus/typx v0.4.4/go.mod h1:/7ycx/MzjjJ7IIvtfTbur1RKdmFP/NJ54SVO6CTqIas=
-github.com/xoctopus/x v0.5.4 h1:SLNKh0Fmcaoj3NC5JfjvxSZydvHEbM+865qul6AXZbU=
-github.com/xoctopus/x v0.5.4/go.mod h1:jSApSot3xHATyXYFNi0qRQTLRsW8BwyHpAOd/K/weNk=
+github.com/xoctopus/x v0.5.5 h1:SZXv1DOU7J6cJM3/HM44hmGp3xNbvj8geJNZmKbpbkE=
+github.com/xoctopus/x v0.5.5/go.mod h1:jSApSot3xHATyXYFNi0qRQTLRsW8BwyHpAOd/K/weNk=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=

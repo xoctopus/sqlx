@@ -76,31 +76,27 @@ func NewModel(g genx.Context, t types.Type) *Model {
 		}
 	}
 
-	for key, annotations := range doc.Annotations() {
-		for _, anno := range annotations {
-			switch key {
-			case "def":
-				k := def.ParseKeyDef(anno.Text())
-				must.BeTrueF(k != nil, "failed to parse %s @def: %s", m.typ.Name(), anno.Text())
-				for _, o := range k.Options {
-					_, exists := fm[o.Name]
-					must.BeTrueF(exists, "failed to parse %s field def not found: %s", m.typ.Name(), o.Name)
+	annotations, _ := doc.AnnotationsByName(identifier)
+	for _, anno := range annotations {
+		switch k := anno.Key(); k {
+		case string(AttrTableName), string(AttrRegister):
+			m.attrs[Attr(k)] = anno.Value()
+		default:
+			keydef := def.ParseKeyDef(strings.ToLower(k), anno.Value())
+			must.BeTrueF(keydef != nil, "failed to parse %s @def: %s", m.typ.Name(), anno.Text())
+			for _, o := range keydef.Options {
+				_, exists := fm[o.Name]
+				must.BeTrueF(exists, "failed to parse %s field def not found: %s", m.typ.Name(), o.Name)
+			}
+			switch kind := keydef.Kind; kind {
+			case def.KEY_KIND__PRIMARY:
+				if m.primary == nil {
+					m.primary = keydef
 				}
-				switch k.Kind {
-				case def.KEY_KIND__PRIMARY:
-					m.primary = k
-				case def.KEY_KIND__INDEX:
-					m.indexes = append(m.indexes, k)
-				case def.KEY_KIND__UNIQUE_INDEX:
-					m.uniques = append(m.uniques, k)
-				}
-			case "attr":
-				// line = strings.TrimSpace(after)
-				if k, v, found := strings.Cut(anno.Text(), "="); found {
-					if attr := HasAttr(k); len(attr) > 0 {
-						m.attrs[attr] = v
-					}
-				}
+			case def.KEY_KIND__INDEX:
+				m.indexes = append(m.indexes, keydef)
+			case def.KEY_KIND__UNIQUE_INDEX:
+				m.uniques = append(m.uniques, keydef)
 			}
 		}
 	}

@@ -7,6 +7,9 @@ import (
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 	"github.com/xoctopus/sqlx/pkg/sql/adaptor"
+	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/mysql"
+	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/postgres"
+	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/sqlite"
 )
 
 // Session defines logic session interface

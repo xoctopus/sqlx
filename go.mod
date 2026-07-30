@@ -2,14 +2,22 @@ module github.com/xoctopus/sqlx
 
 go 1.26.5
 
-tool github.com/xoctopus/sqlx/example/cmd/devtool
+tool (
+	github.com/xoctopus/sqlx/example/cmd/devtool
+	github.com/xoctopus/sqlx/internal/cmd/skill-install
+)
 
 require (
-	github.com/xoctopus/genx v0.3.0
+	// +skill:genx
+	github.com/xoctopus/genx v0.3.3
+	// +skill:testx
+	github.com/xoctopus/x v0.5.5
+)
+
+require (
 	github.com/xoctopus/logx v0.3.2
 	github.com/xoctopus/pkgx v0.4.3
 	github.com/xoctopus/typx v0.4.4
-	github.com/xoctopus/x v0.5.4
 )
 
 // drivers
