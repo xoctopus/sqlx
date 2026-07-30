@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Comment attaches SQL comment lines to a statement.
 func Comment(lines ...string) Addition {
 	c := &comment{}
 	for _, text := range lines {

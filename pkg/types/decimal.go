@@ -2,6 +2,7 @@ package types
 
 import "github.com/shopspring/decimal"
 
+// AsDecimal wraps a shopspring decimal.Decimal.
 func AsDecimal(v decimal.Decimal) Decimal {
 	return Decimal{}
 }

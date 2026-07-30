@@ -6,6 +6,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// CombinationAddition is a set-operation addition (UNION/EXCEPT/INTERSECT).
 type CombinationAddition interface {
 	Addition
 
@@ -13,14 +14,17 @@ type CombinationAddition interface {
 	Distinct(SelectStatement) CombinationAddition
 }
 
+// Union builds a UNION combination.
 func Union() CombinationAddition {
 	return &combination{operator: "UNION"}
 }
 
+// Expect builds an EXCEPT combination.
 func Expect() CombinationAddition {
 	return &combination{operator: "EXCEPT"}
 }
 
+// Intersect builds an INTERSECT combination.
 func Intersect() CombinationAddition {
 	return &combination{operator: "INTERSECT"}
 }

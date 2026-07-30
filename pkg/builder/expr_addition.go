@@ -8,12 +8,14 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Addition is a SQL clause attached to a statement (WHERE, JOIN, ...).
 type Addition interface {
 	frag.Fragment
 
 	Type() AdditionType
 }
 
+// AdditionType identifies the kind of an Addition.
 type AdditionType int8
 
 const (
@@ -31,6 +33,7 @@ const (
 	addition_COMMENT = 127
 )
 
+// Additions is an ordered collection of Addition clauses.
 type Additions []Addition
 
 func (as Additions) IsNil() bool {
@@ -66,10 +69,12 @@ func (as Additions) Frag(ctx context.Context) frag.Iter {
 	}
 }
 
+// AsAddition wraps f as an Addition of type t.
 func AsAddition(t AdditionType, f frag.Fragment) Addition {
 	return &addition{Fragment: f, T: t}
 }
 
+// ExtractAdditions returns additions matching type t.
 func ExtractAdditions(t AdditionType, additions ...Addition) (filtered Additions) {
 	for _, a := range additions {
 		if frag.IsNil(a) {

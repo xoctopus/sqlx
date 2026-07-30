@@ -6,10 +6,12 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// ReturningAddition is a RETURNING clause.
 type ReturningAddition interface {
 	Addition
 }
 
+// Returning builds a RETURNING addition.
 func Returning(p frag.Fragment) ReturningAddition {
 	if frag.IsNil(p) {
 		p = frag.Lit("*")

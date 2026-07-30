@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Alias renders f AS name.
 func Alias(f frag.Fragment, name string) frag.Fragment {
 	return &alias{
 		name:     name,
@@ -30,6 +31,7 @@ func (a *alias) Frag(ctx context.Context) frag.Iter {
 	).Frag(TrimToggles(ctx, TOGGLE__AUTO_ALIAS))
 }
 
+// AutoAlias enables automatic aliases for the given columns.
 func AutoAlias(columns ...frag.Fragment) frag.Fragment {
 	return &autoalias{
 		columns: slices.Collect(frag.NonNil(slices.Values(columns))),

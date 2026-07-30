@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Boolean converts a Go bool to Bool (TRUE/FALSE).
 func Boolean(b bool) Bool {
 	if b {
 		return TRUE

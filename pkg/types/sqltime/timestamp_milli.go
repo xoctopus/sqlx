@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// ParseTimestampMilli parses input using configured input layouts.
 func ParseTimestampMilli(input string) (d TimestampMilli, err error) {
 	for layout := range gConfig.inputs.Range {
 		t, e := time.ParseInLocation(layout, input, gConfig.timezone.Value())
@@ -18,6 +19,7 @@ func ParseTimestampMilli(input string) (d TimestampMilli, err error) {
 	return d, err
 }
 
+// ParseTimestampMilliWithLayout parses input with an explicit layout.
 func ParseTimestampMilliWithLayout(input, layout string) (TimestampMilli, error) {
 	t, err := time.ParseInLocation(layout, input, gConfig.timezone.Value())
 	if err != nil {
@@ -26,10 +28,12 @@ func ParseTimestampMilliWithLayout(input, layout string) (TimestampMilli, error)
 	return TimestampMilli{t}, nil
 }
 
+// AsTimestampMilli converts t to TimestampMilli in the configured timezone.
 func AsTimestampMilli(t time.Time) TimestampMilli {
 	return TimestampMilli{t.In(gConfig.timezone.Value())}
 }
 
+// TimestampMilli is a millisecond-precision unix timestamp.
 type TimestampMilli struct {
 	time.Time `json:",inline"`
 }

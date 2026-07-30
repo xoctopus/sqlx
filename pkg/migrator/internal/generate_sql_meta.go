@@ -24,6 +24,7 @@ func cut(s string, n int) string {
 	return s
 }
 
+// GenerateTableColumnDocuments rebuilds sql_meta_table_column and inserts column docs from cat.
 func GenerateTableColumnDocuments(_ context.Context, a adaptor.Adaptor, cat builder.Catalog) []frag.Fragment {
 	t := builder.TFrom(&models.TableColumn{})
 	d := a.Dialect()
@@ -53,6 +54,7 @@ func GenerateTableColumnDocuments(_ context.Context, a adaptor.Adaptor, cat buil
 	return append(fragments, frag.Compose("", builder.Insert().Into(t).Values(cols, vals...), frag.Query(";")))
 }
 
+// GenerateTableDocuments rebuilds sql_meta_table and inserts table docs from cat.
 func GenerateTableDocuments(_ context.Context, a adaptor.Adaptor, cat builder.Catalog) []frag.Fragment {
 	t := builder.TFrom(&models.Table{})
 	d := a.Dialect()
@@ -85,6 +87,7 @@ func GenerateTableDocuments(_ context.Context, a adaptor.Adaptor, cat builder.Ca
 	return append(fragments, frag.Compose("", builder.Insert().Into(t).Values(cols, vals...), frag.Query(";")))
 }
 
+// GenerateTableEnumerationDocument rebuilds sql_meta_enumeration and inserts enum docs from cat.
 func GenerateTableEnumerationDocument(_ context.Context, a adaptor.Adaptor, cat builder.Catalog) []frag.Fragment {
 	t := builder.TFrom(&models.Enumeration{})
 	d := a.Dialect()

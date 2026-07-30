@@ -9,16 +9,20 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// SubQuery builds a CTE body for a table.
 type SubQuery func(Table) frag.Fragment
 
+// WithRecursive starts a recursive WITH statement.
 func WithRecursive(t Table, q SubQuery) *WithStmt {
 	return With(t, q, "RECURSIVE")
 }
 
+// With starts a WITH statement.
 func With(t Table, q SubQuery, modifiers ...string) *WithStmt {
 	return (&WithStmt{modifiers: modifiers}).With(t, q)
 }
 
+// WithStmt builds a WITH/CTE statement.
 type WithStmt struct {
 	modifiers []string
 	tables    []Table

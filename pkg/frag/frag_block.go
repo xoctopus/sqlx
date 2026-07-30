@@ -20,6 +20,7 @@ func Block(f Fragment) Fragment {
 	}
 }
 
+// BlockWithoutBrackets joins fragments with commas, without surrounding parentheses.
 func BlockWithoutBrackets(seq iter.Seq[Fragment]) Fragment {
 	if seq == nil {
 		return nil

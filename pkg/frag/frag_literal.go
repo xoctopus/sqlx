@@ -2,10 +2,12 @@ package frag
 
 import "context"
 
+// Lit creates a literal SQL snippet with no arguments.
 func Lit(q string) Fragment {
 	return literal(q)
 }
 
+// Empty is an empty fragment (IsNil reports true).
 func Empty() Fragment {
 	return literal("")
 }

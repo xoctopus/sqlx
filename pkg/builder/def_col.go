@@ -15,84 +15,98 @@ import (
 )
 
 type (
+	// Col is a database column fragment.
 	Col interface {
 		frag.Fragment
 
-		// Name presents database column name
+		// Name returns the database column name.
 		Name() string
-		// FieldName presents name of definition of struct field
+		// FieldName returns the struct field name of the column definition.
 		FieldName() string
-		// String returns full name like `table.column`
+		// String returns the qualified name like `table.column`.
 		String() string
-		// Of change column table context to given argument
+		// Of rebinds the column to the given table context.
 		Of(Table) Col
-		// Fragment return a sql frag based current column
+		// Fragment builds a SQL fragment with `#` as a placeholder for this column.
 		Fragment(q string, args ...any) frag.Fragment
 	}
 
+	// ColPick picks columns by name.
 	ColPick interface {
-		// C picks a column by name
+		// C picks a column by column name or field name.
 		C(string) Col
-		// Pick columns
+		// Pick returns a column subset by names.
 		Pick(...string) Cols
 	}
 
+	// ColIter iterates columns.
 	ColIter interface {
-		// Cols iteration of columns
+		// Cols returns an iterator over columns.
 		Cols() iter.Seq[Col]
 	}
 
+	// ColDef exposes column definition metadata.
 	ColDef interface {
-		// Def returns column define
+		// Def returns the column definition.
 		Def() ColumnDef
 	}
 
+	// ColWrapper unwraps a wrapped column to its underlying Col.
 	ColWrapper interface {
 		Unwrap() Col
 	}
 
+	// ColModifier mutates column construction options.
 	ColModifier interface {
 		SetFieldName(string)
 		SetComputed(frag.Fragment)
 		SetDef(ColumnDef)
 	}
 
+	// ColOption configures a column at construction time.
 	ColOption func(ColModifier)
 
+	// ColComputed exposes a computed expression for a column.
 	ColComputed interface {
 		Computed() frag.Fragment
 	}
 
+	// ColValuer builds a typed expression against a column.
 	ColValuer[T any] func(v Col) frag.Fragment
 
-	// TCol make column can computed
+	// TCol is a typed column that can form conditions and assignments.
 	TCol[T any] interface {
 		Col
 
+		// AsCond builds a condition with the given valuator.
 		AsCond(ColValuer[T]) frag.Fragment
+		// AssignBy builds an assignment with the given valuators.
 		AssignBy(...ColValuer[T]) Assignment
 	}
 
+	// ColsManager adds columns to a collection.
 	ColsManager interface {
 		AddCol(...Col)
 	}
 
+	// Cols is a set of columns.
 	Cols interface {
 		ColPick
 		ColIter
 
-		// Of changes columns table context
+		// Of rebinds all columns to the given table context.
 		Of(Table) Cols
-		// Len returns amount of column set
+		// Len returns the number of columns.
 		Len() int
 
 		frag.Fragment
 	}
 
+	// ColumnDef is the column definition metadata.
 	ColumnDef = def.ColumnDef
 )
 
-// C creates a Col by name and ColOption
+// C creates a Col by name with optional configuration.
 func C(name string, options ...ColOption) Col {
 	c := &column[any]{
 		name: strings.ToLower(name),
@@ -105,7 +119,7 @@ func C(name string, options ...ColOption) Col {
 	return c
 }
 
-// CT creates a Col by name and ColOption with computing T
+// CT creates a typed TCol by name with optional configuration.
 func CT[T any](name string, options ...ColOption) TCol[T] {
 	c := &column[T]{
 		name: strings.ToLower(name),
@@ -117,7 +131,7 @@ func CT[T any](name string, options ...ColOption) TCol[T] {
 	return c
 }
 
-// CC cast c for computing with type T
+// CC casts c to a typed TCol[T], optionally applying more options.
 func CC[T any](c Col, options ...ColOption) TCol[T] {
 	col := &column[T]{
 		name:     c.Name(),
@@ -241,6 +255,7 @@ func (c *column[T]) Frag(ctx context.Context) frag.Iter {
 	return frag.Lit(c.name).Frag(ctx)
 }
 
+// GetColTable returns the table bound to c, unwrapping ColWrapper if needed.
 func GetColTable(c Col) Table {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
@@ -252,6 +267,7 @@ func GetColTable(c Col) Table {
 	return t
 }
 
+// GetColDef returns the column definition of c, unwrapping ColWrapper if needed.
 func GetColDef(c Col) ColumnDef {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
@@ -263,6 +279,7 @@ func GetColDef(c Col) ColumnDef {
 	return d
 }
 
+// GetColComputed returns the computed expression of c, unwrapping ColWrapper if needed.
 func GetColComputed(c Col) frag.Fragment {
 	if x, ok := c.(ColWrapper); ok {
 		c = x.Unwrap()
@@ -274,70 +291,83 @@ func GetColComputed(c Col) frag.Fragment {
 	return f
 }
 
+// WithColFieldName sets the struct field name of a column.
 func WithColFieldName(name string) ColOption {
 	return func(c ColModifier) { c.SetFieldName(name) }
 }
 
+// WithColComputed sets a computed expression for a column.
 func WithColComputed(f frag.Fragment) ColOption {
 	return func(c ColModifier) { c.SetComputed(f) }
 }
 
+// WithColDef sets the column definition.
 func WithColDef(def *ColumnDef) ColOption {
 	return func(c ColModifier) { c.SetDef(*def) }
 }
 
+// WithColDefOf parses a ColumnDef from a sample value and struct tag.
 func WithColDefOf(v any, tag reflect.StructTag) ColOption {
 	return WithColDef(def.ParseColDef(typx.NewRType(reflect.TypeOf(v)), tag))
 }
 
+// AsValue assigns/compares using another column as the value.
 func AsValue[T any](v TCol[T]) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("?", v)
 	}
 }
 
+// Value assigns/compares using a literal value.
 func Value[T any](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("?", v)
 	}
 }
 
+// Inc builds `column + v`.
 func Inc[T any](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? + ?", c, v)
 	}
 }
 
+// Dec builds `column - v`.
 func Dec[T any](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? - ?", c, v)
 	}
 }
 
+// Eq builds `column = v`.
 func Eq[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? = ?", c, v)
 	}
 }
 
+// EqCol builds `column = other`.
 func EqCol[T comparable](v TCol[T]) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? = ?", c, v)
 	}
 }
 
+// Neq builds `column <> v`.
 func Neq[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? <> ?", c, v)
 	}
 }
 
+// NeqCol builds `column <> other`.
 func NeqCol[T comparable](v TCol[T]) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? <> ?", c, v)
 	}
 }
 
+// In builds `column IN (...)`. Empty values yield nil.
 func In[T any](vs ...T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		if len(vs) == 0 {
@@ -347,6 +377,7 @@ func In[T any](vs ...T) ColValuer[T] {
 	}
 }
 
+// NotIn builds `column NOT IN (...)`. Empty values yield nil.
 func NotIn[T any](vs ...T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		if len(vs) == 0 {
@@ -356,24 +387,28 @@ func NotIn[T any](vs ...T) ColValuer[T] {
 	}
 }
 
+// IsNull builds `column IS NULL`.
 func IsNull[T any]() ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? IS NULL", c)
 	}
 }
 
+// IsNotNull builds `column IS NOT NULL`.
 func IsNotNull[T any]() ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? IS NOT NULL", c)
 	}
 }
 
+// Like builds `column LIKE %s%`.
 func Like[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, "%"+s+"%")
 	}
 }
 
+// NotLike builds `column NOT LIKE %s%`.
 func NotLike[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? NOT LIKE ?", c, "%"+s+"%")
@@ -394,60 +429,70 @@ func RLike[T ~string](s T) ColValuer[T] {
 	}
 }
 
+// MatchPrefix builds `column LIKE s%`.
 func MatchPrefix[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, s+"%")
 	}
 }
 
+// MatchSuffix builds `column LIKE %s`.
 func MatchSuffix[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, "%"+s)
 	}
 }
 
+// Match builds `column LIKE s` without rewriting the pattern.
 func Match[T ~string](s T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? LIKE ?", c, s)
 	}
 }
 
+// Between builds `column BETWEEN min AND max`.
 func Between[T comparable](min, max T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? BETWEEN ? AND ?", c, min, max)
 	}
 }
 
+// NotBetween builds `column NOT BETWEEN min AND max`.
 func NotBetween[T comparable](min, max T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? NOT BETWEEN ? AND ?", c, min, max)
 	}
 }
 
+// Gt builds `column > v`.
 func Gt[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? > ?", c, v)
 	}
 }
 
+// Gte builds `column >= v`.
 func Gte[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? >= ?", c, v)
 	}
 }
 
+// Lt builds `column < v`.
 func Lt[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? < ?", c, v)
 	}
 }
 
+// Lte builds `column <= v`.
 func Lte[T comparable](v T) ColValuer[T] {
 	return func(c Col) frag.Fragment {
 		return frag.Query("? <= ?", c, v)
 	}
 }
 
+// Columns creates a Cols from column names.
 func Columns(names ...string) Cols {
 	cs := &columns{}
 	for _, name := range names {
@@ -456,6 +501,7 @@ func Columns(names ...string) Cols {
 	return cs
 }
 
+// ColsOf creates a Cols from the given columns.
 func ColsOf(cs ...Col) Cols {
 	cs_ := &columns{}
 	for _, c := range cs {
@@ -464,6 +510,7 @@ func ColsOf(cs ...Col) Cols {
 	return cs_
 }
 
+// ColsIterOf collects columns from one or more iterators into a Cols.
 func ColsIterOf(cs ...iter.Seq[Col]) Cols {
 	cs_ := &columns{}
 	for _, seq := range cs {
@@ -478,7 +525,7 @@ type columns struct {
 	l []Col
 }
 
-// C collects Col from columns by column name or field name
+// C picks a Col by field name (exported) or column name.
 func (cs *columns) C(name string) Col {
 	if name == "" {
 		return nil

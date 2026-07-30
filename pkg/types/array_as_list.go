@@ -11,6 +11,8 @@ import (
 	"github.com/xoctopus/x/misc/must"
 )
 
+// TElement is the element constraint for ArrayAsList.
+// Empty string elements and commas inside string elements are not supported.
 type TElement interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
@@ -46,6 +48,8 @@ func parseElement[T TElement](s string) (T, error) {
 	return *v, nil
 }
 
+// ParseArrayAsList parses a comma-separated list into ArrayAsList[T].
+// Empty parts (after TrimSpace) are rejected.
 func ParseArrayAsList[T TElement](s string) (ArrayAsList[T], error) {
 	list := make(ArrayAsList[T], 0)
 	for part := range strings.SplitSeq(s, ",") {
@@ -61,6 +65,7 @@ func ParseArrayAsList[T TElement](s string) (ArrayAsList[T], error) {
 	return list, nil
 }
 
+// ArrayAsList stores a typed slice as a comma-separated TEXT column.
 type ArrayAsList[T TElement] []T
 
 var (
@@ -68,18 +73,22 @@ var (
 	_ sql.Scanner   = (*ArrayAsList[int])(nil)
 )
 
+// DBType returns the SQL datatype for ArrayAsList.
 func (aa ArrayAsList[T]) DBType(driver string) string {
 	return "text"
 }
 
+// Value implements driver.Valuer.
 func (aa ArrayAsList[T]) Value() (driver.Value, error) {
 	return strings.Join(aa.Elements(), ","), nil
 }
 
+// String returns the comma-separated representation.
 func (aa ArrayAsList[T]) String() string {
 	return strings.Join(aa.Elements(), ",")
 }
 
+// Scan implements sql.Scanner. NULL scans to an empty list.
 func (aa *ArrayAsList[T]) Scan(v any) error {
 	switch src := v.(type) {
 	case nil:
@@ -94,6 +103,7 @@ func (aa *ArrayAsList[T]) Scan(v any) error {
 	}
 }
 
+// Elements returns string forms of all elements.
 func (aa ArrayAsList[T]) Elements() []string {
 	elements := make([]string, 0, len(aa))
 	for _, e := range aa {
@@ -102,10 +112,12 @@ func (aa ArrayAsList[T]) Elements() []string {
 	return elements
 }
 
+// Append appends values to the list.
 func (aa *ArrayAsList[T]) Append(values ...T) {
 	*aa = append(*aa, values...)
 }
 
+// UnmarshalText parses comma-separated text into the list.
 func (aa *ArrayAsList[T]) UnmarshalText(data []byte) error {
 	x, err := ParseArrayAsList[T](string(data))
 	if err != nil {
@@ -115,10 +127,13 @@ func (aa *ArrayAsList[T]) UnmarshalText(data []byte) error {
 	return nil
 }
 
+// MarshalText encodes the list as comma-separated text.
 func (aa *ArrayAsList[T]) MarshalText() ([]byte, error) {
 	return []byte(aa.String()), nil
 }
 
+// UnmarshalJSON parses a JSON string holding a comma-separated list.
+// null and empty payloads become an empty list.
 func (aa *ArrayAsList[T]) UnmarshalJSON(data []byte) error {
 	s := string(data)
 	if len(s) == 0 || s == "null" {
@@ -138,6 +153,7 @@ func (aa *ArrayAsList[T]) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON encodes the list as a quoted comma-separated JSON string.
 func (aa *ArrayAsList[T]) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Quote(aa.String())), nil
 }

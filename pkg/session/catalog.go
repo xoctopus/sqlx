@@ -9,6 +9,8 @@ import (
 
 var catalogs = syncx.NewXmap[string, struct{}]()
 
+// Register records tables from cats and panics if a table key is registered twice.
+// The key is TableName, or Schema.TableName when the table has a schema.
 func Register(cats ...builder.Catalog) {
 	for _, cat := range cats {
 		for t := range cat.Tables() {

@@ -12,20 +12,24 @@ import (
 	_ "github.com/xoctopus/sqlx/pkg/sql/adaptor/sqlite"
 )
 
-// Session defines logic session interface
+// Session is a named database access handle.
 type Session interface {
-	// Name logic session name
+	// Name returns the logical session name.
 	Name() string
-	// T picks table from session
+	// T resolves a table from a model, Table, or WithTable value.
 	T(any) builder.Table
-	// Adaptor returns session adaptor
+	// Adaptor returns the underlying adaptor; ReadOnly() selects the RO adaptor when set.
 	Adaptor(...AdaptorOptionApplier) adaptor.Adaptor
 
+	// Tx runs fn inside a transaction on the RW adaptor.
 	Tx(context.Context, func(context.Context) error) error
+	// Exec executes f on the RW adaptor.
 	Exec(context.Context, frag.Fragment) (sql.Result, error)
+	// Query runs f on the RW adaptor.
 	Query(context.Context, frag.Fragment) (*sql.Rows, error)
 }
 
+// New creates a Session backed by a single adaptor.
 func New(a adaptor.Adaptor, name string) Session {
 	return &session{
 		name: name,
@@ -33,6 +37,7 @@ func New(a adaptor.Adaptor, name string) Session {
 	}
 }
 
+// NewReadonly creates a Session with separate read-write and read-only adaptors.
 func NewReadonly(rw adaptor.Adaptor, ro adaptor.Adaptor, name string) Session {
 	return &session{
 		name: name,
@@ -87,12 +92,16 @@ func (s *session) Adaptor(appliers ...AdaptorOptionApplier) adaptor.Adaptor {
 	return s.a
 }
 
+// AdaptorOption configures Adaptor selection.
 type AdaptorOption struct {
+	// ReadOnly selects the read-only adaptor when true.
 	ReadOnly bool
 }
 
+// AdaptorOptionApplier mutates AdaptorOption.
 type AdaptorOptionApplier func(*AdaptorOption)
 
+// ReadOnly selects the read-only adaptor from NewReadonly.
 func ReadOnly() AdaptorOptionApplier {
 	return func(o *AdaptorOption) {
 		o.ReadOnly = true

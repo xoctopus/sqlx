@@ -23,28 +23,34 @@ var gConfig = struct {
 	),
 }
 
+// SetTimeOutputLayout sets the global time output layout.
 func SetTimeOutputLayout(layout string) {
 	gConfig.output.Set(layout)
 }
 
+// GetTimeOutputLayout returns the global time output layout.
 func GetTimeOutputLayout() string {
 	return gConfig.output.Value()
 }
 
+// AddTimeInputLayouts registers additional parse layouts.
 func AddTimeInputLayouts(layouts ...string) {
 	for _, layout := range layouts {
 		gConfig.inputs.Store(layout)
 	}
 }
 
+// GetTimeInputLayouts returns registered parse layouts.
 func GetTimeInputLayouts() []string {
 	return gConfig.inputs.Keys()
 }
 
+// SetTimezone sets the global timezone used for parse/format.
 func SetTimezone(timezone *time.Location) {
 	gConfig.timezone.Set(timezone)
 }
 
+// GetTimezone returns the global timezone.
 func GetTimezone() *time.Location {
 	return gConfig.timezone.Value()
 }

@@ -15,8 +15,11 @@ import (
 )
 
 type (
+	// Table is a database table with columns and keys.
 	Table interface {
+		// TableName returns the table name.
 		TableName() string
+		// String returns the table name.
 		String() string
 
 		KeyPick
@@ -25,38 +28,51 @@ type (
 		ColPick
 		ColIter
 
+		// Fragment builds a SQL fragment with `#` as a table/column placeholder.
 		Fragment(string, ...any) frag.Fragment
 		frag.Fragment
 	}
 
+	// Catalog is a registry of tables.
 	Catalog interface {
+		// T picks a table by name.
 		T(string) Table
+		// Tables iterates registered tables.
 		Tables() iter.Seq[Table]
 
+		// Add registers tables into the catalog.
 		Add(...Table)
+		// Remove unregisters a table by name.
 		Remove(string)
+		// Len returns the number of tables.
 		Len() int
 
 		// Require(...Catalog)
 	}
 
+	// WithTable exposes an associated table.
 	WithTable interface {
 		T() Table
 	}
+	// WithTableName returns a copy with a different table name.
 	WithTableName interface {
 		WithTableName(name string) Table
 	}
+	// HasTableName exposes a table name.
 	HasTableName interface {
 		TableName() string
 	}
+	// WithSchema returns a copy with a schema.
 	WithSchema interface {
 		WithSchema(schema string) Table
 	}
+	// HasSchema exposes the schema name.
 	HasSchema interface {
 		Schema() string
 	}
 )
 
+// T creates a Table by name from column and key definitions.
 func T(name string, defs ...frag.Fragment) Table {
 	t := &table{
 		name: name,
@@ -82,6 +98,7 @@ func T(name string, defs ...frag.Fragment) Table {
 
 var schemas = syncx.NewXmap[reflect.Type, Table]()
 
+// TFrom builds a Table from a model pointer, caching by struct type.
 func TFrom(m any) Table {
 	t := reflect.TypeOf(m)
 	must.BeTrueF(t.Kind() == reflect.Pointer, "model %s must be a pointer", t.Name())
@@ -206,6 +223,7 @@ func (t *table) Keys() iter.Seq[Key] {
 	return t.ks.Keys()
 }
 
+// TableNames iterates table names in a catalog.
 func TableNames(c Catalog) iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for t := range c.Tables() {
@@ -216,6 +234,7 @@ func TableNames(c Catalog) iter.Seq[string] {
 	}
 }
 
+// CatalogFrom builds a Catalog from model instances.
 func CatalogFrom(models ...internal.Model) Catalog {
 	tabs := &tables{}
 	for i := range models {
@@ -224,6 +243,7 @@ func CatalogFrom(models ...internal.Model) Catalog {
 	return tabs
 }
 
+// NewCatalog creates an empty Catalog.
 func NewCatalog() Catalog {
 	return &tables{}
 }

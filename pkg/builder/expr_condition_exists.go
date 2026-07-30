@@ -6,6 +6,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Exists builds an EXISTS condition.
 func Exists(f frag.Fragment) SqlCondition {
 	return AsCond(&exists{f: f})
 }

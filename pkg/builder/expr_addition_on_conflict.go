@@ -9,6 +9,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// OnConflictAddition is an ON CONFLICT clause.
 type OnConflictAddition interface {
 	Addition
 
@@ -16,6 +17,7 @@ type OnConflictAddition interface {
 	DoUpdateSet(...Assignment) OnConflictAddition
 }
 
+// OnConflict builds an ON CONFLICT addition for cols.
 func OnConflict(cols ColIter) OnConflictAddition {
 	return &onconflict{cols: cols}
 }

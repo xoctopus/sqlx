@@ -34,12 +34,15 @@ func NonNil[F Fragment](seq iter.Seq[F]) iter.Seq[Fragment] {
 	}
 }
 
-// Fragment defines an interface to present a sql fragment
+// Fragment is a SQL fragment that yields query pieces and arguments.
 type Fragment interface {
+	// IsNil reports whether the fragment is empty.
 	IsNil() bool
+	// Frag yields SQL text chunks and their bound arguments.
 	Frag(ctx context.Context) Iter
 }
 
+// Collect flattens f into a query string and argument list.
 func Collect(ctx context.Context, f Fragment) (string, []any) {
 	if IsNil(f) {
 		return "", nil
@@ -62,6 +65,7 @@ func Collect(ctx context.Context, f Fragment) (string, []any) {
 	return query.String(), args
 }
 
+// Stringify returns a debug representation of f as "query | args".
 func Stringify(f Fragment) string {
 	q, args := Collect(context.Background(), f)
 	return fmt.Sprintf("%s | %v", q, args)

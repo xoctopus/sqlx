@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
+// CreationTime holds CreatedAt as a second-precision unix timestamp.
 type CreationTime struct {
 	// CreatedAt 创建时间 秒时间戳
 	CreatedAt sqltime.Timestamp `db:"f_created_at,default=0" json:"createdAt"`
@@ -18,6 +19,7 @@ func (c *CreationTime) MarkCreatedAt() {
 	}
 }
 
+// CreationModificationTime adds UpdatedAt to CreationTime.
 type CreationModificationTime struct {
 	CreationTime
 	// UpdatedAt 更新时间 秒时间戳
@@ -38,6 +40,7 @@ func (cu *CreationModificationTime) MarkCreatedAt() {
 	}
 }
 
+// CreationModificationDeletionTime adds soft-deletion DeletedAt.
 type CreationModificationDeletionTime struct {
 	CreationModificationTime
 	// DeletedAt 删除时间 秒时间戳
@@ -53,4 +56,5 @@ func (cmd *CreationModificationDeletionTime) MarkDeletedAt() {
 	cmd.DeletedAt = cmd.UpdatedAt
 }
 
+// OperationTime is an alias of CreationModificationDeletionTime.
 type OperationTime = CreationModificationDeletionTime

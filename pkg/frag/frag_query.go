@@ -11,10 +11,14 @@ import (
 )
 
 type (
-	NamedArg  = sql.NamedArg
+	// NamedArg is a named SQL argument.
+	NamedArg = sql.NamedArg
+	// NamedArgs is a map of named argument values for @name placeholders.
 	NamedArgs map[string]any
 )
 
+// Query creates a Fragment from a query template.
+// Use `?` for positional args and `@name` for named args (NamedArg / NamedArgs).
 func Query(query string, args ...any) Fragment {
 	if len(args) == 0 {
 		return &pair{query: query}

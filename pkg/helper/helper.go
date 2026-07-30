@@ -14,7 +14,8 @@ import (
 	"github.com/xoctopus/sqlx/pkg/sql/scanner"
 )
 
-// CVsForInsertion generates columns and values for insertion
+// CVsForInsertion builds insert columns and flattened values from models.
+// Auto-increment columns are skipped.
 func CVsForInsertion[M builder.Model](ms ...M) (builder.Cols, []any) {
 	if len(ms) == 0 {
 		return nil, nil
@@ -42,10 +43,13 @@ func CVsForInsertion[M builder.Model](ms ...M) (builder.Cols, []any) {
 	return builder.ColsOf(cols...), vals
 }
 
+// Scan scans rows into dst.
 func Scan(ctx context.Context, rows *sql.Rows, dst any) error {
 	return scanner.Scan(ctx, rows, dst)
 }
 
+// QueryAndScan executes f and scans the result into dst.
+// If dst is nil, the query still runs and rows are discarded after close.
 func QueryAndScan(ctx context.Context, e adaptor.Adaptor, f frag.Fragment, dst any) error {
 	rows, err := e.Query(ctx, f)
 	if err != nil {

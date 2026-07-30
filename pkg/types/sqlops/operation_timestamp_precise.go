@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
+// CreationTimePrecise holds CreatedAt as a millisecond unix timestamp.
 type CreationTimePrecise struct {
 	// CreatedAt 创建时间 毫秒时间戳
 	CreatedAt sqltime.TimestampMilli `db:"created_at,default=0" json:"createdAt"`
@@ -18,6 +19,7 @@ func (c *CreationTimePrecise) MarkCreatedAt() {
 	}
 }
 
+// CreationModificationTimePrecise adds UpdatedAt to CreationTimePrecise.
 type CreationModificationTimePrecise struct {
 	CreationTimePrecise
 	// UpdatedAt 更新时间 毫秒时间戳
@@ -38,6 +40,7 @@ func (cu *CreationModificationTimePrecise) MarkCreatedAt() {
 	}
 }
 
+// CreationModificationDeletionTimePrecise adds soft-deletion DeletedAt.
 type CreationModificationDeletionTimePrecise struct {
 	CreationModificationTimePrecise
 	// DeletedAt 删除时间 毫秒时间戳
@@ -53,4 +56,5 @@ func (cmd *CreationModificationDeletionTimePrecise) MarkDeletedAt() {
 	cmd.DeletedAt = cmd.UpdatedAt
 }
 
+// OperationTimePrecise is an alias of CreationModificationDeletionTimePrecise.
 type OperationTimePrecise = CreationModificationDeletionTimePrecise

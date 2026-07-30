@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/types/sqltime"
 )
 
+// CreationDatetimeMilli holds CreatedAt as a millisecond-precision datetime.
 type CreationDatetimeMilli struct {
 	// CreatedAt 创建日期时间(毫秒)
 	CreatedAt sqltime.Datetime `db:"created_at,precision=3,default=CURRENT_TIMESTAMP(3)" json:"createdAt"`
@@ -18,6 +19,7 @@ func (c *CreationDatetimeMilli) MarkCreatedAt() {
 	}
 }
 
+// CreationModificationDatetimePrecise adds UpdatedAt to CreationDatetimeMilli.
 type CreationModificationDatetimePrecise struct {
 	CreationDatetimeMilli
 	// UpdatedAt 更新日期时间(毫秒)
@@ -37,6 +39,7 @@ func (cu *CreationModificationDatetimePrecise) MarkModifiedAt() {
 	}
 }
 
+// CreationModificationDeletionDatetimePrecise adds soft-deletion DeletedAt.
 type CreationModificationDeletionDatetimePrecise struct {
 	CreationModificationDatetimePrecise
 	// DeletedAt 删除日期时间(毫秒)
@@ -53,5 +56,6 @@ func (cud *CreationModificationDeletionDatetimePrecise) MarkDeletedAt() {
 }
 
 type (
+	// OperationDatetimePrecise is an alias of the full create/modify/delete datetime embed.
 	OperationDatetimePrecise = CreationModificationDeletionDatetimePrecise
 )

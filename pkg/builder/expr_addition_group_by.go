@@ -6,12 +6,14 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// GroupByAddition is a GROUP BY clause.
 type GroupByAddition interface {
 	Addition
 
 	Having(cond frag.Fragment) GroupByAddition
 }
 
+// GroupBy builds a GROUP BY addition.
 func GroupBy(groups ...frag.Fragment) GroupByAddition {
 	return &groupby{groups: groups}
 }

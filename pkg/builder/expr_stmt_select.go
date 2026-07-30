@@ -6,12 +6,14 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// SelectStatement is a SELECT statement fragment.
 type SelectStatement interface {
 	frag.Fragment
 
 	asSelection()
 }
 
+// Select starts a SELECT statement builder.
 func Select(f frag.Fragment, modifiers ...frag.Fragment) *StmtSelect {
 	return &StmtSelect{
 		projects:  f,
@@ -19,6 +21,7 @@ func Select(f frag.Fragment, modifiers ...frag.Fragment) *StmtSelect {
 	}
 }
 
+// StmtSelect builds a SELECT statement.
 type StmtSelect struct {
 	SelectStatement
 

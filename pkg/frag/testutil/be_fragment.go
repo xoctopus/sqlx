@@ -11,6 +11,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// BeFragmentForQuery matches a Fragment by query text only (args ignored).
 func BeFragmentForQuery(query string, args ...any) testx.Matcher[frag.Fragment] {
 	return &fragmentMatcher[frag.Fragment]{
 		query: strings.TrimSpace(query),
@@ -18,6 +19,7 @@ func BeFragmentForQuery(query string, args ...any) testx.Matcher[frag.Fragment] 
 	}
 }
 
+// BeFragment matches a Fragment by query text and bound arguments.
 func BeFragment(query string, args ...any) testx.Matcher[frag.Fragment] {
 	return &fragmentMatcher[frag.Fragment]{
 		query:     strings.TrimSpace(query),

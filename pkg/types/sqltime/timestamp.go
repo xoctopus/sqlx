@@ -8,6 +8,7 @@ import (
 	_ "time/tzdata"
 )
 
+// ParseTimestamp parses input using configured input layouts.
 func ParseTimestamp(input string) (d Timestamp, err error) {
 	for layout := range gConfig.inputs.Range {
 		t, e := time.ParseInLocation(layout, input, gConfig.timezone.Value())
@@ -19,6 +20,7 @@ func ParseTimestamp(input string) (d Timestamp, err error) {
 	return d, err
 }
 
+// ParseTimestampWithLayout parses input with an explicit layout.
 func ParseTimestampWithLayout(input, layout string) (Timestamp, error) {
 	t, err := time.ParseInLocation(layout, input, gConfig.timezone.Value())
 	if err != nil {
@@ -27,6 +29,7 @@ func ParseTimestampWithLayout(input, layout string) (Timestamp, error) {
 	return Timestamp{t}, nil
 }
 
+// AsTimestamp converts t to Timestamp in the configured timezone.
 func AsTimestamp(t time.Time) Timestamp {
 	return Timestamp{t.In(gConfig.timezone.Value())}
 }

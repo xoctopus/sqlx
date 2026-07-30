@@ -12,59 +12,76 @@ import (
 )
 
 type (
+	// Key is a table index or primary key.
 	Key interface {
 		frag.Fragment
 		ColIter
 
+		// Name returns the key/index name.
 		Name() string
+		// Of rebinds the key to the given table context.
 		Of(Table) Key
+		// IsPrimary reports whether this is a primary key.
 		IsPrimary() bool
+		// IsUnique reports whether this is a unique key.
 		IsUnique() bool
-		// String return [$table_name.]$index_name
+		// String returns [$table_name.]$index_name.
 		String() string
 	}
 
+	// KeyDefine is the key definition metadata.
 	KeyDefine = def.KeyDefine
 
+	// KeyDef exposes index method and per-column options.
 	KeyDef interface {
 		Method() string
 		ColumnOptions() []def.KeyColumnOption
 	}
 
+	// KeyPick picks a key by name.
 	KeyPick interface {
 		K(string) Key
 	}
 
+	// KeyIter iterates keys.
 	KeyIter interface {
 		Keys() iter.Seq[Key]
 	}
 
+	// KeysManager adds keys to a collection.
 	KeysManager interface {
 		AddKey(...Key)
 	}
 
+	// Keys is a set of keys.
 	Keys interface {
 		KeyIter
 		KeyPick
 
+		// Of rebinds all keys to the given table context.
 		Of(Table) Keys
 		// Len() int
 	}
 
-	KeyKind         = def.KeyKind
+	// KeyKind is the kind of a key.
+	KeyKind = def.KeyKind
+	// KeyColumnOption is a per-column key option.
 	KeyColumnOption = def.KeyColumnOption
 )
 
+// PK creates a primary key over cols.
 func PK(cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create primary key")
 	return UK("PRIMARY", cols, opts...)
 }
 
+// UK creates a unique index named name over cols.
 func UK(name string, cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create unique index")
 	return K(name, cols, append(opts, WithKeyUniqueness(true))...)
 }
 
+// K creates an index named name over cols.
 func K(name string, cols Cols, opts ...KeyOption) Key {
 	must.BeTrueF(cols != nil && cols.Len() > 0, "missing columns to create index")
 	k := &key{name: strings.ToLower(name)}
@@ -79,20 +96,24 @@ func K(name string, cols Cols, opts ...KeyOption) Key {
 	return k
 }
 
+// KeyOption configures a key at construction time.
 type KeyOption func(*key)
 
+// WithKeyUniqueness marks the key as unique or non-unique.
 func WithKeyUniqueness(unique bool) KeyOption {
 	return func(k *key) {
 		k.unique = unique
 	}
 }
 
+// WithKeyMethod sets the index method (for example BTREE).
 func WithKeyMethod(method string) KeyOption {
 	return func(k *key) {
 		k.method = method
 	}
 }
 
+// WithKeyColumnOptions sets per-column key options.
 func WithKeyColumnOptions(opts ...KeyColumnOption) KeyOption {
 	return func(k *key) {
 		options := make([]KeyColumnOption, 0)
@@ -105,6 +126,7 @@ func WithKeyColumnOptions(opts ...KeyColumnOption) KeyOption {
 	}
 }
 
+// GetKeyTable returns the table bound to k, if any.
 func GetKeyTable(k Key) Table {
 	if d, ok := k.(WithTable); ok {
 		return d.T()
@@ -112,6 +134,7 @@ func GetKeyTable(k Key) Table {
 	return nil
 }
 
+// KeyColumnsDefOf renders key column definitions for DDL.
 func KeyColumnsDefOf(k Key) frag.Fragment {
 	kd := k.(KeyDef)
 

@@ -6,6 +6,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Where builds a WHERE addition.
 func Where(f frag.Fragment) Addition {
 	switch x := f.(type) {
 	case *where:

@@ -6,6 +6,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// OnDuplicate builds an ON DUPLICATE KEY UPDATE addition.
 func OnDuplicate(assignments ...Assignment) Addition {
 	return &onduplicate{
 		assignments: assignments,

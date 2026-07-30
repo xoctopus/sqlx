@@ -2,6 +2,7 @@ package frag
 
 import "context"
 
+// Func wraps a context-aware iterator factory as a Fragment.
 func Func(f func(context.Context) Iter) Fragment {
 	return _func(f)
 }

@@ -6,10 +6,12 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Insert starts an INSERT statement builder.
 func Insert(modifiers ...string) *StmtInsert {
 	return &StmtInsert{modifiers: modifiers}
 }
 
+// StmtInsert builds an INSERT statement.
 type StmtInsert struct {
 	table       Table
 	modifiers   []string

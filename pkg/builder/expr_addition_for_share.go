@@ -6,7 +6,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
-// ForShare read locker
+// ForShare builds a FOR SHARE lock clause.
 func ForShare(modifiers ...string) Addition {
 	return AsAddition(
 		addition_FOR_SHARE,
@@ -14,10 +14,12 @@ func ForShare(modifiers ...string) Addition {
 	)
 }
 
+// ForShareSkipLocked builds FOR SHARE SKIP LOCKED.
 func ForShareSkipLocked() Addition {
 	return ForShare("SKIP LOCKED")
 }
 
+// ForShareNoWait builds FOR SHARE NOWAIT.
 func ForShareNoWait() Addition {
 	return ForShare("NOWAIT")
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// OrderAddition is an ORDER BY item.
 type OrderAddition interface {
 	Addition
 	frag.Fragment
@@ -14,6 +15,7 @@ type OrderAddition interface {
 	asOrderAddition()
 }
 
+// OrderBy builds an ORDER BY addition.
 func OrderBy(os ...OrderAddition) Addition {
 	final := make([]OrderAddition, 0, len(os))
 	for i := range os {

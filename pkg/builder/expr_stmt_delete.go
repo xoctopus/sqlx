@@ -6,10 +6,12 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// Delete starts a DELETE statement builder.
 func Delete() *StmtDelete {
 	return &StmtDelete{}
 }
 
+// StmtDelete builds a DELETE statement.
 type StmtDelete struct {
 	table     Table
 	additions Additions

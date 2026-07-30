@@ -9,7 +9,7 @@ func (v *ArrayAsList[T]) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"stores a typed slice as a comma-separated TEXT column."}, true
 }
 
 func (v *AutoIncID) DocOf(names ...string) ([]string, bool) {
@@ -20,14 +20,14 @@ func (v *AutoIncID) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"is an auto-increment primary key field."}, true
 }
 
 func (v *ID) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"is a generic unsigned identifier."}, true
 }
 
 func (v *Bool) DocOf(names ...string) ([]string, bool) {
@@ -50,7 +50,7 @@ func (v *JSONDBType) DocOf(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"holds an optional SQL datatype override for JSON columns."}, true
 }
 
 func (v *JSONArray[T]) DocOf(names ...string) ([]string, bool) {
@@ -61,7 +61,7 @@ func (v *JSONArray[T]) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"stores a typed slice as JSON TEXT."}, true
 }
 
 func (v *JSONObject[T]) DocOf(names ...string) ([]string, bool) {
@@ -72,7 +72,7 @@ func (v *JSONObject[T]) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"stores a typed struct/map as JSON TEXT."}, true
 }
 
 func (v *Blob) DocOf(names ...string) ([]string, bool) {
@@ -97,7 +97,7 @@ func (v *CreationDatetime) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"holds CreatedAt as a second-precision datetime."}, true
 }
 
 func (v *CreationModificationDatetime) DocOf(names ...string) ([]string, bool) {
@@ -111,7 +111,7 @@ func (v *CreationModificationDatetime) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds UpdatedAt to CreationDatetime."}, true
 }
 
 func (v *CreationModificationDeletionDatetime) DocOf(names ...string) ([]string, bool) {
@@ -125,7 +125,7 @@ func (v *CreationModificationDeletionDatetime) DocOf(names ...string) ([]string,
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds soft-deletion DeletedAt."}, true
 }
 
 func (v *CreationDatetimeMilli) DocOf(names ...string) ([]string, bool) {
@@ -136,7 +136,7 @@ func (v *CreationDatetimeMilli) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"holds CreatedAt as a millisecond-precision datetime."}, true
 }
 
 func (v *CreationModificationDatetimePrecise) DocOf(names ...string) ([]string, bool) {
@@ -150,7 +150,7 @@ func (v *CreationModificationDatetimePrecise) DocOf(names ...string) ([]string, 
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds UpdatedAt to CreationDatetimeMilli."}, true
 }
 
 func (v *CreationModificationDeletionDatetimePrecise) DocOf(names ...string) ([]string, bool) {
@@ -164,7 +164,7 @@ func (v *CreationModificationDeletionDatetimePrecise) DocOf(names ...string) ([]
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds soft-deletion DeletedAt."}, true
 }
 
 func (v *CreationTime) DocOf(names ...string) ([]string, bool) {
@@ -175,7 +175,7 @@ func (v *CreationTime) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"holds CreatedAt as a second-precision unix timestamp."}, true
 }
 
 func (v *CreationModificationTime) DocOf(names ...string) ([]string, bool) {
@@ -189,7 +189,7 @@ func (v *CreationModificationTime) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds UpdatedAt to CreationTime."}, true
 }
 
 func (v *CreationModificationDeletionTime) DocOf(names ...string) ([]string, bool) {
@@ -203,7 +203,7 @@ func (v *CreationModificationDeletionTime) DocOf(names ...string) ([]string, boo
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds soft-deletion DeletedAt."}, true
 }
 
 func (v *CreationTimePrecise) DocOf(names ...string) ([]string, bool) {
@@ -214,7 +214,7 @@ func (v *CreationTimePrecise) DocOf(names ...string) ([]string, bool) {
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"holds CreatedAt as a millisecond unix timestamp."}, true
 }
 
 func (v *CreationModificationTimePrecise) DocOf(names ...string) ([]string, bool) {
@@ -228,7 +228,7 @@ func (v *CreationModificationTimePrecise) DocOf(names ...string) ([]string, bool
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds UpdatedAt to CreationTimePrecise."}, true
 }
 
 func (v *CreationModificationDeletionTimePrecise) DocOf(names ...string) ([]string, bool) {
@@ -242,5 +242,5 @@ func (v *CreationModificationDeletionTimePrecise) DocOf(names ...string) ([]stri
 		}
 		return []string{}, false
 	}
-	return []string{}, true
+	return []string{"adds soft-deletion DeletedAt."}, true
 }

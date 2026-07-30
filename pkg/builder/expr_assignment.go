@@ -10,6 +10,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// AssignmentMarker marks assignment fragments.
 type AssignmentMarker interface {
 	asAssignment()
 }
@@ -44,6 +45,7 @@ func ColumnsAndValues(cols frag.Fragment, values ...any) Assignment {
 	return a
 }
 
+// Assignment is a SET/VALUES assignment fragment.
 type Assignment interface {
 	frag.Fragment
 
@@ -152,6 +154,7 @@ func (a *assignment) Frag(ctx context.Context) frag.Iter {
 	}
 }
 
+// Assignments is a list of Assignment values.
 type Assignments []Assignment
 
 func (as Assignments) asAssignment() {}

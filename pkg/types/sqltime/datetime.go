@@ -8,16 +8,22 @@ import (
 )
 
 var (
-	DatetimeZero           = Datetime{Timestamp: TimestampZero}
-	DatetimeUnixZero       = Datetime{Timestamp: TimestampUnixZero}
-	DatetimeEpoch          = "1970-01-01 00:00:00"
+	// DatetimeZero is the zero datetime value.
+	DatetimeZero = Datetime{Timestamp: TimestampZero}
+	// DatetimeUnixZero is the unix-epoch datetime value.
+	DatetimeUnixZero = Datetime{Timestamp: TimestampUnixZero}
+	// DatetimeEpoch is the second-precision epoch literal.
+	DatetimeEpoch = "1970-01-01 00:00:00"
+	// DatetimeEpochPrecision is the millisecond-precision epoch literal.
 	DatetimeEpochPrecision = "1970-01-01 00:00:00.000"
 )
 
+// AsDatetime converts t to Datetime in the configured timezone.
 func AsDatetime(t time.Time) Datetime {
 	return Datetime{AsTimestamp(t)}
 }
 
+// Datetime is a datetime column value backed by Timestamp.
 type Datetime struct {
 	Timestamp
 }

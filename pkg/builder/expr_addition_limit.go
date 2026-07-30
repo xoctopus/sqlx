@@ -7,12 +7,14 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// LimitAddition is a LIMIT clause.
 type LimitAddition interface {
 	Addition
 
 	Offset(offset int64) LimitAddition
 }
 
+// Limit builds a LIMIT addition.
 func Limit(count int64) LimitAddition {
 	return &limit{count: count}
 }

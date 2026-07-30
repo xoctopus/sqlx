@@ -10,16 +10,20 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// ErrUpdateNeedLimitation is reserved for update-without-limit errors.
 var ErrUpdateNeedLimitation = any(nil)
 
+// Update starts an UPDATE statement on t.
 func Update(t Table, modifiers ...string) *StmtUpdate {
 	return &StmtUpdate{table: t, modifiers: modifiers}
 }
 
+// UpdateIgnore starts an UPDATE IGNORE statement on t.
 func UpdateIgnore(t Table) *StmtUpdate {
 	return Update(t, "IGNORE")
 }
 
+// StmtUpdate builds an UPDATE statement.
 type StmtUpdate struct {
 	table       Table
 	from        Table

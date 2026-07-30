@@ -8,6 +8,7 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// JoinAddition is a JOIN clause.
 type JoinAddition interface {
 	Addition
 
@@ -15,6 +16,7 @@ type JoinAddition interface {
 	Using(cols ...Col) JoinAddition
 }
 
+// Join builds a JOIN on t with optional join methods.
 func Join(t frag.Fragment, methods ...string) JoinAddition {
 	return &join{
 		method: strings.Join(methods, " "),
@@ -22,24 +24,27 @@ func Join(t frag.Fragment, methods ...string) JoinAddition {
 	}
 }
 
+// InnerJoin builds an INNER JOIN on t.
 func InnerJoin(t frag.Fragment) JoinAddition {
 	return Join(t, "INNER")
 }
 
+// LeftJoin builds a LEFT JOIN on t.
 func LeftJoin(t frag.Fragment) JoinAddition {
 	return Join(t, "LEFT")
 }
 
-// RightJoin sqlite unsupported
+// RightJoin builds a RIGHT JOIN on t. Unsupported on SQLite.
 func RightJoin(t frag.Fragment) JoinAddition {
 	return Join(t, "RIGHT")
 }
 
-// FullJoin mysql/sqlite unsupported
+// FullJoin builds a FULL JOIN on t. Unsupported on MySQL/SQLite.
 func FullJoin(t frag.Fragment) JoinAddition {
 	return Join(t, "FULL")
 }
 
+// CrossJoin builds a CROSS JOIN on t.
 func CrossJoin(t frag.Fragment) JoinAddition {
 	return Join(t, "CROSS")
 }

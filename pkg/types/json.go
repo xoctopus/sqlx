@@ -50,6 +50,7 @@ func DriverJSONValue(v any) (driver.Value, error) {
 	return string(data), nil
 }
 
+// JSONDBType holds an optional SQL datatype override for JSON columns.
 type JSONDBType struct {
 	typ string
 }
@@ -65,10 +66,12 @@ func (t *JSONDBType) WithDBType(typ string) {
 	t.typ = typ
 }
 
+// JSONArrayOf wraps a slice as a JSON array column value.
 func JSONArrayOf[T any](s []T) *JSONArray[T] {
 	return &JSONArray[T]{v: s}
 }
 
+// JSONArray stores a typed slice as JSON TEXT.
 type JSONArray[T any] struct {
 	JSONDBType
 	v []T
@@ -112,6 +115,7 @@ func (v JSONArray[T]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.v)
 }
 
+// JSONObjectOf wraps a struct/map pointer as a JSON object column value.
 func JSONObjectOf[T any](v *T) JSONObject[T] {
 	k := reflect.TypeFor[T]().Kind()
 	must.BeTrueF(
@@ -121,6 +125,7 @@ func JSONObjectOf[T any](v *T) JSONObject[T] {
 	return JSONObject[T]{v: v}
 }
 
+// JSONObject stores a typed struct/map as JSON TEXT.
 type JSONObject[T any] struct {
 	JSONDBType
 	v *T

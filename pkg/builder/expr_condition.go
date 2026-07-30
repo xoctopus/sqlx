@@ -6,28 +6,34 @@ import (
 	"github.com/xoctopus/sqlx/pkg/frag"
 )
 
+// ConditionMarker marks condition fragments.
 type ConditionMarker interface {
 	asCondition()
 }
 
+// And composes conditions with AND.
 func And(conditions ...frag.Fragment) SqlCondition {
 	return compose("AND", process(conditions))
 }
 
+// Or composes conditions with OR.
 func Or(conditions ...frag.Fragment) SqlCondition {
 	return compose("OR", process(conditions))
 }
 
+// Xor composes conditions with XOR.
 func Xor(conditions ...frag.Fragment) SqlCondition {
 	return compose("XOR", process(conditions))
 }
 
+// SqlCondition is a SQL boolean condition.
 type SqlCondition interface {
 	frag.Fragment
 
 	ConditionMarker
 }
 
+// AsCond wraps f as a Condition.
 func AsCond(f frag.Fragment) *Condition {
 	switch x := f.(type) {
 	case *Condition:
@@ -37,6 +43,7 @@ func AsCond(f frag.Fragment) *Condition {
 	}
 }
 
+// Condition is a single SQL condition expression.
 type Condition struct {
 	expr frag.Fragment
 
@@ -76,6 +83,7 @@ func process(conditions []frag.Fragment) []SqlCondition {
 	return final
 }
 
+// ComposedCondition joins conditions with a logical operator.
 type ComposedCondition struct {
 	ConditionMarker
 

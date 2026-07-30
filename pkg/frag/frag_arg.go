@@ -12,6 +12,7 @@ import (
 	"github.com/xoctopus/x/reflectx"
 )
 
+// Values expands a sequence into comma-separated `?` placeholders.
 type Values[T any] iter.Seq[T]
 
 func (vs Values[T]) IsNil() bool {
@@ -42,12 +43,15 @@ type CustomValueArg interface {
 	ValueEx() string
 }
 
+// ArgIterFunc wraps ArgIter(v) as a Fragment.
 func ArgIterFunc(v any) Fragment {
 	return Func(func(ctx context.Context) Iter {
 		return ArgIter(ctx, v)
 	})
 }
 
+// ArgIter expands v into SQL placeholders and arguments.
+// It supports Fragment, CustomValueArg, driver.Valuer, slices, and sequences.
 func ArgIter(ctx context.Context, v any) Iter {
 	switch x := v.(type) {
 	case CustomValueArg:
