@@ -3,7 +3,7 @@ module github.com/xoctopus/sqlx
 go 1.26.5
 
 tool (
-	github.com/xoctopus/sqlx/example/cmd/devtool
+	github.com/xoctopus/sqlx/internal/cmd/example
 	github.com/xoctopus/sqlx/internal/cmd/skill-install
 )
 

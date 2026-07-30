@@ -1,6 +1,12 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.5...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.6...HEAD)
+
+> 0001-01-01
+
+
+<a name="v0.3.6"></a>
+## [v0.3.6](https://github.com/xoctopus/sqlx/compare/v0.3.5...v0.3.6)
 
 > 2026-07-30
 
@@ -20,6 +26,7 @@
 
 ### Doc
 
+* add code comments
 * update CHANGELOG and README
 
 ### Refact
