@@ -52,8 +52,8 @@ github.com/xoctopus/pkgx/testdata v1.0.4 h1:lbybNEnGMbnS43BuowOy4PoDD/c+5qfw1gb5
 github.com/xoctopus/pkgx/testdata v1.0.4/go.mod h1:hM3Pd+eByHRAG1plTMLXVBFzEdYqG3h7B5sHvOu2+iU=
 github.com/xoctopus/typx v0.4.4 h1:5R+rd7Kjo70piy64Qpq+JBGrFFZl8+6WY5gXNYHs34U=
 github.com/xoctopus/typx v0.4.4/go.mod h1:/7ycx/MzjjJ7IIvtfTbur1RKdmFP/NJ54SVO6CTqIas=
-github.com/xoctopus/x v0.5.4 h1:SLNKh0Fmcaoj3NC5JfjvxSZydvHEbM+865qul6AXZbU=
-github.com/xoctopus/x v0.5.4/go.mod h1:jSApSot3xHATyXYFNi0qRQTLRsW8BwyHpAOd/K/weNk=
+github.com/xoctopus/x v0.5.5 h1:SZXv1DOU7J6cJM3/HM44hmGp3xNbvj8geJNZmKbpbkE=
+github.com/xoctopus/x v0.5.5/go.mod h1:jSApSot3xHATyXYFNi0qRQTLRsW8BwyHpAOd/K/weNk=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
