@@ -11,7 +11,7 @@ import "github.com/xoctopus/sqlx/pkg/types"
 // @model idx=i_product_name;ProductName
 // @model idx=i_created_at;CreatedAt
 type OrderSnapshot struct {
-	types.AutoIncID
+	types.Serial
 
 	RelOrder
 	RelProduct

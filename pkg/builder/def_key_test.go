@@ -26,7 +26,7 @@ func TestKeys(t *testing.T) {
 			"ui_name",
 			builder.ColsOf(tab.C("f_name")),
 			builder.WithKeyMethod("BTREE"),
-			builder.WithKeyColumnOptions(def.ResolveKeyColumnOptions("Name,NULL,FIRST")),
+			builder.WithKeyColumnOptions(def.ResolveKeyColumnOptions("Name,NULLS,FIRST")),
 		),
 		builder.K(
 			"i_org",
@@ -36,7 +36,7 @@ func TestKeys(t *testing.T) {
 
 	t.Run("KeyColumnsDef", func(t *testing.T) {
 		Expect(t, builder.KeyColumnsDefOf(tab.K("primary")), BeFragment("f_id"))
-		Expect(t, builder.KeyColumnsDefOf(tab.K("ui_name")), BeFragment("f_name NULL FIRST"))
+		Expect(t, builder.KeyColumnsDefOf(tab.K("ui_name")), BeFragment("f_name NULLS FIRST"))
 		Expect(t, builder.KeyColumnsDefOf(tab.K("i_org")), BeFragment("f_org,f_deleted_at"))
 	})
 
@@ -49,7 +49,7 @@ func TestKeys(t *testing.T) {
 		Expect(
 			t,
 			tab.K("ui_name").(builder.KeyDef).ColumnOptions(),
-			Equal([]builder.KeyColumnOption{{Name: "Name", Options: []string{"NULL", "FIRST"}}}),
+			Equal([]builder.KeyColumnOption{{Name: "Name", Options: []string{"NULLS", "FIRST"}}}),
 		)
 		Expect(t, tab.K("ui_name").IsNil(), BeFalse())
 		Expect(t, tab.K("ui_name").String(), Equal("t_demo_ui_name"))

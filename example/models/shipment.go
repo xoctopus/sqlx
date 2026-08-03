@@ -18,19 +18,28 @@ import (
 // @model idx=i_shipped_at;ShippedAt
 // @model idx=i_delivered_at;DeliveredAt
 type Shipment struct {
-	types.AutoIncID
+	types.Serial
 
 	RelOrder
-	ShipmentData
+	RelShipmentNo
+	ShipmentMeta
+	ShipmentState
 
 	types.CreationModificationTime
 }
 
-type ShipmentData struct {
+type RelShipmentNo struct {
+	// TrackingNo 物流单号
+	// @model rel=Shipment.TrackingNo
+	TrackingNo string `db:"tracking_no,width=128"`
+}
+
+type ShipmentMeta struct {
 	// Carrier 物流运营商
 	Carrier string `db:"carrier,width=64"`
-	// TrackingNo 物流单号
-	TrackingNo string `db:"tracking_no,width=128"`
+}
+
+type ShipmentState struct {
 	// Status 物流状态
 	Status enums.ShipmentStatus `db:"status"`
 	// ShippedAt 开始运输时间

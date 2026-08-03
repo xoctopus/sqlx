@@ -1,12 +1,37 @@
 package def_test
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/def"
 )
+
+func ExampleParseKeyDef() {
+	// // @model pk=ID
+	kd := def.ParseKeyDef("pk", "ID")
+	fmt.Printf("pk name=%s fields=%v\n", kd.Name, kd.OptionsNames())
+
+	// // @model idx=ui_username,BTREE;Username
+	kd = def.ParseKeyDef("idx", "ui_username,BTREE;Username")
+	fmt.Printf("idx name=%s using=%s fields=%v\n", kd.Name, kd.Using, kd.OptionsNames())
+
+	// // @model idx=i_status;Status,NULLS,FIRST
+	kd = def.ParseKeyDef("idx", "i_status;Status,NULLS,FIRST")
+	fmt.Printf("idx fields=%v\n", kd.OptionsStrings())
+
+	// // @model uidx=ui_product_id;ProductID;DeletedAt
+	kd = def.ParseKeyDef("uidx", "ui_product_id;ProductID;DeletedAt")
+	fmt.Printf("uidx name=%s fields=%v\n", kd.Name, kd.OptionsNames())
+
+	// Output:
+	// pk name=primary fields=[ID]
+	// idx name=ui_username using=BTREE fields=[Username]
+	// idx fields=[Status,NULLS,FIRST]
+	// uidx name=ui_product_id fields=[ProductID DeletedAt]
+}
 
 func TestParseKeyDef(t *testing.T) {
 	cases := []struct {

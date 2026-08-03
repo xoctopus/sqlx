@@ -2,14 +2,46 @@ package def
 
 import "strings"
 
-// ParseKeyDef parses key define
-// eg:
+// ParseKeyDef parses an `@model` primary-key or index annotation value.
 //
-//	| Kind | Name[,Using]       | Field[,Option]                |
-//	| :--- | :---               | :----                         |
-//	| idx  | idx_name,BTREE     | Name                          |
-//	| uidx | idx_name           | OrgID;f_member_id,NULLS,FIRST |
-//	| pk   |                    | ID                            |
+// k is the annotation key: "pk", "idx", or "uidx".
+// def is the annotation value after `=`.
+//
+// Separators: fields use `;`; name/method and field options use `,`.
+//
+// Annotation → ParseKeyDef(k, def):
+//
+//	// @model pk=ID
+//	ParseKeyDef("pk", "ID")
+//	// Kind=PRIMARY Name=primary Options=[{ID}]
+//
+//	// @model idx=i_status;Status
+//	ParseKeyDef("idx", "i_status;Status")
+//	// Kind=INDEX Name=i_status Options=[{Status}]
+//
+//	// @model idx=ui_username,BTREE;Username
+//	ParseKeyDef("idx", "ui_username,BTREE;Username")
+//	// Kind=INDEX Name=ui_username Using=BTREE Options=[{Username}]
+//
+//	// @model idx=i_status;Status,NULLS,FIRST
+//	ParseKeyDef("idx", "i_status;Status,NULLS,FIRST")
+//	// Kind=INDEX Name=i_status Options=[{Status [NULLS FIRST]}]
+//
+//	// @model uidx=ui_product_id;ProductID;DeletedAt
+//	ParseKeyDef("uidx", "ui_product_id;ProductID;DeletedAt")
+//	// Kind=UNIQUE Name=ui_product_id Options=[{ProductID} {DeletedAt}]
+//
+//	// @model uidx=ui_name;f_org_id,NULLS,FIRST;MemberID
+//	ParseKeyDef("uidx", "ui_name;f_org_id,NULLS,FIRST;MemberID")
+//	// Kind=UNIQUE Name=ui_name Options=[{f_org_id [NULLS FIRST]} {MemberID}]
+//
+// Tabular form of def:
+//
+//	| Kind | Name[,Using]       | Field[,Option]...              |
+//	| :--- | :---               | :----                          |
+//	| idx  | idx_name,BTREE     | Name                           |
+//	| uidx | idx_name           | OrgID;f_member_id,NULLS,FIRST  |
+//	| pk   | (forced "primary") | ID                             |
 func ParseKeyDef(k, def string) *KeyDefine {
 	def = strings.TrimSpace(def)
 	if len(def) == 0 {

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
-	_ "github.com/xoctopus/sqlx/pkg/adaptors"
 	"github.com/xoctopus/sqlx/pkg/builder"
 	"github.com/xoctopus/sqlx/pkg/frag"
 )

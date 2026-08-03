@@ -49,7 +49,7 @@ func init() {
 			IUpdatedAt: m.MK("i_updated_at"),
 			UIOrderID:  m.MK("ui_order_id"),
 		},
-		ID:         modeled.CT[Order, uint64](m.C("ID")),
+		ID:         modeled.CT[Order, int64](m.C("ID")),
 		UserID:     modeled.CT[Order, UserID](m.C("UserID")),
 		OrderID:    modeled.CT[Order, OrderID](m.C("OrderID")),
 		OrderNo:    modeled.CT[Order, string](m.C("OrderNo")),
@@ -79,7 +79,8 @@ type tOrder struct {
 	I      iOrder
 	schema string
 
-	ID      modeled.TCol[Order, uint64]
+	// 自增主键
+	ID      modeled.TCol[Order, int64]
 	UserID  modeled.TCol[Order, UserID]
 	OrderID modeled.TCol[Order, OrderID]
 	// 订单编号
@@ -191,6 +192,9 @@ func (m Order) ColumnRel() map[string][]string {
 		},
 		"OrderID": {
 			"Order.OrderID",
+		},
+		"OrderNo": {
+			"Order.OrderNo",
 		},
 	}
 }

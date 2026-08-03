@@ -67,10 +67,17 @@ func NewModel(g genx.Context, t types.Type) *Model {
 			e.GetFieldDocByName(f.FieldName)
 			d := docx.Parse(g.Packages().DocByPos(token.Pos(typx.PosOfStructField(f.Field))))
 			f.ColumnDef.Comment = d.Description(f.FieldName, " ")
-			if annotations, ok := d.AnnotationsByName("rel"); ok {
-				f.ColumnDef.Relation = slicex.Mapping(
+			if annotations, ok := d.AnnotationsByName(identifier); ok {
+				f.ColumnDef.Relation = slicex.FilterMapping(
 					annotations,
-					func(a docx.Annotation) string { return a.Text() },
+					func(a docx.Annotation) (string, bool) {
+						switch a.Key() {
+						case "rel":
+							return a.Value(), true
+						default:
+							return "", false
+						}
+					},
 				)
 			}
 		}

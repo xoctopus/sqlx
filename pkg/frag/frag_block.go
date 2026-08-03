@@ -14,8 +14,12 @@ func Block(f Fragment) Fragment {
 		return Empty()
 	}
 	return &block{
-		sep:       ",",
-		seq:       func(yield func(Fragment) bool) { yield(f) },
+		sep: ",",
+		seq: func(yield func(Fragment) bool) {
+			if !yield(f) {
+				return
+			}
+		},
 		bracketed: true,
 	}
 }

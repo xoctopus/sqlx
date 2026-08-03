@@ -16,11 +16,13 @@ import (
 // @model idx=i_created_at;CreatedAt
 // @model idx=i_updated_at;UpdatedAt
 type Order struct {
-	types.AutoIncID
+	types.Serial
 
 	RelUser
 	RelOrder
-	OrderData
+	RelOrderNo
+	OrderMeta
+	OrderState
 
 	types.CreationModificationTime
 }
@@ -28,17 +30,24 @@ type Order struct {
 type OrderID uint64
 
 type RelOrder struct {
-	// @rel Order.OrderID
+	// @model rel=Order.OrderID
 	OrderID OrderID `db:"order_id"`
 }
 
-type OrderData struct {
+type RelOrderNo struct {
 	// OrderNo 订单编号
+	// @model rel=Order.OrderNo
 	OrderNo string `db:"order_no,width=64" json:"orderNO"`
+}
+
+type OrderMeta struct {
 	// Amount 订单金额
 	Amount types.Decimal `db:"amount,width=22,precision=4" json:"amount"`
 	// Currency 结算币种
 	Currency enums.Currency `db:"currency" json:"currency"`
+}
+
+type OrderState struct {
 	// PaidAt 订单支付时间
 	PaidAt sqltime.Timestamp `db:"paid_at,default=0" json:"paidAt"`
 	// CanceledAt 订单取消时间

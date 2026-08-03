@@ -12,7 +12,7 @@ import (
 	. "github.com/xoctopus/x/testx"
 
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
-	_ "github.com/xoctopus/sqlx/pkg/adaptors"
+	_ "github.com/xoctopus/sqlx/pkg/session"
 )
 
 func Check(t testing.TB) {

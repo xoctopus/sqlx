@@ -196,4 +196,5 @@ func TestCompose(t *testing.T) {
 func TestFunc(t *testing.T) {
 	f := frag.ArgIterFunc(100)
 	Expect(t, f, BeFragment("?", 100))
+	Expect(t, frag.Stringify(f), Equal("? | [100]"))
 }

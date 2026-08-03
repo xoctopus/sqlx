@@ -19,6 +19,8 @@ import (
 var (
 	// CtxMode carries migration/diff mode flags.
 	CtxMode = diff.CtxMode
+	// CtxMeta carries migration sql meta switcher
+	CtxMeta = contextx.NewV[bool](true)
 	// CtxOutput is reserved for writing migration output to a directory.
 	CtxOutput = contextx.NewT[string]()
 )
@@ -52,14 +54,16 @@ func Migrate(ctx context.Context, a adaptor.Adaptor, next builder.Catalog) (stri
 		fragments = append(fragments, d)
 	}
 
-	fragments = append(
-		fragments,
-		slices.Concat(
-			internal.GenerateTableDocuments(ctx, a, next),
-			internal.GenerateTableColumnDocuments(ctx, a, next),
-			internal.GenerateTableEnumerationDocument(ctx, a, next),
-		)...,
-	)
+	if enabled, _ := CtxMeta.From(ctx); enabled {
+		fragments = append(
+			fragments,
+			slices.Concat(
+				internal.GenerateTableDocuments(ctx, a, next),
+				internal.GenerateTableColumnDocuments(ctx, a, next),
+				internal.GenerateTableEnumerationDocument(ctx, a, next),
+			)...,
+		)
+	}
 
 	q, args := frag.Collect(ctx, frag.Compose("\n", fragments...))
 	named := make([]driver.NamedValue, len(args))

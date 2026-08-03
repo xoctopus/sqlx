@@ -15,7 +15,7 @@ import (
 )
 
 type (
-	// Col is a database column fragment.
+	// Col a database column.
 	Col interface {
 		frag.Fragment
 
