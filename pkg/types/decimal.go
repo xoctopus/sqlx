@@ -4,7 +4,7 @@ import "github.com/shopspring/decimal"
 
 // AsDecimal wraps a shopspring decimal.Decimal.
 func AsDecimal(v decimal.Decimal) Decimal {
-	return Decimal{}
+	return Decimal{Decimal: v}
 }
 
 // Decimal decimal number
