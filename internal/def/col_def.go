@@ -68,7 +68,12 @@ type ColumnDef struct {
 	Tag        reflect.StructTag
 	DataType   string
 	IsUnsigned *bool
-	Width      *uint64
+	// Width describes the max storage space.
+	// It's valid when not nil and greater than 0
+	// e.g. DECIMAL(10) VARCHAR(128) DATETIME(3)
+	Width *uint64
+	// Precision describes the max storage precision space.
+	// e.g. DECIMAL(10,2)
 	Precision  *uint64
 	Default    *string
 	OnUpdate   *string

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	mysqldriver "github.com/go-sql-driver/mysql"
+	"github.com/shopspring/decimal"
 	"github.com/xoctopus/typx/pkg/typx"
 	. "github.com/xoctopus/x/testx"
 
@@ -191,6 +192,22 @@ func DropTable(t *testing.T, a adaptor.Adaptor, tab builder.Table) {
 	Expect(t, err, Succeed())
 }
 
+type Money struct {
+	decimal.Decimal
+}
+
+func (Money) DBType(_ string) string {
+	return "decimal"
+}
+
+func (Money) DBFixedWidth(_ string) *uint64 {
+	return new(uint64(22))
+}
+
+func (Money) DBFixedPrecision(_ string) *uint64 {
+	return new(uint64(4))
+}
+
 func TestDialect_DBType(t *testing.T) {
 	hack.Check(t)
 	a := hack.NewAdaptor(t, "mysql://root@localhost:13306/test_db_type?interpolateParams=true")
@@ -218,4 +235,17 @@ func TestDialect_DBType(t *testing.T) {
 		Expect(t, s1, Equal(s2))
 		t.Log(c.Name(), s1)
 	}
+
+	t.Run("ExtractFromType", func(t *testing.T) {
+		cd := def.ColumnDef{
+			Type:  typx.NewRType(reflect.TypeFor[types.ULID]()),
+			Width: new(uint64(100)),
+		}
+		Expect(t, frag.Stringify(d.DBType(cd)), Equal("BINARY(16) NOT NULL | []"))
+
+		cd = def.ColumnDef{
+			Type: typx.NewRType(reflect.TypeFor[Money]()),
+		}
+		Expect(t, frag.Stringify(d.DBType(cd)), Equal("DECIMAL(22,4) NOT NULL | []"))
+	})
 }

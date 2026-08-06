@@ -13,6 +13,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/xoctopus/typx/pkg/typx"
 	"github.com/xoctopus/x/misc/must"
+	"github.com/xoctopus/x/reflectx"
 
 	"github.com/xoctopus/sqlx/internal/def"
 	"github.com/xoctopus/sqlx/internal/sql/adaptor"
@@ -241,10 +242,7 @@ func (d dialect) DBType(def builder.ColumnDef) frag.Fragment {
 }
 
 func (d dialect) ColDefine(dd *builder.ColumnDef) {
-	must.BeTrueF(
-		dd != nil && dd.Type != nil,
-		"invalid column define",
-	)
+	must.BeTrueF(dd != nil && dd.Type != nil, "invalid column define")
 	d.datatype(dd.Type, dd)
 }
 
@@ -256,17 +254,19 @@ func (d dialect) datatype(typ typx.Type, dd *builder.ColumnDef) {
 
 	must.BeTrueF(typ != nil, "column def missing type info")
 	if rt, ok := typ.Unwrap().(reflect.Type); ok {
-		rv := reflect.New(rt)
-		ptr := rv.Interface()
-		if desc, ok := ptr.(builder.WithDatatypeDesc); ok {
-			dd.DataType = strings.ToUpper(desc.DBType("mysql"))
+		vx := reflect.New(reflectx.Deref(rt)).Interface()
+		if x, ok := vx.(builder.WithDatatypeDesc); ok {
+			dd.DataType = strings.ToUpper(x.DBType("mysql"))
+		}
+		// Fixed width/precision override tag values when the type provides them.
+		if x, ok := vx.(builder.WithFixedWidthDesc); ok {
+			dd.Width = x.DBFixedWidth("mysql")
+		}
+		if x, ok := vx.(builder.WithFixedPrecisionDesc); ok {
+			dd.Precision = x.DBFixedPrecision("mysql")
+		}
+		if len(dd.DataType) > 0 {
 			return
-		} else {
-			val := rv.Elem().Interface()
-			if desc, ok = val.(builder.WithDatatypeDesc); ok {
-				dd.DataType = strings.ToUpper(desc.DBType("mysql"))
-				return
-			}
 		}
 	}
 

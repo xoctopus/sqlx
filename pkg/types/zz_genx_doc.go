@@ -255,3 +255,15 @@ func (v *CreationModificationDeletionTimePrecise) DocOf(names ...string) ([]stri
 	}
 	return []string{"adds soft-deletion DeletedAt."}, true
 }
+
+func (v *ULID) DocOf(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		}
+		if doc, ok := docx.Of(&v.ULID, "", names...); ok {
+			return doc, true
+		}
+		return []string{}, false
+	}
+	return []string{}, true
+}

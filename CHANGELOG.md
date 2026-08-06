@@ -1,13 +1,33 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.6...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.8...HEAD)
 
-> 2026-07-31
+> 0001-01-01
+
+
+<a name="v0.3.8"></a>
+## [v0.3.8](https://github.com/xoctopus/sqlx/compare/v0.3.7...v0.3.8)
+
+> 2026-08-04
+
+### Fix
+
+* **types:** AsDecimal
+
+
+<a name="v0.3.7"></a>
+## [v0.3.7](https://github.com/xoctopus/sqlx/compare/v0.3.6...v0.3.7)
+
+> 2026-08-04
 
 ### Chore
 
 * more comments and unit testing
 * regen
+
+### Doc
+
+* add skills and more documents
 
 
 <a name="v0.3.6"></a>
