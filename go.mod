@@ -15,7 +15,6 @@ require (
 )
 
 require (
-	github.com/oklog/ulid/v2 v2.1.2
 	github.com/xoctopus/logx v0.3.5
 	github.com/xoctopus/pkgx v0.4.3
 	github.com/xoctopus/typx v0.4.5
@@ -30,7 +29,10 @@ require (
 )
 
 // extended datatypes
-require github.com/shopspring/decimal v1.4.0
+require (
+	github.com/oklog/ulid/v2 v2.1.2
+	github.com/shopspring/decimal v1.4.0
+)
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
