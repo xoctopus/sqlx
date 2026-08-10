@@ -9,7 +9,7 @@ tool (
 
 require (
 	// +skill:genx
-	github.com/xoctopus/genx v0.3.4
+	github.com/xoctopus/genx v0.3.5
 	// +skill:testx
 	github.com/xoctopus/x v0.5.5
 )
