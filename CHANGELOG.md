@@ -1,12 +1,22 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.9...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.0...HEAD)
 
-> 2026-08-07
+> 0001-01-01
+
+
+<a name="v0.4.0"></a>
+## [v0.4.0](https://github.com/xoctopus/sqlx/compare/v0.3.9...v0.4.0)
+
+> 2026-08-17
 
 ### Chore
 
 * order modules
+
+### Feat
+
+* **mysql:** register temporary tidb scheme alias
 
 
 <a name="v0.3.9"></a>

@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"net/url"
+	"slices"
+	"strings"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/xoctopus/x/codex"
@@ -26,15 +27,17 @@ func init() {
 	// mapping and dialect behavior stay on the mysql path.
 	// TODO: remove once a dedicated tidb adaptor exists, or if TiDB-specific
 	// DDL/catalog differences need first-class handling.
-	adaptor.Register(&mycli{}, "tidb")
+	aliases := []string{"tidb"}
+	adaptor.Register(&mycli{aliases: aliases}, aliases...)
 }
 
 type mycli struct {
 	dialect
 	adaptor.DB
 
-	schema string
-	dsn    *url.URL
+	aliases []string
+	schema  string
+	dsn     *url.URL
 }
 
 func (d *mycli) Dialect() adaptor.Dialect {
@@ -61,16 +64,21 @@ func (d *mycli) Connector() driver.DriverContext {
 			loggingdriver.WithInterpolator(loggingdriver.DefaultInterpolate),
 		)
 	}
-
-	return loggingdriver.Wrap(mysql.MySQLDriver{}, d.DriverName(), options...)
+	name := d.DriverName()
+	if d.dsn != nil && d.dsn.Scheme != "" {
+		name = d.dsn.Scheme
+	}
+	return loggingdriver.Wrap(mysql.MySQLDriver{}, name, options...)
 }
 
 // Open returns mysql adaptor.Adaptor
 // dsn: mysql://[user[:password]@][addr]/database[?param1=value1&paramN=valueN]
 func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error) {
+	scheme := dsn.Scheme
+	names := append(d.aliases, d.DriverName())
 	must.BeTrueF(
-		dsn.Scheme == d.DriverName(),
-		"invalid dsn schema, expect '%s' but got '%s'", d.DriverName(), dsn,
+		slices.Contains(names, scheme),
+		"invalid dsn schema, expect %v but got '%s'", names, dsn,
 	)
 	database := adaptor.DatabaseNameFromDSN(dsn)
 	d.dsn = dsn
@@ -104,8 +112,9 @@ func (d *mycli) Open(ctx context.Context, dsn *url.URL) (adaptor.Adaptor, error)
 			}
 			return err
 		}),
-		schema: database,
-		dsn:    dsn,
+		schema:  database,
+		dsn:     dsn,
+		aliases: d.aliases,
 	}, nil
 }
 
@@ -136,9 +145,15 @@ func ParseDSN(dsn string) (string, error) {
 	}
 
 	pass, _ := u.User.Password()
-	dsn = fmt.Sprintf("%s:%s@tcp(%s)%s", u.User.Username(), pass, u.Host, u.Path)
-	if q := u.Query(); len(q) > 0 {
-		dsn += "?" + q.Encode()
+	conf := mysql.NewConfig()
+	conf.User = u.User.Username()
+	conf.Passwd = pass
+	conf.Net = "tcp"
+	conf.Addr = u.Host
+	conf.DBName = strings.TrimPrefix(u.Path, "/")
+	conf.Params = make(map[string]string)
+	for k, vs := range u.Query() {
+		conf.Params[k] = vs[0]
 	}
-	return dsn, nil
+	return conf.FormatDSN(), nil
 }

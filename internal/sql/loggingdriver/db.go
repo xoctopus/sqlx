@@ -65,9 +65,13 @@ func (c *connector) Driver() driver.Driver {
 }
 
 func (c *connector) Open(dsn string) (driver.Conn, error) {
-	conn, err := c.d.Open(c.dsn)
+	conn, err := c.d.Open(dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open connection: %w. %s", err, dsn)
+		if u, err2 := url.Parse(dsn); err2 == nil {
+			u.User = url.UserPassword(u.User.Username(), "--------")
+			return nil, fmt.Errorf("failed to open connection: %w. %s", err, u.String())
+		}
+		return nil, fmt.Errorf("failed to open connection: %w", err)
 	}
 	return &connection{
 		Conn:         conn,
