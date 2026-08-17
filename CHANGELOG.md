@@ -1,8 +1,22 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.8...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.3.9...HEAD)
 
-> 0001-01-01
+> 2026-08-07
+
+### Chore
+
+* order modules
+
+
+<a name="v0.3.9"></a>
+## [v0.3.9](https://github.com/xoctopus/sqlx/compare/v0.3.8...v0.3.9)
+
+> 2026-08-07
+
+### Feat
+
+* **types:** add ULID and fixed width/precision descriptors
 
 
 <a name="v0.3.8"></a>
