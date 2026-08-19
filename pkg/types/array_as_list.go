@@ -119,6 +119,10 @@ func (aa *ArrayAsList[T]) Append(values ...T) {
 
 // UnmarshalText parses comma-separated text into the list.
 func (aa *ArrayAsList[T]) UnmarshalText(data []byte) error {
+	if len(data) == 0 {
+		*aa = ArrayAsList[T]{}
+		return nil
+	}
 	x, err := ParseArrayAsList[T](string(data))
 	if err != nil {
 		return err
