@@ -1,8 +1,24 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.0...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.1-rc0...HEAD)
 
 > 0001-01-01
+
+
+<a name="v0.4.1-rc0"></a>
+## [v0.4.1-rc0](https://github.com/xoctopus/sqlx/compare/v0.4.1...v0.4.1-rc0)
+
+> 2026-08-19
+
+### Fix
+
+* **types:** handle empty data in ArrayAsList.UnmarshalText
+
+
+<a name="v0.4.1"></a>
+## [v0.4.1](https://github.com/xoctopus/sqlx/compare/v0.4.0...v0.4.1)
+
+> 2026-08-17
 
 
 <a name="v0.4.0"></a>

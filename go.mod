@@ -9,7 +9,7 @@ tool (
 
 require (
 	// +skill:genx
-	github.com/xoctopus/genx v0.3.4
+	github.com/xoctopus/genx v0.3.7
 	// +skill:testx
 	github.com/xoctopus/x v0.5.5
 )
@@ -17,7 +17,7 @@ require (
 require (
 	github.com/xoctopus/logx v0.3.5
 	github.com/xoctopus/pkgx v0.4.3
-	github.com/xoctopus/typx v0.4.5
+	github.com/xoctopus/typx v0.4.6
 )
 
 // drivers

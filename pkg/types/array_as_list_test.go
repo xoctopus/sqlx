@@ -122,7 +122,9 @@ func TestArrayAsList(t *testing.T) {
 		Expect(t, decoded.UnmarshalText(data), Succeed())
 		Expect(t, decoded, Equal(aa))
 
-		Expect(t, decoded.UnmarshalText([]byte("")), Failed())
+		Expect(t, decoded.UnmarshalText([]byte("")), Succeed())
+		Expect(t, decoded, Equal(ArrayAsList[string]{}))
+
 		Expect(t, decoded.UnmarshalText([]byte("a,,b")), Failed())
 	})
 
