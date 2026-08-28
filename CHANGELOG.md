@@ -1,8 +1,18 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.1-rc0...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.2...HEAD)
 
-> 0001-01-01
+> 2026-08-20
+
+### Chore
+
+* **deps:** bump modernc.org/sqlite from 1.55.0 to 1.56.0 ([#47](https://github.com/xoctopus/sqlx/issues/47))
+
+
+<a name="v0.4.2"></a>
+## [v0.4.2](https://github.com/xoctopus/sqlx/compare/v0.4.1-rc0...v0.4.2)
+
+> 2026-08-20
 
 
 <a name="v0.4.1-rc0"></a>

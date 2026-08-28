@@ -1,37 +1,33 @@
 module github.com/xoctopus/sqlx
 
-go 1.26.5
+go 1.27.0
 
 tool (
-	github.com/xoctopus/sqlx/internal/cmd/example
+	github.com/xoctopus/sqlx/internal/cmd/gen
 	github.com/xoctopus/sqlx/internal/cmd/skill-install
 )
 
 require (
-	// +skill:genx
-	github.com/xoctopus/genx v0.3.7
-	// +skill:testx
-	github.com/xoctopus/x v0.5.5
-)
-
-require (
-	github.com/xoctopus/logx v0.3.5
-	github.com/xoctopus/pkgx v0.4.3
-	github.com/xoctopus/typx v0.4.6
-)
-
-// drivers
-require (
+	// util:testing
 	github.com/DATA-DOG/go-sqlmock v1.5.2
+	// driver:mysql
 	github.com/go-sql-driver/mysql v1.10.0
+	// driver:postgres
 	github.com/jackc/pgx/v5 v5.10.0
-	modernc.org/sqlite v1.56.0
-)
-
-// extended datatypes
-require (
+	// datatype:ULID
 	github.com/oklog/ulid/v2 v2.1.2
+	// datatype:decimal
 	github.com/shopspring/decimal v1.4.0
+	// +skill:genx
+	github.com/xoctopus/genx v0.3.8
+	// +skill:logx
+	github.com/xoctopus/logx v0.3.8
+	github.com/xoctopus/pkgx v0.4.4
+	github.com/xoctopus/typx v0.4.7
+	// +skill:testx
+	github.com/xoctopus/x v0.5.8
+	// driver:sqlite
+	modernc.org/sqlite v1.57.0
 )
 
 require (
@@ -47,12 +43,12 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.28.0 // indirect
-	golang.org/x/mod v0.38.0 // indirect
+	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
-	golang.org/x/tools v0.48.0 // indirect
-	modernc.org/libc v1.74.4 // indirect
+	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/tools v0.49.0 // indirect
+	modernc.org/libc v1.75.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.11.0 // indirect
+	modernc.org/memory v1.12.1 // indirect
 )
