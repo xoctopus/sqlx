@@ -1,8 +1,8 @@
 ---
-name: SQLx
-description:
-  - 说明如何在其他项目中引入并使用 `github.com/xoctopus/sqlx` 的主要包与集成入口
-  - 当 agent 需要把 sqlx 作为依赖接入宿主项目时使用.
+name: sqlx
+description: >-
+  说明如何在其他项目中引入并使用 `sqlx` 的主要包与集成入口.
+  当需要把 sqlx 作为依赖接入宿主项目, 构建 SQL 片段, 执行查询/事务, 或定义模型与迁移时使用.
 ---
 
 # SQLx
