@@ -11,7 +11,7 @@ require (
 	// util:testing
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	// driver:mysql
-	github.com/go-sql-driver/mysql v1.10.0
+	github.com/go-sql-driver/mysql v1.10.1
 	// driver:postgres
 	github.com/jackc/pgx/v5 v5.10.0
 	// datatype:ULID
