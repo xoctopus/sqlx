@@ -27,7 +27,7 @@ require (
 	// +skill:testx
 	github.com/xoctopus/x v0.5.9
 	// driver:sqlite
-	modernc.org/sqlite v1.57.0
+	modernc.org/sqlite v1.58.0
 )
 
 require (
