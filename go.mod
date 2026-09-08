@@ -21,7 +21,7 @@ require (
 	// +skill:genx
 	github.com/xoctopus/genx v0.3.8
 	// +skill:logx
-	github.com/xoctopus/logx v0.3.8
+	github.com/xoctopus/logx v0.3.9
 	github.com/xoctopus/pkgx v0.4.4
 	github.com/xoctopus/typx v0.4.7
 	// +skill:testx
