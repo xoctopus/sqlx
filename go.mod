@@ -25,7 +25,7 @@ require (
 	github.com/xoctopus/pkgx v0.4.4
 	github.com/xoctopus/typx v0.4.7
 	// +skill:testx
-	github.com/xoctopus/x v0.5.8
+	github.com/xoctopus/x v0.5.9
 	// driver:sqlite
 	modernc.org/sqlite v1.57.0
 )
