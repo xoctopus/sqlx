@@ -13,7 +13,7 @@ require (
 	// driver:mysql
 	github.com/go-sql-driver/mysql v1.10.1
 	// driver:postgres
-	github.com/jackc/pgx/v5 v5.10.0
+	github.com/jackc/pgx/v5 v5.11.0
 	// datatype:ULID
 	github.com/oklog/ulid/v2 v2.1.2
 	// datatype:decimal
