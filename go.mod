@@ -19,7 +19,7 @@ require (
 	// datatype:decimal
 	github.com/shopspring/decimal v1.4.0
 	// +skill:genx
-	github.com/xoctopus/genx v0.3.8
+	github.com/xoctopus/genx v0.3.9
 	// +skill:logx
 	github.com/xoctopus/logx v0.3.9
 	github.com/xoctopus/pkgx v0.4.4
