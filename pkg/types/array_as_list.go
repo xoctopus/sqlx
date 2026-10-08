@@ -11,16 +11,16 @@ import (
 	"github.com/xoctopus/x/misc/must"
 )
 
-// TElement is the element constraint for ArrayAsList.
+// _E is the element constraint for ArrayAsList.
 // Empty string elements and commas inside string elements are not supported.
-type TElement interface {
+type _E interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
 		~float32 | ~float64 |
 		~string
 }
 
-func parseElement[T TElement](s string) (T, error) {
+func parseElement[T _E](s string) (T, error) {
 	v := new(T)
 	switch t := reflect.TypeFor[T](); t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -50,7 +50,7 @@ func parseElement[T TElement](s string) (T, error) {
 
 // ParseArrayAsList parses a comma-separated list into ArrayAsList[T].
 // Empty parts (after TrimSpace) are rejected.
-func ParseArrayAsList[T TElement](s string) (ArrayAsList[T], error) {
+func ParseArrayAsList[T _E](s string) (ArrayAsList[T], error) {
 	list := make(ArrayAsList[T], 0)
 	for part := range strings.SplitSeq(s, ",") {
 		if part = strings.TrimSpace(part); len(part) == 0 {
@@ -66,7 +66,7 @@ func ParseArrayAsList[T TElement](s string) (ArrayAsList[T], error) {
 }
 
 // ArrayAsList stores a typed slice as a comma-separated TEXT column.
-type ArrayAsList[T TElement] []T
+type ArrayAsList[T _E] []T
 
 var (
 	_ driver.Valuer = (*ArrayAsList[int])(nil)
