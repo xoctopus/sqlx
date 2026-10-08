@@ -1,11 +1,42 @@
 
 <a name="HEAD"></a>
-## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.2...HEAD)
+## [HEAD](https://github.com/xoctopus/sqlx/compare/v0.4.4...HEAD)
 
-> 2026-08-20
+> 2026-10-08
 
 ### Chore
 
+* unexport TElement
+* code formating
+* **deps:** bump github.com/xoctopus/genx from 0.3.8 to 0.3.9
+* **deps:** bump github.com/go-sql-driver/mysql from 1.10.0 to 1.10.1
+* **deps:** bump modernc.org/sqlite from 1.57.0 to 1.58.0
+* **deps:** bump github.com/xoctopus/x from 0.5.8 to 0.5.9
+* **deps:** bump github.com/xoctopus/logx from 0.3.8 to 0.3.9
+
+
+<a name="v0.4.4"></a>
+## [v0.4.4](https://github.com/xoctopus/sqlx/compare/v0.4.3...v0.4.4)
+
+> 2026-09-05
+
+### Ci
+
+* update ci scripts
+
+### Docs
+
+* **skills:** fix sqlx SKILL.md frontmatter
+
+
+<a name="v0.4.3"></a>
+## [v0.4.3](https://github.com/xoctopus/sqlx/compare/v0.4.2...v0.4.3)
+
+> 2026-08-28
+
+### Chore
+
+* bump Go to 1.27.0
 * **deps:** bump modernc.org/sqlite from 1.55.0 to 1.56.0 ([#47](https://github.com/xoctopus/sqlx/issues/47))
 
 

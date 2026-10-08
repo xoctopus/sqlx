@@ -22,8 +22,9 @@ func TestArrayAsList(t *testing.T) {
 			Expect(t, err, Succeed())
 			Expect(t, list, Equal(ArrayAsList[int]{1, 2, 3}))
 
-			_, err = ParseArrayAsList[int]("")
-			Expect(t, err, Failed())
+			list, err = ParseArrayAsList[int]("")
+			Expect(t, err, Succeed())
+			Expect(t, list, Equal(ArrayAsList[int]{}))
 			_, err = ParseArrayAsList[int]("1,,2")
 			Expect(t, err, Failed())
 			_, err = ParseArrayAsList[int]("1,2,")
@@ -64,9 +65,27 @@ func TestArrayAsList(t *testing.T) {
 			Expect(t, err, Succeed())
 			Expect(t, list, Equal(ArrayAsList[string]{"a", "b"}))
 
-			_, err = ParseArrayAsList[string]("")
-			Expect(t, err, Failed())
+			list, err = ParseArrayAsList[string]("")
+			Expect(t, err, Succeed())
+			Expect(t, list, Equal(ArrayAsList[string]{}))
 			_, err = ParseArrayAsList[string]("a,,b")
+			Expect(t, err, Failed())
+		})
+
+		t.Run("EmptyInput", func(t *testing.T) {
+			list, err := ParseArrayAsList[int]("")
+			Expect(t, err, Succeed())
+			Expect(t, list, Equal(ArrayAsList[int]{}))
+
+			v, err := list.Value()
+			Expect(t, err, Succeed())
+			Expect(t, v, Equal[driver.Value](""))
+
+			list2, err := ParseArrayAsList[int](v.(string))
+			Expect(t, err, Succeed())
+			Expect(t, list2, Equal(ArrayAsList[int]{}))
+
+			_, err = ParseArrayAsList[int]("   ")
 			Expect(t, err, Failed())
 		})
 	})
@@ -143,6 +162,9 @@ func TestArrayAsList(t *testing.T) {
 		Expect(t, decoded, Equal(ArrayAsList[ID]{}))
 
 		Expect(t, decoded.UnmarshalJSON([]byte(nil)), Succeed())
+		Expect(t, decoded, Equal(ArrayAsList[ID]{}))
+
+		Expect(t, decoded.UnmarshalJSON([]byte(`""`)), Succeed())
 		Expect(t, decoded, Equal(ArrayAsList[ID]{}))
 
 		Expect(t, decoded.UnmarshalJSON([]byte(`"1,2,3"`)), Succeed())

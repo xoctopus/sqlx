@@ -49,8 +49,12 @@ func parseElement[T _E](s string) (T, error) {
 }
 
 // ParseArrayAsList parses a comma-separated list into ArrayAsList[T].
-// Empty parts (after TrimSpace) are rejected.
+// An empty input string yields an empty list. Empty parts (after TrimSpace)
+// between commas are rejected.
 func ParseArrayAsList[T _E](s string) (ArrayAsList[T], error) {
+	if len(s) == 0 {
+		return make(ArrayAsList[T], 0), nil
+	}
 	list := make(ArrayAsList[T], 0)
 	for part := range strings.SplitSeq(s, ",") {
 		if part = strings.TrimSpace(part); len(part) == 0 {
@@ -119,10 +123,6 @@ func (aa *ArrayAsList[T]) Append(values ...T) {
 
 // UnmarshalText parses comma-separated text into the list.
 func (aa *ArrayAsList[T]) UnmarshalText(data []byte) error {
-	if len(data) == 0 {
-		*aa = ArrayAsList[T]{}
-		return nil
-	}
 	x, err := ParseArrayAsList[T](string(data))
 	if err != nil {
 		return err
