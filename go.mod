@@ -17,7 +17,7 @@ require (
 	// datatype:ULID
 	github.com/oklog/ulid/v2 v2.1.2
 	// datatype:decimal
-	github.com/shopspring/decimal v1.4.0
+	github.com/shopspring/decimal v1.5.0
 	// +skill:genx
 	github.com/xoctopus/genx v0.3.9
 	// +skill:logx
