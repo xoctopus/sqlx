@@ -1,6 +1,6 @@
 module github.com/xoctopus/sqlx
 
-go 1.27.0
+go 1.27.3
 
 tool (
 	github.com/xoctopus/sqlx/internal/cmd/gen
@@ -25,7 +25,7 @@ require (
 	github.com/xoctopus/pkgx v0.4.4
 	github.com/xoctopus/typx v0.4.7
 	// +skill:testx
-	github.com/xoctopus/x v0.5.9
+	github.com/xoctopus/x v0.6.0
 	// driver:sqlite
 	modernc.org/sqlite v1.58.0
 )
